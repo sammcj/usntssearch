@@ -417,13 +417,17 @@ class ApiResponses:
 				niceResults_row = {
 							#~ 'url': results[i]['url'],
 							'url':self.rqurl + self.cgen['revproxy'] + '/warp?x='+qryforwarp,
-							'encodedurl': uuid.uuid4(),
+							'encodedurl': qryforwarp,
 							'title':results[i]['title'],
 							'filesize':results[i]['size'],
 							'age':human_readable_time,
 							'providertitle':results[i]['providertitle'],
 							'providerurl':results[i]['provider']
 						}
+
+				#~ non CP request generate might errors if no url is found in the permalink
+				if(self.typesearch != 0):
+					niceResults_row['encodedurl'] = self.rqurl + '/' + str(uuid.uuid4())
 					
 				niceResults.append(	niceResults_row)
 							

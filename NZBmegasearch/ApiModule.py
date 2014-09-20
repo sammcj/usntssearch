@@ -30,6 +30,7 @@ import urllib2
 import os
 import logging
 import copy
+import uuid
 
 log = logging.getLogger(__name__)
 
@@ -416,17 +417,13 @@ class ApiResponses:
 				niceResults_row = {
 							#~ 'url': results[i]['url'],
 							'url':self.rqurl + self.cgen['revproxy'] + '/warp?x='+qryforwarp,
-							'encodedurl': qryforwarp,
+							'encodedurl': uuid.uuid4(),
 							'title':results[i]['title'],
 							'filesize':results[i]['size'],
 							'age':human_readable_time,
 							'providertitle':results[i]['providertitle'],
 							'providerurl':results[i]['provider']
 						}
-
-				#~ non CP request generate might errors if no url is found in the permalink
-				if(self.typesearch != 0):
-					niceResults_row['encodedurl'] = 'http://bogus.gu/bog'
 					
 				niceResults.append(	niceResults_row)
 							

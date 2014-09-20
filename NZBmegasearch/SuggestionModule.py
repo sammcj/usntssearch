@@ -236,7 +236,7 @@ class SuggestionResponses:
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 	def get_show_lastepisode(self, rid):
 		parsed_data = []
-		url_tvrage = 'http://www.tvrage.com/feeds/episode_list.php'
+		url_tvrage = 'http://services.tvrage.com/feeds/episode_list.php'
 		urlParams = dict( sid=rid )			
 		#~ print urlParams
 		try:

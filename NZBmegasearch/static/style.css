@@ -777,7 +777,7 @@ a:hover.tooltips span {
 	title of selection 
 */
 .dropdown dt a {
-	background:#ffffff url(http://localhost:5000/static/arrow.png) no-repeat scroll right center; 
+	background:#ffffff url(/static/arrow-down.png) no-repeat scroll right center; 
 	display:inline-block; 
 	width:115px; 
 	height:35px; 
@@ -828,4 +828,3 @@ a:hover.tooltips span {
 .dropdown dd ul li a:hover { background-color:#F2F5A9;}
 
 .dropdown img.flag { border:none; vertical-align:middle; margin-left:10px; }
-

@@ -104,7 +104,7 @@ class CfgSettings:
 		parser.set('general', 'general_ipaddress', '')		
 		parser.set('general', 'predb_active', '0')	
 		parser.set('general', 'general_restrictopt1', '0')				
-		
+		parser.set('general', 'general_dereferer', '0')
 
 		if (request_form['general_ipaddress'] != 'AUTO'):			
 			cip = request_form['general_ipaddress'].replace(" ", "").replace("http://", "").replace("https://", "")
@@ -115,6 +115,8 @@ class CfgSettings:
 			parser.set('general', 'general_https', '1')
 		if (request_form.has_key('general_restrictopt1')  == True):
 			parser.set('general', 'general_restrictopt1', '1')
+		if (request_form.has_key('general_dereferer')  == True):
+			parser.set('general', 'general_dereferer', '1')
 		if (request_form.has_key('trends')  == True):
 			parser.set('general', 'trends', '1')
 		if (request_form.has_key('sugg')  == True):
@@ -368,6 +370,7 @@ class CfgSettings:
 				'nzbget_url' : '', 'nzbget_user':'','nzbget_pwd':'',
 				'general_apikey' : '',
 				'general_restrictopt1' : 0,
+				'general_dereferer' : 0,
 				'predb_active' : 1,
 				'revproxy':revproxy,
 				'stats_key' : gen_stats_key, 'motd':gen_motd}
@@ -458,7 +461,9 @@ class CfgSettings:
 			if(cst_parser.has_option('general' ,'predb_active')):	
 				self.cgen['predb_active'] = cst_parser.getint('general', 'predb_active')
 			if(cst_parser.has_option('general' ,'general_restrictopt1')):	
-				self.cgen['general_restrictopt1'] = cst_parser.getint('general', 'general_restrictopt1')
+				self.cgen['general_restrictopt1'] = cst_parser.getint('general', 'general_restrictopt1')				
+			if(cst_parser.has_option('general' ,'general_dereferer')):	
+				self.cgen['general_dereferer'] = cst_parser.getint('general', 'general_dereferer')
 			if(cst_parser.has_option('general' ,'revproxy')):	
 				self.cgen['revproxy'] = cst_parser.get('general', 'revproxy')
 
@@ -668,13 +673,16 @@ class CfgSettings:
 		genopt['smartsearch_verbose']	 = ''
 		genopt['max_cache_verbose']	 = ''
 		genopt['predb_active_verbose']	 = ''		
-		genopt['general_restrictopt1_verbose']	 = ''				
+		genopt['general_restrictopt1_verbose']	 = ''
+		genopt['general_dereferer_verbose']	 = ''				
 		if(genopt['predb_active'] == 1):
 			genopt['predb_active_verbose']	 = 'checked=yes'
 		if(genopt['general_https'] == 1):
 			genopt['general_https_verbose']	 = 'checked=yes'
 		if(genopt['general_restrictopt1'] == 1):
 			genopt['general_restrictopt1_verbose']	 = 'checked=yes'
+		if(genopt['general_dereferer'] == 1):
+			genopt['general_dereferer_verbose']	 = 'checked=yes'
 		if(genopt['general_suggestion'] == 1):
 			genopt['general_suggestion_verbose']	 = 'checked=yes'
 		if(genopt['general_trend'] == 1):

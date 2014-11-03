@@ -30,6 +30,7 @@ import urllib2
 import os
 import logging
 import copy
+import uuid
 
 log = logging.getLogger(__name__)
 
@@ -218,18 +219,25 @@ class ApiResponses:
 				return self.generate_tvserie_nabresponse_broadcast();
 			else:
 				return render_template('api_error.html')
-		else:	
+					#if user searches for a query, look it up 
+ 		elif(self.args.has_key('q')): 
+ 			query = {'showtitle': self.args['q']} 
+ 			return self.generate_tvserie_nabresponse(query) 
+ 		#use userdefined category 
+ 		elif(self.args.has_key('cat')): 
+ 			return self.generate_tvserie_nabresponse_broadcast(self.args['cat']); 
+ 		else: 
 			return render_template('api_default.html')
 
 	#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 
-	def generate_tvserie_nabresponse_broadcast(self):
+	def generate_tvserie_nabresponse_broadcast(selff, catIDs='5040,5030'):
 		
 		addparams = dict(
 						age= '1500',
 						t='tvsearch',
-						cat='5040,5030')
+						cat=catIDs)
 		
 		rawResults = SearchModule.performSearch('', self.cfg, self.cfg_ds, addparams)
 		#~ rawResults = SearchModule.performSearch('', self.cfg, None, addparams)
@@ -277,13 +285,13 @@ class ApiResponses:
 	def tvrage_getshowinfo(self, rid ):	
 		parsed_data = {'showtitle': ''}
 
-		url_tvrage = 'http://www.tvrage.com/feeds/showinfo.php'
+		url_tvrage = 'http://services.tvrage.com/feeds/showinfo.php'
 		urlParams = dict( sid=rid )			
 		#~ loading
 		try:
 			http_result = requests.get(url=url_tvrage, params=urlParams, verify=False, timeout=self.timeout,  headers=self.tvrage_rqheaders)
 		except Exception as e:
-			print e
+			print 'TV-RAGE does not respond -- ',e
 			log.critical(str(e))
 			return parsed_data
 		
@@ -292,7 +300,7 @@ class ApiResponses:
 		try:
 			tree = ET.fromstring(data.encode('utf-8'))
 		except Exception as e:
-			print e
+			print 'TV-RAGE has sintax errors -- ',e
 			log.critical(str(e))
 			return parsed_data
 
@@ -426,7 +434,7 @@ class ApiResponses:
 
 				#~ non CP request generate might errors if no url is found in the permalink
 				if(self.typesearch != 0):
-					niceResults_row['encodedurl'] = 'http://bogus.gu/bog'
+					niceResults_row['encodedurl'] = self.rqurl + '/' + str(uuid.uuid4())
 					
 				niceResults.append(	niceResults_row)
 							

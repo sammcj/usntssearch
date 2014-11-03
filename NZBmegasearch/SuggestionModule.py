@@ -65,6 +65,11 @@ class SuggestionResponses:
 						'Accept-Language': 'en-US,en;q=0.8',
 						'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'
 						 }
+						 
+		if(int(cgen['general_dereferer']) == 1):
+			self.dereferer = 'http://www.dereferer.org/?'
+		else:
+			self.dereferer = ''
 
 		if(int(cgen['general_trend']) == 0):
 			self.active_trend = 0
@@ -80,7 +85,7 @@ class SuggestionResponses:
 		nuqry = args['q'] + ' ' + self.cgen['searchaddontxt']
 		self.qry_nologic = self.logic_expr.sub(" ",nuqry)
 		urlParams = dict( search=self.qry_nologic, rss=1  )			
-		urlpredb = 'http://predb.me'
+		urlpredb = self.dereferer+'http://predb.me'
 		
 		#~ print urlParams
 		try:
@@ -236,7 +241,7 @@ class SuggestionResponses:
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 	def get_show_lastepisode(self, rid):
 		parsed_data = []
-		url_tvrage = 'http://www.tvrage.com/feeds/episode_list.php'
+		url_tvrage = 'http://services.tvrage.com/feeds/episode_list.php'
 		urlParams = dict( sid=rid )			
 		#~ print urlParams
 		try:
@@ -326,7 +331,7 @@ class SuggestionResponses:
 							'year': str(data[i]['year']),
 							'rating_count': data[i]['ratings']['votes'],
 							'tvrage_id': data[i]['tvrage_id'],
-							'tvdb_url': 'http://thetvdb.com/?tab=series&id='+data[i]['tvdb_id']}
+							'tvdb_url': self.dereferer+'http://thetvdb.com/?tab=series&id='+data[i]['tvdb_id']}
 				#~ print p_data				
 				#~ print '------------------'
 				parsed_data.append(p_data)				
@@ -372,7 +377,7 @@ class SuggestionResponses:
 				p_data = { 'title': data[i]['title'],
 							'year': str(data[i]['year']),
 							'rating_count': data[i]['ratings']['votes'],
-							'imdb_url': 'http://www.imdb.com/title/'+data[i]['imdb_id'],
+							'imdb_url': self.dereferer+'http://www.imdb.com/title/'+data[i]['imdb_id'],
 							'release_date':data[i]['released']}
 				#~ print p_data				
 				#~ print '------------------'

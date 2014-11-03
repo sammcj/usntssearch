@@ -89,7 +89,7 @@
 							{% for tm in trend_movie -%}
 								<tr>
 									<td>
-										<a href="{{ tm['imdb_url'] }}" ><img src="static/imdb.png" width="16" height="16" alt="IMDb" /></a> 
+										<a href="http://www.dereferer.org/?{{ tm['imdb_url'] }}" ><img src="static/imdb.png" width="16" height="16" alt="IMDb" /></a> 
 										&nbsp;<a href="s?q={{ tm['searchstr'] }}" class='sugglinx'>{{ tm['prettytxt'] }}</a>
 									</td>
 								</tr>
@@ -108,7 +108,7 @@
 							{% for ts in trend_show -%}
 								<tr>
 									<td>
-										<a href="{{ ts['imdb_url'] }}"><img src="static/thetvdb16.png" width="16" height="16" alt="tvdb" /></a>
+										<a href="http://www.dereferer.org/?{{ ts['imdb_url'] }}"><img src="static/thetvdb16.png" width="16" height="16" alt="tvdb" /></a>
 										&nbsp;<a href="s?q={{ ts['searchstr'] }}" class='sugglinx'>{{ ts['prettytxt'] }}</a>
 									</td>
 								</tr>

@@ -340,7 +340,7 @@ def api():
 					return apiresp.dosearch(request.args, urlparse(request.url))
 				else:	
                 	return apiresp.dosearch(request.args, urlparse(request.url)),
-                		200, {'Content-Type':'application/rss+xml'}
+                			200, {'Content-Type':'application/rss+xml'}
 			else:	
 				return '[API key protection ACTIVE] Wrong key selected'
 		else:	
@@ -350,7 +350,7 @@ def api():
 			return apiresp.dosearch(request.args, urlparse(request.url))
 		else:	
            	return apiresp.dosearch(request.args, urlparse(request.url)), 
-           		200, {'Content-Type':'application/rss+xml'}
+           			200, {'Content-Type':'application/rss+xml'}
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~   
 

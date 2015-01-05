@@ -344,13 +344,13 @@ def api():
 			else:	
 				return '[API key protection ACTIVE] Wrong key selected'
 		else:	
-				return '[API key protection ACTIVE] API key required'
+			return '[API key protection ACTIVE] API key required'
 	else:
-				if('t' in request.args and request.args['t'] == 'get'):
-					return apiresp.dosearch(request.args, urlparse(request.url))
-				else:	
-                	return apiresp.dosearch(request.args, urlparse(request.url)), 
-                		200, {'Content-Type':'application/rss+xml'}
+		if('t' in request.args and request.args['t'] == 'get'):
+			return apiresp.dosearch(request.args, urlparse(request.url))
+		else:	
+           	return apiresp.dosearch(request.args, urlparse(request.url)), 
+           		200, {'Content-Type':'application/rss+xml'}
 
 #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~   
 

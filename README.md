@@ -10,6 +10,12 @@ NZBmegasearcH collects all your (not only) newznab-based accounts to one place. 
 All credits to the original authors. 
 
 ## Updates
+
+**Changes in v0.50**
+- Merged Pillone's retention fix #calbinbui
+- Merged retention api #calbinbui
+- Merged NZBClub url fix #calbinbui
+
 **Changes in v0.49**
 - Changed auto update to this repo
 - Changed all urls to this repo
@@ -18,7 +24,6 @@ All credits to the original authors.
 - Changed Toggle dereferer #McGriddle
 - fixed sickbeard rss issue #cytec
 - fixed NZBDrone RSS/Api header content error #jonharris
-
 
 **Changes in v0.46**
 

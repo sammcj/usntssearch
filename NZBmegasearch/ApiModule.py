@@ -410,14 +410,14 @@ class ApiResponses:
 		#~ no sorting
 		for i in xrange(len(results)):
 			if(results[i]['ignore'] == 0):
-                                # retention
+                # retention
 				totdays = int ( (time.time() - results[i]['posting_date_timestamp'])/ (3600*24) )			
 				if(totdays == 0):
 					totdays = float ( (time.time() - results[i]['posting_date_timestamp'])/ (3600) )
 					if(totdays < 0):
 						totdays = -totdays
 					totdays =  totdays/100.0
-				if(totdays > (float)self.cgen['daysretention']):
+				if(totdays > self.cgen['daysretention']):
                     continue
 
 				if (results[i]['url'] is None):

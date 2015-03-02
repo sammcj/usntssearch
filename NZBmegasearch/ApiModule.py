@@ -444,7 +444,7 @@ class ApiResponses:
 						}
 
 				#~ non CP request generate might errors if no url is found in the permalink
-				if(self.typesearch != 0):
+				if(self.typesearch != 0 or self.typesearch != 1):
 					niceResults_row['encodedurl'] = self.rqurl + '/' + str(uuid.uuid4())
 					
 				niceResults.append(	niceResults_row)

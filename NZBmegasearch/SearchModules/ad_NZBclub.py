@@ -26,7 +26,7 @@ class ad_NZBclub(SearchModule):
 		# Parse config file		
 		self.name = 'NZBClub'
 		self.typesrch = 'CLB'
-		self.queryURL = 'http://www.nzbclub.com/nzbfeed.aspx'
+		self.queryURL = 'http://www.nzbclub.com/nzbfeeds.aspx'
 		self.baseURL = 'http://www.nzbclub.com'
 		self.active = 1
 		self.builtin = 1

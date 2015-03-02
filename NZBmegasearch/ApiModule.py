@@ -30,7 +30,6 @@ import urllib2
 import os
 import logging
 import copy
-import uuid
 import time
 
 log = logging.getLogger(__name__)
@@ -419,8 +418,7 @@ class ApiResponses:
 						totdays = -totdays
 					totdays =  totdays/100.0
 				if(totdays > (float)self.cgen['daysretention']):
-					# print results[i]['posting_date_timestamp']
-					continue
+                                        continue
 
 				if (results[i]['url'] is None):
 					results[i]['url'] = ""

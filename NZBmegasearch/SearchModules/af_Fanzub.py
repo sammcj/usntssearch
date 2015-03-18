@@ -25,8 +25,8 @@ class af_Fanzub(SearchModule):
 		# Parse config file		
 		self.name = 'Fanzub'
 		self.typesrch = 'FAN'
-		self.queryURL = 'https://www.fanzub.com/rss'
-		self.baseURL = 'https://www.fanzub.com'
+		self.queryURL = 'http://animenzb.com/rss' #'https://www.fanzub.com/rss'
+		self.baseURL = 'http://animenzb.com' #'https://www.fanzub.com' 
 		self.active = 0
 		self.builtin = 1
 		self.login = 0

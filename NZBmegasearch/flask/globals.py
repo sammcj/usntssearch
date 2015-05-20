@@ -13,6 +13,7 @@
 from functools import partial
 from werkzeug.local import LocalStack, LocalProxy
 
+
 def _lookup_object(name):
     top = _request_ctx_stack.top
     if top is None:
@@ -25,7 +26,6 @@ def _find_app():
     if top is None:
         raise RuntimeError('working outside of application context')
     return top.app
-
 
 # context locals
 _request_ctx_stack = LocalStack()

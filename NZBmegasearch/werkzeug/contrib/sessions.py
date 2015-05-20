@@ -58,6 +58,7 @@ import tempfile
 from os import path
 from time import time
 from random import random
+
 try:
     from hashlib import sha1
 except ImportError:
@@ -68,7 +69,6 @@ from ..datastructures import CallbackDict
 from ..utils import dump_cookie, parse_cookie
 from ..wsgi import ClosingIterator
 from ..posixemulation import rename
-
 
 _sha1_re = re.compile(r'^[a-f0-9]{40}$')
 
@@ -89,6 +89,7 @@ class ModificationTrackingDict(CallbackDict):
     def __init__(self, *args, **kwargs):
         def on_update(self):
             self.modified = True
+
         self.modified = False
         CallbackDict.__init__(self, on_update=on_update)
         dict.update(self, *args, **kwargs)
@@ -180,7 +181,6 @@ class SessionStore(object):
         that wasn't the case.
         """
         return self.session_class({}, sid, True)
-
 
 #: used for temporary files by the filesystem session store
 _fs_transaction_suffix = '.__wz_sess'
@@ -335,10 +335,11 @@ class SessionMiddleware(object):
             if session.should_save:
                 self.store.save(session)
                 headers.append(('Set-Cookie', dump_cookie(self.cookie_name,
-                                session.sid, self.cookie_age,
-                                self.cookie_expires, self.cookie_path,
-                                self.cookie_domain, self.cookie_secure,
-                                self.cookie_httponly)))
+                                                          session.sid, self.cookie_age,
+                                                          self.cookie_expires, self.cookie_path,
+                                                          self.cookie_domain, self.cookie_secure,
+                                                          self.cookie_httponly)))
             return start_response(status, headers, exc_info)
+
         return ClosingIterator(self.app(environ, injecting_start_response),
                                lambda: self.store.save_if_modified(session))

@@ -24,7 +24,6 @@ from werkzeug import wsgi
 
 
 class WSGIUtilsTestCase(WerkzeugTestCase):
-
     def test_shareddatamiddleware_get_file_loader(self):
         app = wsgi.SharedDataMiddleware(None, {})
         assert callable(app.get_file_loader('foo'))
@@ -33,10 +32,11 @@ class WSGIUtilsTestCase(WerkzeugTestCase):
         def null_application(environ, start_response):
             start_response('404 NOT FOUND', [('Content-Type', 'text/plain')])
             yield 'NOT FOUND'
+
         app = wsgi.SharedDataMiddleware(null_application, {
-            '/':        path.join(path.dirname(__file__), 'res'),
+            '/': path.join(path.dirname(__file__), 'res'),
             '/sources': path.join(path.dirname(__file__), 'res'),
-            '/pkg':     ('werkzeug.debug', 'shared')
+            '/pkg': ('werkzeug.debug', 'shared')
         })
 
         for p in '/test.txt', '/sources/test.txt':
@@ -57,11 +57,12 @@ class WSGIUtilsTestCase(WerkzeugTestCase):
                'SERVER_NAME': 'bullshit', 'HOST_NAME': 'ignore me dammit'}
         assert wsgi.get_host(env) == 'example.org'
         assert wsgi.get_host(create_environ('/', 'http://example.org')) \
-            == 'example.org'
+               == 'example.org'
 
     def test_responder(self):
         def foo(environ, start_response):
             return BaseResponse('Test')
+
         client = Client(wsgi.responder(foo), BaseResponse)
         response = client.get('/')
         assert response.status_code == 200
@@ -74,6 +75,7 @@ class WSGIUtilsTestCase(WerkzeugTestCase):
         def assert_tuple(script_name, path_info):
             assert env.get('SCRIPT_NAME') == script_name
             assert env.get('PATH_INFO') == path_info
+
         env = original_env.copy()
         pop = lambda: wsgi.pop_path_info(env)
 
@@ -189,14 +191,14 @@ class WSGIUtilsTestCase(WerkzeugTestCase):
 
     def test_get_host_fallback(self):
         assert wsgi.get_host({
-            'SERVER_NAME':      'foobar.example.com',
-            'wsgi.url_scheme':  'http',
-            'SERVER_PORT':      '80'
+            'SERVER_NAME': 'foobar.example.com',
+            'wsgi.url_scheme': 'http',
+            'SERVER_PORT': '80'
         }) == 'foobar.example.com'
         assert wsgi.get_host({
-            'SERVER_NAME':      'foobar.example.com',
-            'wsgi.url_scheme':  'http',
-            'SERVER_PORT':      '81'
+            'SERVER_NAME': 'foobar.example.com',
+            'wsgi.url_scheme': 'http',
+            'SERVER_PORT': '81'
         }) == 'foobar.example.com:81'
 
     def test_multi_part_line_breaks(self):

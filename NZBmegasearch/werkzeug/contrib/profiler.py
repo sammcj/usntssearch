@@ -17,12 +17,14 @@
     :license: BSD, see LICENSE for more details.
 """
 import sys
+
 try:
     try:
         from cProfile import Profile
     except ImportError:
         from profile import Profile
     from pstats import Stats
+
     available = True
 except ImportError:
     available = False
@@ -109,10 +111,13 @@ def make_action(app_factory, hostname='localhost', port=5000,
         from ..contrib import profiler
         action_profile = profiler.make_action(make_app)
     """
+
     def action(hostname=('h', hostname), port=('p', port),
                threaded=threaded, processes=processes):
         """Start a new development server."""
         from ..serving import run_simple
+
         app = ProfilerMiddleware(app_factory(), stream, sort_by, restrictions)
         run_simple(hostname, port, app, False, None, threaded, processes)
+
     return action

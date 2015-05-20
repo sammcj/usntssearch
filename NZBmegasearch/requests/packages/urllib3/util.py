@@ -29,7 +29,6 @@ try:  # Test for SSL features
 except ImportError:
     pass
 
-
 from .packages import six
 from .exceptions import LocationParseError
 
@@ -90,7 +89,7 @@ def split_first(s, delims):
     if min_idx is None or min_idx < 0:
         return s, '', None
 
-    return s[:min_idx], s[min_idx+1:], min_delim
+    return s[:min_idx], s[min_idx + 1:], min_delim
 
 
 def parse_url(url):
@@ -227,7 +226,7 @@ def make_headers(keep_alive=None, accept_encoding=None, user_agent=None,
 
     if basic_auth:
         headers['authorization'] = 'Basic ' + \
-            b64encode(six.b(basic_auth)).decode('utf-8')
+                                   b64encode(six.b(basic_auth)).decode('utf-8')
 
     return headers
 
@@ -243,11 +242,11 @@ def is_connection_dropped(conn):
     let the platform handle connection recycling transparently for us.
     """
     sock = getattr(conn, 'sock', False)
-    if not sock: # Platform-specific: AppEngine
+    if not sock:  # Platform-specific: AppEngine
         return False
 
-    if not poll: # Platform-specific
-        if not select: # Platform-specific: AppEngine
+    if not poll:  # Platform-specific
+        if not select:  # Platform-specific: AppEngine
             return False
 
         try:
@@ -301,6 +300,7 @@ def resolve_ssl_version(candidate):
         return res
 
     return candidate
+
 
 if SSLContext is not None:  # Python 3.2+
     def ssl_wrap_socket(sock, keyfile=None, certfile=None, cert_reqs=None,

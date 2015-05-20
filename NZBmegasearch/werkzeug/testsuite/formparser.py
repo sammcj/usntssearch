@@ -46,7 +46,6 @@ def get_contents(filename):
 
 
 class FormParserTestCase(WerkzeugTestCase):
-
     def test_limiting(self):
         data = 'foo=Hello+World&bar=baz'
         req = Request.from_values(input_stream=StringIO(data),
@@ -138,7 +137,6 @@ class FormParserTestCase(WerkzeugTestCase):
 
 
 class MultiPartTestCase(WerkzeugTestCase):
-
     def test_basic(self):
         resources = join(dirname(__file__), 'multipart')
         client = Client(form_data_consumer, Response)
@@ -171,7 +169,7 @@ class MultiPartTestCase(WerkzeugTestCase):
             data = get_contents(join(folder, 'request.txt'))
             for filename, field, content_type, fsname in files:
                 response = client.post('/?object=' + field, data=data, content_type=
-                                       'multipart/form-data; boundary="%s"' % boundary,
+                'multipart/form-data; boundary="%s"' % boundary,
                                        content_length=len(data))
                 lines = response.data.split('\n', 3)
                 self.assert_equal(lines[0], repr(filename))
@@ -179,7 +177,7 @@ class MultiPartTestCase(WerkzeugTestCase):
                 self.assert_equal(lines[2], repr(content_type))
                 self.assert_equal(lines[3], get_contents(join(folder, fsname)))
             response = client.post('/?object=text', data=data, content_type=
-                                   'multipart/form-data; boundary="%s"' % boundary,
+            'multipart/form-data; boundary="%s"' % boundary,
                                    content_length=len(data))
             self.assert_equal(response.data, repr(text))
 
@@ -189,7 +187,7 @@ class MultiPartTestCase(WerkzeugTestCase):
         data = get_contents(data_file)
         boundary = '---------------------------7da36d1b4a0164'
         response = client.post('/?object=cb_file_upload_multiple', data=data, content_type=
-                                   'multipart/form-data; boundary="%s"' % boundary, content_length=len(data))
+        'multipart/form-data; boundary="%s"' % boundary, content_length=len(data))
         lines = response.data.split('\n', 3)
         self.assert_equal(lines[0],
                           repr(u'Sellersburg Town Council Meeting 02-22-2010doc.doc'))
@@ -220,14 +218,15 @@ class MultiPartTestCase(WerkzeugTestCase):
             '--foo--'
         )
         _, form, files = formparser.parse_form_data(create_environ(data=data,
-            method='POST', content_type='multipart/form-data; boundary=foo'))
+                                                                   method='POST',
+                                                                   content_type='multipart/form-data; boundary=foo'))
         self.assert_(not files)
         self.assert_(not form)
 
         self.assert_raises(ValueError, formparser.parse_form_data,
-            create_environ(data=data, method='POST',
-                      content_type='multipart/form-data; boundary=foo'),
-                      silent=False)
+                           create_environ(data=data, method='POST',
+                                          content_type='multipart/form-data; boundary=foo'),
+                           silent=False)
 
     def test_file_no_content_type(self):
         data = (
@@ -292,7 +291,7 @@ class MultiPartTestCase(WerkzeugTestCase):
             req = Request.from_values(input_stream=StringIO(data),
                                       content_length=len(data),
                                       content_type='multipart/form-data; '
-                                      'boundary=foo', method='POST')
+                                                   'boundary=foo', method='POST')
             self.assert_equal(req.form['foo'], 'this is just bar')
             self.assert_equal(req.form['bar'], 'blafasel')
 
@@ -300,6 +299,7 @@ class MultiPartTestCase(WerkzeugTestCase):
         def parse_multipart(stream, boundary, content_length):
             parser = formparser.MultiPartParser(content_length)
             return parser.parse(stream, boundary, content_length)
+
         self.assert_raises(ValueError, parse_multipart, StringIO(''), '', 0)
         self.assert_raises(ValueError, parse_multipart, StringIO(''), 'broken  ', 0)
 
@@ -321,6 +321,7 @@ class MultiPartTestCase(WerkzeugTestCase):
     def test_bad_newline_bad_newline_assumption(self):
         class ISORequest(Request):
             charset = 'latin1'
+
         contents = 'U2vlbmUgbORu'
         data = '--foo\r\nContent-Disposition: form-data; name="test"\r\n' \
                'Content-Transfer-Encoding: base64\r\n\r\n' + \
@@ -333,7 +334,6 @@ class MultiPartTestCase(WerkzeugTestCase):
 
 
 class InternalFunctionsTestCase(WerkzeugTestCase):
-
     def test_lien_parser(self):
         assert formparser._line_parse('foo') == ('foo', False)
         assert formparser._line_parse('foo\r\n') == ('foo', True)

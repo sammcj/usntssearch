@@ -19,7 +19,6 @@ from werkzeug import urls
 
 
 class URLsTestCase(WerkzeugTestCase):
-
     def test_quoting(self):
         assert urls.url_quote(u'\xf6\xe4\xfc') == '%C3%B6%C3%A4%C3%BC'
         assert urls.url_unquote(urls.url_quote(u'#%="\xf6')) == u'#%="\xf6'
@@ -63,7 +62,7 @@ class URLsTestCase(WerkzeugTestCase):
     def test_sorted_url_encode(self):
         assert urls.url_encode({"a": 42, "b": 23, 1: 1, 2: 2}, sort=True) == '1=1&2=2&a=42&b=23'
         assert urls.url_encode({'A': 1, 'a': 2, 'B': 3, 'b': 4}, sort=True,
-                          key=lambda x: x[0].lower()) == 'A=1&a=2&B=3&b=4'
+                               key=lambda x: x[0].lower()) == 'A=1&a=2&B=3&b=4'
 
     def test_streamed_url_encoding(self):
         out = StringIO()
@@ -96,13 +95,13 @@ class URLsTestCase(WerkzeugTestCase):
         self.assert_raises(UnicodeError, urls.iri_to_uri, 'http://föö.com/')
         assert urls.uri_to_iri('http://xn--n3h.net/') == u'http://\u2603.net/'
         assert urls.uri_to_iri('http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th') == \
-            u'http://\xfcser:p\xe4ssword@\u2603.net/p\xe5th'
+               u'http://\xfcser:p\xe4ssword@\u2603.net/p\xe5th'
         assert urls.iri_to_uri(u'http://☃.net/') == 'http://xn--n3h.net/'
         assert urls.iri_to_uri(u'http://üser:pässword@☃.net/påth') == \
-            'http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th'
+               'http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th'
 
         assert urls.uri_to_iri('http://test.com/%3Fmeh?foo=%26%2F') == \
-            u'http://test.com/%3Fmeh?foo=%26%2F'
+               u'http://test.com/%3Fmeh?foo=%26%2F'
 
         # this should work as well, might break on 2.4 because of a broken
         # idna codec

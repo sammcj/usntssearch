@@ -16,17 +16,16 @@
 import sys
 import re
 from traceback import format_exception_only
+
 try:
     from collections import deque
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     deque = None
 from werkzeug.utils import escape
-
 
 missing = object()
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 RegexType = type(_paragraph_re)
-
 
 HELP_HTML = '''\
 <div class=box>
@@ -73,13 +72,14 @@ class _Helper(object):
             sys.stdout._write('<span class=help>%s</span>' % repr(self))
             return
         import pydoc
+
         pydoc.help(topic)
         rv = sys.stdout.reset().decode('utf-8', 'ignore')
         paragraphs = _paragraph_re.split(rv)
         if len(paragraphs) > 1:
             title = paragraphs[0]
             text = '\n\n'.join(paragraphs[1:])
-        else: # pragma: no cover
+        else:  # pragma: no cover
             title = 'Help'
             text = paragraphs[0]
         sys.stdout._write(HELP_HTML % {'title': title, 'text': text})
@@ -102,7 +102,6 @@ def _add_subclass_info(inner, obj, base):
 
 
 class DebugReprGenerator(object):
-
     def __init__(self):
         self._stack = []
 
@@ -123,6 +122,7 @@ class DebugReprGenerator(object):
                 buf.append('</span>')
             buf.append(right)
             return _add_subclass_info(u''.join(buf), obj, base)
+
         return proxy
 
     list_repr = _sequence_repr_maker('[', ']', list)
@@ -207,7 +207,7 @@ class DebugReprGenerator(object):
     def fallback_repr(self):
         try:
             info = ''.join(format_exception_only(*sys.exc_info()[:2]))
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             info = '?'
         return u'<span class="brokenrepr">&lt;broken repr (%s)&gt;' \
                u'</span>' % escape(info.decode('utf-8', 'ignore').strip())
@@ -261,7 +261,7 @@ class DebugReprGenerator(object):
         if not html_items:
             html_items.append('<tr><td><em>Nothing</em>')
         return OBJECT_DUMP_HTML % {
-            'title':    escape(title),
-            'repr':     repr and '<pre class=repr>%s</pre>' % repr or '',
-            'items':    '\n'.join(html_items)
+            'title': escape(title),
+            'repr': repr and '<pre class=repr>%s</pre>' % repr or '',
+            'items': '\n'.join(html_items)
         }

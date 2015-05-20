@@ -120,7 +120,7 @@ class AppContext(object):
             self.app.do_teardown_appcontext(exc)
         rv = _app_ctx_stack.pop()
         assert rv is self, 'Popped wrong app context.  (%r instead of %r)' \
-            % (rv, self)
+                           % (rv, self)
 
     def __enter__(self):
         self.push()
@@ -259,7 +259,7 @@ class RequestContext(object):
 
         rv = _request_ctx_stack.pop()
         assert rv is self, 'Popped wrong request context.  (%r instead of %r)' \
-            % (rv, self)
+                           % (rv, self)
 
         # get rid of circular dependencies at the end of the request
         # so that we don't require the GC to be active.
@@ -281,7 +281,7 @@ class RequestContext(object):
         # the context can be force kept alive for the test client.
         # See flask.testing for how this works.
         if self.request.environ.get('flask._preserve_context') or \
-           (tb is not None and self.app.preserve_context_on_exception):
+                (tb is not None and self.app.preserve_context_on_exception):
             self.preserved = True
         else:
             self.pop(exc_value)

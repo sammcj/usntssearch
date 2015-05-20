@@ -4,7 +4,6 @@ from jinja2._markupsafe import Markup, escape, escape_silent
 
 
 class MarkupTestCase(unittest.TestCase):
-
     def test_markup_operations(self):
         # adding two strings should escape the unsafe one
         unsafe = '<script type="application/x-some-script">alert("foo");</script>'
@@ -29,8 +28,10 @@ class MarkupTestCase(unittest.TestCase):
         class Foo(object):
             def __html__(self):
                 return '<em>awesome</em>'
+
             def __unicode__(self):
                 return 'awesome'
+
         assert Markup(Foo()) == '<em>awesome</em>'
         assert Markup('<strong>%s</strong>') % Foo() == \
                '<strong><em>awesome</em></strong>'
@@ -42,6 +43,7 @@ class MarkupTestCase(unittest.TestCase):
 
     def test_all_set(self):
         import jinja2._markupsafe as markup
+
         for item in markup.__all__:
             getattr(markup, item)
 
@@ -52,7 +54,6 @@ class MarkupTestCase(unittest.TestCase):
 
 
 class MarkupLeakTestCase(unittest.TestCase):
-
     def test_markup_leaks(self):
         counts = set()
         for count in xrange(20):

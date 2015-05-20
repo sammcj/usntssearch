@@ -12,7 +12,8 @@ COPYING.txt included with the distribution).
 import re, time, logging
 
 from _clientcookie import reraise_unmasked_exceptions, FileCookieJar, Cookie, \
-     MISSING_FILENAME_TEXT, LoadError
+    MISSING_FILENAME_TEXT, LoadError
+
 debug = logging.getLogger("ClientCookie").debug
 
 
@@ -75,8 +76,8 @@ class MozillaCookieJar(FileCookieJar):
 
                 # skip comments and blank lines XXX what is $ for?
                 if (line.strip().startswith("#") or
-                    line.strip().startswith("$") or
-                    line.strip() == ""):
+                        line.strip().startswith("$") or
+                            line.strip() == ""):
                     continue
 
                 domain, domain_specified, path, secure, expires, name, value = \
@@ -121,8 +122,10 @@ class MozillaCookieJar(FileCookieJar):
 
     def save(self, filename=None, ignore_discard=False, ignore_expires=False):
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         f = open(filename, "w")
         try:
@@ -136,10 +139,14 @@ class MozillaCookieJar(FileCookieJar):
                 if not ignore_expires and cookie.is_expired(now):
                     debug("   Not saving %s: expired", cookie.name)
                     continue
-                if cookie.secure: secure = "TRUE"
-                else: secure = "FALSE"
-                if cookie.domain.startswith("."): initial_dot = "TRUE"
-                else: initial_dot = "FALSE"
+                if cookie.secure:
+                    secure = "TRUE"
+                else:
+                    secure = "FALSE"
+                if cookie.domain.startswith("."):
+                    initial_dot = "TRUE"
+                else:
+                    initial_dot = "FALSE"
                 if cookie.expires is not None:
                     expires = str(cookie.expires)
                 else:
@@ -155,7 +162,7 @@ class MozillaCookieJar(FileCookieJar):
                     value = cookie.value
                 f.write(
                     "\t".join([cookie.domain, initial_dot, cookie.path,
-                               secure, expires, name, value])+
+                               secure, expires, name, value]) +
                     "\n")
         finally:
             f.close()

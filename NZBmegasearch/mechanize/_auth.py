@@ -64,5 +64,6 @@ class HTTPSClientCertMgr(HTTPPasswordMgr):
     # implementation inheritance: this is not a proper subclass
     def add_key_cert(self, uri, key_file, cert_file):
         self.add_password(None, uri, key_file, cert_file)
+
     def find_key_cert(self, authuri):
         return HTTPPasswordMgr.find_user_password(self, None, authuri)

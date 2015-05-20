@@ -11,9 +11,7 @@
 import re
 from itertools import imap
 
-
 __all__ = ['Markup', 'soft_unicode', 'escape', 'escape_silent']
-
 
 _striptags_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
 _entity_re = re.compile(r'&([^;]+);')
@@ -88,6 +86,7 @@ class Markup(unicode):
         if isinstance(num, (int, long)):
             return self.__class__(unicode.__mul__(self, num))
         return NotImplemented
+
     __rmul__ = __mul__
 
     def __mod__(self, arg):
@@ -105,18 +104,22 @@ class Markup(unicode):
 
     def join(self, seq):
         return self.__class__(unicode.join(self, imap(escape, seq)))
+
     join.__doc__ = unicode.join.__doc__
 
     def split(self, *args, **kwargs):
         return map(self.__class__, unicode.split(self, *args, **kwargs))
+
     split.__doc__ = unicode.split.__doc__
 
     def rsplit(self, *args, **kwargs):
         return map(self.__class__, unicode.rsplit(self, *args, **kwargs))
+
     rsplit.__doc__ = unicode.rsplit.__doc__
 
     def splitlines(self, *args, **kwargs):
         return map(self.__class__, unicode.splitlines(self, *args, **kwargs))
+
     splitlines.__doc__ = unicode.splitlines.__doc__
 
     def unescape(self):
@@ -127,6 +130,7 @@ class Markup(unicode):
         u'Main \xbb <em>About</em>'
         """
         from jinja2._markupsafe._constants import HTML_ENTITIES
+
         def handle_match(m):
             name = m.group(1)
             if name in HTML_ENTITIES:
@@ -139,6 +143,7 @@ class Markup(unicode):
             except ValueError:
                 pass
             return u''
+
         return _entity_re.sub(handle_match, unicode(self))
 
     def striptags(self):
@@ -165,10 +170,12 @@ class Markup(unicode):
 
     def make_wrapper(name):
         orig = getattr(unicode, name)
+
         def func(self, *args, **kwargs):
             args = _escape_argspec(list(args), enumerate(args))
             _escape_argspec(kwargs, kwargs.iteritems())
             return self.__class__(orig(self, *args, **kwargs))
+
         func.__name__ = orig.__name__
         func.__doc__ = orig.__doc__
         return func
@@ -215,7 +222,6 @@ class _MarkupEscapeHelper(object):
     __repr__ = lambda s: str(escape(repr(s.obj)))
     __int__ = lambda s: int(s.obj)
     __float__ = lambda s: float(s.obj)
-
 
 # we have to import it down here as the speedups and native
 # modules imports the markup type which is define above.

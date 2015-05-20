@@ -18,7 +18,7 @@
 """
 from urllib import unquote
 from ..http import parse_options_header, parse_cache_control_header, \
-     parse_set_header
+    parse_set_header
 from ..useragents import UserAgent
 from ..datastructures import Headers, ResponseCacheControl
 
@@ -40,7 +40,7 @@ class LighttpdCGIRootFix(object):
         # people's code if they are using this fixer in a test that
         # does not set the SERVER_SOFTWARE key.
         if 'SERVER_SOFTWARE' not in environ or \
-           environ['SERVER_SOFTWARE'] < 'lighttpd/1.4.28':
+                        environ['SERVER_SOFTWARE'] < 'lighttpd/1.4.28':
             environ['PATH_INFO'] = environ.get('SCRIPT_NAME', '') + \
                                    environ.get('PATH_INFO', '')
         environ['SCRIPT_NAME'] = ''
@@ -110,9 +110,9 @@ class ProxyFix(object):
         forwarded_for = getter('HTTP_X_FORWARDED_FOR', '').split(',')
         forwarded_host = getter('HTTP_X_FORWARDED_HOST', '')
         environ.update({
-            'werkzeug.proxy_fix.orig_wsgi_url_scheme':  getter('wsgi.url_scheme'),
-            'werkzeug.proxy_fix.orig_remote_addr':      getter('REMOTE_ADDR'),
-            'werkzeug.proxy_fix.orig_http_host':        getter('HTTP_HOST')
+            'werkzeug.proxy_fix.orig_wsgi_url_scheme': getter('wsgi.url_scheme'),
+            'werkzeug.proxy_fix.orig_remote_addr': getter('REMOTE_ADDR'),
+            'werkzeug.proxy_fix.orig_http_host': getter('HTTP_HOST')
         })
         forwarded_for = [x for x in [x.strip() for x in forwarded_for] if x]
         remote_addr = self.get_remote_addr(forwarded_for)
@@ -154,6 +154,7 @@ class HeaderRewriterFix(object):
                     new_headers.append((key, value))
             new_headers += self.add_headers
             return start_response(status, new_headers, exc_info)
+
         return self.app(environ, rewriting_start_response)
 
 
@@ -215,6 +216,7 @@ class InternetExplorerFix(object):
         def fixing_start_response(status, headers, exc_info=None):
             self.fix_headers(environ, Headers.linked(headers), status)
             return start_response(status, headers, exc_info)
+
         return self.app(environ, fixing_start_response)
 
     def __call__(self, environ, start_response):

@@ -176,7 +176,6 @@ class UserAgent(object):
             self.version
         )
 
-
 # conceptionally this belongs in this module but because we want to lazily
 # load the user agent module (which happens in wrappers.py) we have to import
 # it afterwards.  The class itself has the module set to this module so

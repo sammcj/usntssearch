@@ -21,10 +21,10 @@ from werkzeug.wrappers import Request, Response
 
 
 class WrappersTestCase(WerkzeugTestCase):
-
     def test_reverse_slash_behavior(self):
         class MyRequest(wrappers.ReverseSlashBehaviorRequestMixin, Request):
             pass
+
         req = MyRequest.from_values('/foo/bar', 'http://example.com/test')
         assert req.url == 'http://example.com/test/foo/bar'
         assert req.path == 'foo/bar'
@@ -41,6 +41,7 @@ class WrappersTestCase(WerkzeugTestCase):
     def test_dynamic_charset_request_mixin(self):
         class MyRequest(wrappers.DynamicCharsetRequestMixin, Request):
             pass
+
         env = {'CONTENT_TYPE': 'text/html'}
         req = MyRequest(env)
         assert req.charset == 'latin1'
@@ -62,6 +63,7 @@ class WrappersTestCase(WerkzeugTestCase):
 
         def return_ascii(x):
             return "ascii"
+
         env = {'CONTENT_TYPE': 'text/plain; charset=x-weird-charset'}
         req = MyRequest(env)
         req.unknown_charset = return_ascii
@@ -71,6 +73,7 @@ class WrappersTestCase(WerkzeugTestCase):
     def test_dynamic_charset_response_mixin(self):
         class MyResponse(wrappers.DynamicCharsetResponseMixin, Response):
             default_charset = 'utf-7'
+
         resp = MyResponse(mimetype='text/html')
         assert resp.charset == 'utf-7'
         resp.charset = 'utf-8'

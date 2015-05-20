@@ -21,7 +21,6 @@ from werkzeug import __version__ as version, serving
 from werkzeug.testapp import test_app
 from threading import Thread
 
-
 real_make_server = serving.make_server
 
 
@@ -33,15 +32,18 @@ def silencestderr(f):
             return f(*args, **kwargs)
         finally:
             sys.stderr = old_stderr
+
     return update_wrapper(new_func, f)
 
 
 def run_dev_server(application):
     servers = []
+
     def tracking_make_server(*args, **kwargs):
         srv = real_make_server(*args, **kwargs)
         servers.append(srv)
         return srv
+
     serving.make_server = tracking_make_server
     try:
         t = Thread(target=serving.run_simple, args=('localhost', 0, application))
@@ -52,15 +54,14 @@ def run_dev_server(application):
         serving.make_server = real_make_server
     if not servers:
         return None, None
-    server ,= servers
+    server, = servers
     ip, port = server.socket.getsockname()[:2]
     if ':' in ip:
         ip = '[%s]' % ip
-    return server, '%s:%d'  % (ip, port)
+    return server, '%s:%d' % (ip, port)
 
 
 class ServingTestCase(WerkzeugTestCase):
-
     @silencestderr
     def test_serving(self):
         server, addr = run_dev_server(test_app)
@@ -72,7 +73,8 @@ class ServingTestCase(WerkzeugTestCase):
     @silencestderr
     def test_broken_app(self):
         def broken_app(environ, start_response):
-            1/0
+            1 / 0
+
         server, addr = run_dev_server(broken_app)
         rv = urllib.urlopen('http://%s/?foo=bar&baz=blah' % addr).read()
         assert 'Internal Server Error' in rv

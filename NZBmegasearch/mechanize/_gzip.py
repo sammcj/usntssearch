@@ -6,7 +6,6 @@ import _urllib2_fork
 
 # GzipConsumer was taken from Fredrik Lundh's effbot.org-0.1-20041009 library
 class GzipConsumer:
-
     def __init__(self, consumer):
         self.__consumer = consumer
         self.__decoder = None
@@ -22,18 +21,18 @@ class GzipConsumer:
             try:
                 i = 10
                 flag = ord(data[3])
-                if flag & 4: # extra
-                    x = ord(data[i]) + 256*ord(data[i+1])
+                if flag & 4:  # extra
+                    x = ord(data[i]) + 256 * ord(data[i + 1])
                     i = i + 2 + x
-                if flag & 8: # filename
+                if flag & 8:  # filename
                     while ord(data[i]):
                         i = i + 1
                     i = i + 1
-                if flag & 16: # comment
+                if flag & 16:  # comment
                     while ord(data[i]):
                         i = i + 1
                     i = i + 1
-                if flag & 2: # crc
+                if flag & 2:  # crc
                     i = i + 2
                 if len(data) < i:
                     raise IndexError("not enough data")
@@ -42,8 +41,9 @@ class GzipConsumer:
                 data = data[i:]
             except IndexError:
                 self.__data = data
-                return # need more data
+                return  # need more data
             import zlib
+
             self.__data = ""
             self.__decoder = zlib.decompressobj(-zlib.MAX_WBITS)
         data = self.__decoder.decompress(data)
@@ -65,7 +65,9 @@ class GzipConsumer:
 
 class stupid_gzip_consumer:
     def __init__(self): self.data = []
+
     def feed(self, data): self.data.append(data)
+
 
 class stupid_gzip_wrapper(_response.closeable_response):
     def __init__(self, response):
@@ -78,14 +80,17 @@ class stupid_gzip_wrapper(_response.closeable_response):
 
     def read(self, size=-1):
         return self.__data.read(size)
+
     def readline(self, size=-1):
         return self.__data.readline(size)
+
     def readlines(self, sizehint=-1):
         return self.__data.readlines(sizehint)
 
     def __getattr__(self, name):
         # delegate unknown methods/attributes
         return getattr(self._response, name)
+
 
 class HTTPGzipProcessor(_urllib2_fork.BaseHandler):
     handler_order = 200  # response processing before HTTPEquivProcessor

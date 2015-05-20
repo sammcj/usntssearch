@@ -106,7 +106,6 @@ from exceptions import HTTPException, NotFound, MethodNotAllowed
 from _internal import _get_environ
 from datastructures import ImmutableDict, MultiDict
 
-
 _rule_re = re.compile(r'''
     (?P<static>[^<]*)                           # static rule data
     <
@@ -129,13 +128,12 @@ _converter_args_re = re.compile(r'''
         \w+|
         [urUR]?(?P<stringval>"[^"]*?"|'[^']*')
     )\s*,
-''', re.VERBOSE|re.UNICODE)
-
+''', re.VERBOSE | re.UNICODE)
 
 _PYTHON_CONSTANTS = {
-    'None':     None,
-    'True':     True,
-    'False':    False
+    'None': None,
+    'True': True,
+    'False': False
 }
 
 
@@ -652,7 +650,7 @@ class Rule(RuleFactory):
         regex = r'^%s%s$' % (
             u''.join(regex_parts),
             (not self.is_leaf or not self.strict_slashes) and \
-                '(?<!/)(?P<__suffix__>/?)' or ''
+            '(?<!/)(?P<__suffix__>/?)' or ''
         )
         self._regex = re.compile(regex, re.UNICODE)
 
@@ -676,7 +674,7 @@ class Rule(RuleFactory):
                 # tells the map to redirect to the same url but with a
                 # trailing slash
                 if self.strict_slashes and not self.is_leaf and \
-                   not groups.pop('__suffix__'):
+                        not groups.pop('__suffix__'):
                     raise RequestSlash()
                 # if we are not in strict slashes mode we have to remove
                 # a __suffix__
@@ -748,7 +746,7 @@ class Rule(RuleFactory):
         # if a method was given explicitly and that method is not supported
         # by this rule, this rule is not suitable.
         if method is not None and self.methods is not None \
-           and method not in self.methods:
+                and method not in self.methods:
             return False
 
         defaults = self.defaults or ()
@@ -820,7 +818,7 @@ class Rule(RuleFactory):
             self.__class__.__name__,
             (u''.join(tmp).encode(charset)).lstrip('|'),
             self.methods is not None and ' (%s)' % \
-                ', '.join(self.methods) or '',
+            ', '.join(self.methods) or '',
             self.endpoint
         )
 
@@ -921,7 +919,7 @@ class NumberConverter(BaseConverter):
             raise ValidationError()
         value = self.num_convert(value)
         if (self.min is not None and value < self.min) or \
-           (self.max is not None and value > self.max):
+                (self.max is not None and value > self.max):
             raise ValidationError()
         return value
 
@@ -968,15 +966,14 @@ class FloatConverter(NumberConverter):
     def __init__(self, map, min=None, max=None):
         NumberConverter.__init__(self, map, 0, min, max)
 
-
 #: the default converter mapping for the map.
 DEFAULT_CONVERTERS = {
-    'default':          UnicodeConverter,
-    'string':           UnicodeConverter,
-    'any':              AnyConverter,
-    'path':             PathConverter,
-    'int':              IntegerConverter,
-    'float':            FloatConverter
+    'default': UnicodeConverter,
+    'string': UnicodeConverter,
+    'any': AnyConverter,
+    'path': PathConverter,
+    'int': IntegerConverter,
+    'float': FloatConverter
 }
 
 
@@ -1167,7 +1164,7 @@ class Map(object):
             else:
                 server_name = environ['SERVER_NAME']
                 if (environ['wsgi.url_scheme'], environ['SERVER_PORT']) not \
-                   in (('https', '443'), ('http', '80')):
+                        in (('https', '443'), ('http', '80')):
                     server_name += ':' + environ['SERVER_PORT']
         elif subdomain is None and not self.host_matching:
             server_name = server_name.lower()
@@ -1176,7 +1173,7 @@ class Map(object):
             else:
                 wsgi_server_name = environ.get('SERVER_NAME')
                 if (environ['wsgi.url_scheme'], environ['SERVER_PORT']) not \
-                   in (('https', '443'), ('http', '80')):
+                        in (('https', '443'), ('http', '80')):
                     wsgi_server_name += ':' + environ['SERVER_PORT']
             wsgi_server_name = wsgi_server_name.lower()
             cur_server_name = wsgi_server_name.split('.')
@@ -1402,6 +1399,7 @@ class MapAdapter(object):
                     def _handle_match(match):
                         value = rv[match.group(1)]
                         return rule._converters[match.group(1)].to_url(value)
+
                     redirect_url = _simple_rule_re.sub(_handle_match,
                                                        rule.redirect_to)
                 else:
@@ -1480,7 +1478,7 @@ class MapAdapter(object):
             if r is rule:
                 break
             if r.provides_defaults_for(rule) and \
-               r.suitable_for(values, method):
+                    r.suitable_for(values, method):
                 values.update(r.defaults)
                 domain_part, path = r.build(values)
                 return self.make_redirect_url(
@@ -1514,7 +1512,7 @@ class MapAdapter(object):
         if query_args:
             url += '?' + self.encode_query_args(query_args)
         assert url != path, 'detected invalid alias setting.  No canonical ' \
-               'URL found'
+                            'URL found'
         return url
 
     def _partial_build(self, endpoint, values, method, append_unknown):
@@ -1611,8 +1609,8 @@ class MapAdapter(object):
 
         # shortcut this.
         if not force_external and (
-            (self.map.host_matching and host == self.server_name) or
-            (not self.map.host_matching and domain_part == self.subdomain)):
+                    (self.map.host_matching and host == self.server_name) or
+                    (not self.map.host_matching and domain_part == self.subdomain)):
             return str(urljoin(self.script_name, './' + path.lstrip('/')))
         return str('%s://%s%s/%s' % (
             self.url_scheme,

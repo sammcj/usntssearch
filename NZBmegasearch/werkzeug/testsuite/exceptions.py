@@ -21,7 +21,6 @@ from werkzeug.wrappers import Response
 
 
 class ExceptionsTestCase(WerkzeugTestCase):
-
     def test_proxy_exception(self):
         orig_resp = Response('Hello World')
         try:

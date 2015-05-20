@@ -13,13 +13,12 @@ import unittest
 from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Template, Environment, DictLoader, TemplateSyntaxError, \
-     TemplateNotFound, PrefixLoader
+    TemplateNotFound, PrefixLoader
 
 env = Environment()
 
 
 class CornerTestCase(JinjaTestCase):
-
     def test_assigned_scoping(self):
         t = env.from_string('''
         {%- for item in (1, 2, 3, 4) -%}
@@ -79,12 +78,11 @@ class CornerTestCase(JinjaTestCase):
 
 
 class BugTestCase(JinjaTestCase):
-
     def test_keyword_folding(self):
         env = Environment()
         env.filters['testing'] = lambda value, some: value + some
         assert env.from_string("{{ 'test'|testing(some='stuff') }}") \
-               .render() == 'teststuff'
+                   .render() == 'teststuff'
 
     def test_extends_output_bugs(self):
         env = Environment(loader=DictLoader({
@@ -191,18 +189,18 @@ class BugTestCase(JinjaTestCase):
         {% endcall %}""")
 
         assert [x.strip() for x in t.render(list_of_user=[{
-            'username':'apo',
-            'realname':'something else',
-            'description':'test'
+            'username': 'apo',
+            'realname': 'something else',
+            'description': 'test'
         }]).splitlines()] == [
-            u'<ul><li><p>apo</p><dl>',
-            u'<dl>Realname</dl>',
-            u'<dd>something else</dd>',
-            u'<dl>Description</dl>',
-            u'<dd>test</dd>',
-            u'</dl>',
-            u'</li></ul>'
-        ]
+                   u'<ul><li><p>apo</p><dl>',
+                   u'<dl>Realname</dl>',
+                   u'<dd>something else</dd>',
+                   u'<dl>Description</dl>',
+                   u'<dd>test</dd>',
+                   u'</dl>',
+                   u'</li></ul>'
+               ]
 
     def test_empty_if_condition_fails(self):
         self.assert_raises(TemplateSyntaxError, Template, '{% if %}....{% endif %}')
@@ -238,7 +236,7 @@ class BugTestCase(JinjaTestCase):
 
     def test_correct_prefix_loader_name(self):
         env = Environment(loader=PrefixLoader({
-            'foo':  DictLoader({})
+            'foo': DictLoader({})
         }))
         try:
             env.get_template('foo/bar.html')

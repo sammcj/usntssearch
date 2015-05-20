@@ -14,7 +14,6 @@ from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Environment, DictLoader
 
-
 LAYOUTTEMPLATE = '''\
 |{% block block1 %}block 1 from layout{% endblock %}
 |{% block block2 %}block 2 from layout{% endblock %}
@@ -54,17 +53,16 @@ WORKINGTEMPLATE = '''\
 '''
 
 env = Environment(loader=DictLoader({
-    'layout':       LAYOUTTEMPLATE,
-    'level1':       LEVEL1TEMPLATE,
-    'level2':       LEVEL2TEMPLATE,
-    'level3':       LEVEL3TEMPLATE,
-    'level4':       LEVEL4TEMPLATE,
-    'working':      WORKINGTEMPLATE
+    'layout': LAYOUTTEMPLATE,
+    'level1': LEVEL1TEMPLATE,
+    'level2': LEVEL2TEMPLATE,
+    'level3': LEVEL3TEMPLATE,
+    'level4': LEVEL4TEMPLATE,
+    'working': WORKINGTEMPLATE
 }), trim_blocks=True)
 
 
 class InheritanceTestCase(JinjaTestCase):
-
     def test_layout(self):
         tmpl = env.get_template('layout')
         assert tmpl.render() == ('|block 1 from layout|block 2 from '
@@ -184,7 +182,6 @@ class InheritanceTestCase(JinjaTestCase):
 
 
 class BugFixTestCase(JinjaTestCase):
-
     def test_fixed_macro_scoping_bug(self):
         assert Environment(loader=DictLoader({
             'test.html': '''\

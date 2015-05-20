@@ -18,7 +18,6 @@ from werkzeug.test import create_environ
 
 
 class HTTPUtilityTestCase(WerkzeugTestCase):
-
     def test_accept(self):
         a = http.parse_accept_header('en-us,ru;q=0.5')
         self.assert_equal(a.values(), ['en-us', 'ru'])
@@ -34,22 +33,22 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
                                      'image/png,*/*;q=0.5',
                                      datastructures.MIMEAccept)
         self.assert_raises(ValueError, lambda: a['missing'])
-        self.assert_equal(a['image/png'],  1)
-        self.assert_equal(a['text/plain'],  0.8)
-        self.assert_equal(a['foo/bar'],  0.5)
-        self.assert_equal(a[a.find('foo/bar')],  ('*/*', 0.5))
+        self.assert_equal(a['image/png'], 1)
+        self.assert_equal(a['text/plain'], 0.8)
+        self.assert_equal(a['foo/bar'], 0.5)
+        self.assert_equal(a[a.find('foo/bar')], ('*/*', 0.5))
 
     def test_accept_matches(self):
         a = http.parse_accept_header('text/xml,application/xml,application/xhtml+xml,'
-                                    'text/html;q=0.9,text/plain;q=0.8,'
-                                    'image/png', datastructures.MIMEAccept)
+                                     'text/html;q=0.9,text/plain;q=0.8,'
+                                     'image/png', datastructures.MIMEAccept)
         self.assert_equal(a.best_match(['text/html', 'application/xhtml+xml']),
                           'application/xhtml+xml')
-        self.assert_equal(a.best_match(['text/html']),  'text/html')
+        self.assert_equal(a.best_match(['text/html']), 'text/html')
         self.assert_(a.best_match(['foo/bar']) is None)
         self.assert_equal(a.best_match(['foo/bar', 'bar/foo'],
-                          default='foo/bar'),  'foo/bar')
-        self.assert_equal(a.best_match(['application/xml', 'text/xml']),  'application/xml')
+                                       default='foo/bar'), 'foo/bar')
+        self.assert_equal(a.best_match(['application/xml', 'text/xml']), 'application/xml')
 
     def test_charset_accept(self):
         a = http.parse_accept_header('ISO-8859-1,utf-8;q=0.7,*;q=0.7',
@@ -62,7 +61,7 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
     def test_language_accept(self):
         a = http.parse_accept_header('de-AT,de;q=0.8,en;q=0.5',
                                      datastructures.LanguageAccept)
-        self.assert_equal(a.best,  'de-AT')
+        self.assert_equal(a.best, 'de-AT')
         self.assert_('de_AT' in a)
         self.assert_('en' in a)
         self.assert_equal(a['de-at'], 1)
@@ -224,17 +223,17 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
 
     def test_parse_options_header(self):
         assert http.parse_options_header('something; foo="other\"thing"') == \
-            ('something', {'foo': 'other"thing'})
+               ('something', {'foo': 'other"thing'})
         assert http.parse_options_header('something; foo="other\"thing"; meh=42') == \
-            ('something', {'foo': 'other"thing', 'meh': '42'})
+               ('something', {'foo': 'other"thing', 'meh': '42'})
         assert http.parse_options_header('something; foo="other\"thing"; meh=42; bleh') == \
-            ('something', {'foo': 'other"thing', 'meh': '42', 'bleh': None})
+               ('something', {'foo': 'other"thing', 'meh': '42', 'bleh': None})
 
     def test_dump_options_header(self):
         assert http.dump_options_header('foo', {'bar': 42}) == \
-            'foo; bar=42'
+               'foo; bar=42'
         assert http.dump_options_header('foo', {'bar': 42, 'fizz': None}) == \
-            'foo; bar=42; fizz'
+               'foo; bar=42; fizz'
 
     def test_dump_header(self):
         assert http.dump_header([1, 2, 3]) == '1, 2, 3'
@@ -258,9 +257,9 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
 
         env['HTTP_IF_MODIFIED_SINCE'] = http.http_date(datetime(2008, 1, 1, 12, 30))
         assert not http.is_resource_modified(env,
-            last_modified=datetime(2008, 1, 1, 12, 00))
+                                             last_modified=datetime(2008, 1, 1, 12, 00))
         assert http.is_resource_modified(env,
-            last_modified=datetime(2008, 1, 1, 13, 00))
+                                         last_modified=datetime(2008, 1, 1, 13, 00))
 
     def test_date_formatting(self):
         assert http.cookie_date(0) == 'Thu, 01-Jan-1970 00:00:00 GMT'
@@ -270,14 +269,14 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
 
     def test_cookies(self):
         assert http.parse_cookie('dismiss-top=6; CP=null*; PHPSESSID=0a539d42abc001cd'
-                            'c762809248d4beed; a=42') == {
-            'CP':           u'null*',
-            'PHPSESSID':    u'0a539d42abc001cdc762809248d4beed',
-            'a':            u'42',
-            'dismiss-top':  u'6'
-        }
+                                 'c762809248d4beed; a=42') == {
+                   'CP': u'null*',
+                   'PHPSESSID': u'0a539d42abc001cdc762809248d4beed',
+                   'a': u'42',
+                   'dismiss-top': u'6'
+               }
         assert set(http.dump_cookie('foo', 'bar baz blub', 360, httponly=True,
-                               sync_expires=False).split('; ')) == \
+                                    sync_expires=False).split('; ')) == \
                set(['HttpOnly', 'Max-Age=360', 'Path=/', 'foo="bar baz blub"'])
         assert http.parse_cookie('fo234{=bar blub=Blah') == {'blub': 'Blah'}
 
@@ -290,7 +289,6 @@ class HTTPUtilityTestCase(WerkzeugTestCase):
 
 
 class RangeTestCase(WerkzeugTestCase):
-
     def test_if_range_parsing(self):
         rv = http.parse_if_range_header('"Test"')
         assert rv.etag == 'Test'
@@ -375,13 +373,12 @@ class RangeTestCase(WerkzeugTestCase):
 
 
 class RegressionTestCase(WerkzeugTestCase):
-
     def test_best_match_works(self):
         # was a bug in 0.6
         rv = http.parse_accept_header('foo=,application/xml,application/xhtml+xml,'
-                                     'text/html;q=0.9,text/plain;q=0.8,'
-                                     'image/png,*/*;q=0.5',
-                                     datastructures.MIMEAccept).best_match(['foo/bar'])
+                                      'text/html;q=0.9,text/plain;q=0.8,'
+                                      'image/png,*/*;q=0.5',
+                                      datastructures.MIMEAccept).best_match(['foo/bar'])
         self.assert_equal(rv, 'foo/bar')
 
 

@@ -39,7 +39,6 @@ except ImportError:
         except ImportError:
             json_available = False
 
-
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import NotFound
 
@@ -52,14 +51,13 @@ except ImportError:
 from jinja2 import FileSystemLoader
 
 from .globals import session, _request_ctx_stack, _app_ctx_stack, \
-     current_app, request
+    current_app, request
 
 
 def _assert_have_json():
     """Helper function that fails if JSON is unavailable."""
     if not json_available:
         raise RuntimeError('simplejson not installed')
-
 
 # figure out if simplejson escapes slashes.  This behavior was changed
 # from one version to another without reason.
@@ -133,13 +131,14 @@ def stream_with_context(generator_or_function):
         def decorator(*args, **kwargs):
             gen = generator_or_function()
             return stream_with_context(gen)
+
         return update_wrapper(decorator, generator_or_function)
 
     def generator():
         ctx = _request_ctx_stack.top
         if ctx is None:
             raise RuntimeError('Attempted to stream with context but '
-                'there was no context in the first place to keep around.')
+                               'there was no context in the first place to keep around.')
         with ctx:
             # Dummy sentinel.  Has to be inside the context block or we're
             # not actually keeping the context around.
@@ -195,7 +194,7 @@ def jsonify(*args, **kwargs):
     if __debug__:
         _assert_have_json()
     return current_app.response_class(json.dumps(dict(*args, **kwargs),
-        indent=None if request.is_xhr else 2), mimetype='application/json')
+                                                 indent=None if request.is_xhr else 2), mimetype='application/json')
 
 
 def make_response(*args):
@@ -522,23 +521,24 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         file = None
     else:
         from warnings import warn
+
         file = filename_or_fp
         filename = getattr(file, 'name', None)
 
         # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
-           and isinstance(filename, basestring):
+                and isinstance(filename, basestring):
             warn(DeprecationWarning('The filename support for file objects '
-                'passed to send_file is now deprecated.  Pass an '
-                'attach_filename if you want mimetypes to be guessed.'),
-                stacklevel=2)
+                                    'passed to send_file is now deprecated.  Pass an '
+                                    'attach_filename if you want mimetypes to be guessed.'),
+                 stacklevel=2)
         if add_etags:
             warn(DeprecationWarning('In future flask releases etags will no '
-                'longer be generated for file objects passed to the send_file '
-                'function because this behavior was unreliable.  Pass '
-                'filenames instead if possible, otherwise attach an etag '
-                'yourself based on another value'), stacklevel=2)
+                                    'longer be generated for file objects passed to the send_file '
+                                    'function because this behavior was unreliable.  Pass '
+                                    'filenames instead if possible, otherwise attach an etag '
+                                    'yourself based on another value'), stacklevel=2)
 
     if filename is not None:
         if not os.path.isabs(filename):
@@ -772,7 +772,6 @@ class locked_cached_property(object):
 
 
 class _PackageBoundObject(object):
-
     def __init__(self, import_name, template_folder=None):
         #: The name of the package or module.  Do not change this once
         #: it was set by the constructor.
@@ -791,8 +790,10 @@ class _PackageBoundObject(object):
     def _get_static_folder(self):
         if self._static_folder is not None:
             return os.path.join(self.root_path, self._static_folder)
+
     def _set_static_folder(self, value):
         self._static_folder = value
+
     static_folder = property(_get_static_folder, _set_static_folder)
     del _get_static_folder, _set_static_folder
 
@@ -802,8 +803,10 @@ class _PackageBoundObject(object):
                 return None
             return '/' + os.path.basename(self.static_folder)
         return self._static_url_path
+
     def _set_static_url_path(self, value):
         self._static_url_path = value
+
     static_url_path = property(_get_static_url_path, _set_static_url_path)
     del _get_static_url_path, _set_static_url_path
 

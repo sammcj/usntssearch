@@ -18,7 +18,6 @@ from werkzeug.contrib.securecookie import SecureCookie
 
 
 class SecureCookieTestCase(WerkzeugTestCase):
-
     def test_basic_support(self):
         c = SecureCookie(secret_key='foo')
         assert c.new
@@ -52,7 +51,7 @@ class SecureCookieTestCase(WerkzeugTestCase):
         c.save_cookie(resp)
 
         req = Request.from_values(headers={
-            'Cookie':  'session="%s"' % parse_cookie(resp.headers['set-cookie'])['session']
+            'Cookie': 'session="%s"' % parse_cookie(resp.headers['set-cookie'])['session']
         })
         c2 = SecureCookie.load_cookie(req, secret_key='foo')
         assert not c2.new

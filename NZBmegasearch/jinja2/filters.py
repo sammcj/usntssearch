@@ -17,7 +17,6 @@ from jinja2.utils import Markup, escape, pformat, urlize, soft_unicode
 from jinja2.runtime import Undefined
 from jinja2.exceptions import FilterArgumentError, SecurityError
 
-
 _word_re = re.compile(r'\w+(?u)')
 
 
@@ -56,10 +55,12 @@ def make_attrgetter(environment, attribute):
     if not isinstance(attribute, basestring) or '.' not in attribute:
         return lambda x: environment.getitem(x, attribute)
     attribute = attribute.split('.')
+
     def attrgetter(item):
         for part in attribute:
             item = environment.getitem(item, part)
         return item
+
     return attrgetter
 
 
@@ -91,7 +92,7 @@ def do_replace(eval_ctx, s, old, new, count=None):
     if not eval_ctx.autoescape:
         return unicode(s).replace(unicode(old), unicode(new), count)
     if hasattr(old, '__html__') or hasattr(new, '__html__') and \
-       not hasattr(s, '__html__'):
+            not hasattr(s, '__html__'):
         s = escape(s)
     else:
         s = soft_unicode(s)
@@ -182,6 +183,7 @@ def do_dictsort(value, case_sensitive=False, by='key'):
     else:
         raise FilterArgumentError('You can only sort by either '
                                   '"key" or "value"')
+
     def sort_func(item):
         value = item[pos]
         if isinstance(value, basestring) and not case_sensitive:
@@ -228,6 +230,7 @@ def do_sort(environment, value, reverse=False, case_sensitive=False,
         sort_func = None
     if attribute is not None:
         getter = make_attrgetter(environment, attribute)
+
         def sort_func(item, processor=sort_func or (lambda x: x)):
             return processor(getter(item))
     return sorted(value, key=sort_func, reverse=reverse)
@@ -443,6 +446,7 @@ def do_truncate(s, length=255, killwords=False, end='...'):
     result.append(end)
     return u' '.join(result)
 
+
 @environmentfilter
 def do_wordwrap(environment, s, width=79, break_long_words=True):
     """
@@ -452,9 +456,10 @@ def do_wordwrap(environment, s, width=79, break_long_words=True):
     split words apart if they are longer than `width`.
     """
     import textwrap
+
     return environment.newline_sequence.join(textwrap.wrap(s, width=width, expand_tabs=False,
-                                   replace_whitespace=False,
-                                   break_long_words=break_long_words))
+                                                           replace_whitespace=False,
+                                                           break_long_words=break_long_words))
 
 
 def do_wordcount(s):
@@ -746,56 +751,56 @@ def do_attr(environment, obj, name):
             pass
         else:
             if environment.sandboxed and not \
-               environment.is_safe_attribute(obj, name, value):
+                    environment.is_safe_attribute(obj, name, value):
                 return environment.unsafe_undefined(obj, name)
             return value
     return environment.undefined(obj=obj, name=name)
 
 
 FILTERS = {
-    'attr':                 do_attr,
-    'replace':              do_replace,
-    'upper':                do_upper,
-    'lower':                do_lower,
-    'escape':               escape,
-    'e':                    escape,
-    'forceescape':          do_forceescape,
-    'capitalize':           do_capitalize,
-    'title':                do_title,
-    'default':              do_default,
-    'd':                    do_default,
-    'join':                 do_join,
-    'count':                len,
-    'dictsort':             do_dictsort,
-    'sort':                 do_sort,
-    'length':               len,
-    'reverse':              do_reverse,
-    'center':               do_center,
-    'indent':               do_indent,
-    'title':                do_title,
-    'capitalize':           do_capitalize,
-    'first':                do_first,
-    'last':                 do_last,
-    'random':               do_random,
-    'filesizeformat':       do_filesizeformat,
-    'pprint':               do_pprint,
-    'truncate':             do_truncate,
-    'wordwrap':             do_wordwrap,
-    'wordcount':            do_wordcount,
-    'int':                  do_int,
-    'float':                do_float,
-    'string':               soft_unicode,
-    'list':                 do_list,
-    'urlize':               do_urlize,
-    'format':               do_format,
-    'trim':                 do_trim,
-    'striptags':            do_striptags,
-    'slice':                do_slice,
-    'batch':                do_batch,
-    'sum':                  do_sum,
-    'abs':                  abs,
-    'round':                do_round,
-    'groupby':              do_groupby,
-    'safe':                 do_mark_safe,
-    'xmlattr':              do_xmlattr
+    'attr': do_attr,
+    'replace': do_replace,
+    'upper': do_upper,
+    'lower': do_lower,
+    'escape': escape,
+    'e': escape,
+    'forceescape': do_forceescape,
+    'capitalize': do_capitalize,
+    'title': do_title,
+    'default': do_default,
+    'd': do_default,
+    'join': do_join,
+    'count': len,
+    'dictsort': do_dictsort,
+    'sort': do_sort,
+    'length': len,
+    'reverse': do_reverse,
+    'center': do_center,
+    'indent': do_indent,
+    'title': do_title,
+    'capitalize': do_capitalize,
+    'first': do_first,
+    'last': do_last,
+    'random': do_random,
+    'filesizeformat': do_filesizeformat,
+    'pprint': do_pprint,
+    'truncate': do_truncate,
+    'wordwrap': do_wordwrap,
+    'wordcount': do_wordcount,
+    'int': do_int,
+    'float': do_float,
+    'string': soft_unicode,
+    'list': do_list,
+    'urlize': do_urlize,
+    'format': do_format,
+    'trim': do_trim,
+    'striptags': do_striptags,
+    'slice': do_slice,
+    'batch': do_batch,
+    'sum': do_sum,
+    'abs': abs,
+    'round': do_round,
+    'groupby': do_groupby,
+    'safe': do_mark_safe,
+    'xmlattr': do_xmlattr
 }

@@ -15,75 +15,73 @@ from Cookie import SimpleCookie, Morsel, CookieError
 from time import gmtime
 from datetime import datetime, date
 
-
 _logger = None
 _empty_stream = StringIO('')
 _signature_cache = WeakKeyDictionary()
 _epoch_ord = date(1970, 1, 1).toordinal()
 
-
 HTTP_STATUS_CODES = {
-    100:    'Continue',
-    101:    'Switching Protocols',
-    102:    'Processing',
-    200:    'OK',
-    201:    'Created',
-    202:    'Accepted',
-    203:    'Non Authoritative Information',
-    204:    'No Content',
-    205:    'Reset Content',
-    206:    'Partial Content',
-    207:    'Multi Status',
-    226:    'IM Used',              # see RFC 3229
-    300:    'Multiple Choices',
-    301:    'Moved Permanently',
-    302:    'Found',
-    303:    'See Other',
-    304:    'Not Modified',
-    305:    'Use Proxy',
-    307:    'Temporary Redirect',
-    400:    'Bad Request',
-    401:    'Unauthorized',
-    402:    'Payment Required',     # unused
-    403:    'Forbidden',
-    404:    'Not Found',
-    405:    'Method Not Allowed',
-    406:    'Not Acceptable',
-    407:    'Proxy Authentication Required',
-    408:    'Request Timeout',
-    409:    'Conflict',
-    410:    'Gone',
-    411:    'Length Required',
-    412:    'Precondition Failed',
-    413:    'Request Entity Too Large',
-    414:    'Request URI Too Long',
-    415:    'Unsupported Media Type',
-    416:    'Requested Range Not Satisfiable',
-    417:    'Expectation Failed',
-    418:    'I\'m a teapot',        # see RFC 2324
-    422:    'Unprocessable Entity',
-    423:    'Locked',
-    424:    'Failed Dependency',
-    426:    'Upgrade Required',
-    449:    'Retry With',           # proprietary MS extension
-    500:    'Internal Server Error',
-    501:    'Not Implemented',
-    502:    'Bad Gateway',
-    503:    'Service Unavailable',
-    504:    'Gateway Timeout',
-    505:    'HTTP Version Not Supported',
-    507:    'Insufficient Storage',
-    510:    'Not Extended'
+    100: 'Continue',
+    101: 'Switching Protocols',
+    102: 'Processing',
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    203: 'Non Authoritative Information',
+    204: 'No Content',
+    205: 'Reset Content',
+    206: 'Partial Content',
+    207: 'Multi Status',
+    226: 'IM Used',  # see RFC 3229
+    300: 'Multiple Choices',
+    301: 'Moved Permanently',
+    302: 'Found',
+    303: 'See Other',
+    304: 'Not Modified',
+    305: 'Use Proxy',
+    307: 'Temporary Redirect',
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    402: 'Payment Required',  # unused
+    403: 'Forbidden',
+    404: 'Not Found',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Request Entity Too Large',
+    414: 'Request URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Requested Range Not Satisfiable',
+    417: 'Expectation Failed',
+    418: 'I\'m a teapot',  # see RFC 2324
+    422: 'Unprocessable Entity',
+    423: 'Locked',
+    424: 'Failed Dependency',
+    426: 'Upgrade Required',
+    449: 'Retry With',  # proprietary MS extension
+    500: 'Internal Server Error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    507: 'Insufficient Storage',
+    510: 'Not Extended'
 }
 
 
 class _Missing(object):
-
     def __repr__(self):
         return 'no value'
 
     def __reduce__(self):
         return '_missing'
+
 
 _missing = _Missing()
 
@@ -91,6 +89,7 @@ _missing = _Missing()
 def _proxy_repr(cls):
     def proxy_repr(self):
         return '%s(%s)' % (self.__class__.__name__, cls.__repr__(self))
+
     return proxy_repr
 
 
@@ -106,12 +105,13 @@ def _log(type, message, *args, **kwargs):
     global _logger
     if _logger is None:
         import logging
+
         _logger = logging.getLogger('werkzeug')
         # Only set up a default log handler if the
         # end-user application didn't set anything up.
         if not logging.root.handlers and _logger.level == logging.NOTSET:
             _logger.setLevel(logging.INFO)
-            #~ _logger.setLevel(logging.WARNING)
+            # ~ _logger.setLevel(logging.WARNING)
             handler = logging.StreamHandler()
             _logger.addHandler(handler)
     getattr(_logger, type)(message.rstrip(), *args, **kwargs)
@@ -177,6 +177,7 @@ def _parse_signature(func):
 
         return new_args, kwargs, missing, extra, extra_positional, \
                arguments, vararg_var, kwarg_var
+
     _signature_cache[func] = parse
     return parse
 
@@ -207,6 +208,7 @@ def _decode_unicode(value, charset, errors):
         if fallback is not None:
             return value.decode(fallback, 'replace')
         from exceptions import HTTPUnicodeError
+
         raise HTTPUnicodeError(str(e))
 
 
@@ -214,12 +216,14 @@ def _iter_modules(path):
     """Iterate over all modules in a package."""
     import os
     import pkgutil
+
     if hasattr(pkgutil, 'iter_modules'):
         for importer, modname, ispkg in pkgutil.iter_modules(path):
             yield modname, ispkg
         return
     from inspect import getmodulename
     from pydoc import ispackage
+
     found = set()
     for path in path:
         for filename in os.listdir(path):
@@ -377,10 +381,12 @@ krEDuNoJCHNlZYhKpvw4mspVWxqo415n8cD62N9+EfHrAvqQnINStetek7RY2Urv8nxsnGaZfRr/
 nhXbJ6m/yl1LzYqscDZA9QHLNbdaSTTr+kFg3bC0iYbX/eQy0Bv3h4B50/SGYzKAXkCeOLI3bcAt
 mj2Z/FM1vQWgDynsRwNvrWnJHlespkrp8+vO1jNaibm+PhqXPPv30YwDZ6jApe3wUjFQobghvW9p
 7f2zLkGNv8b191cD/3vs9Q833z8t'''.decode('base64').decode('zlib').splitlines()])
+
     def easteregged(environ, start_response):
         def injecting_start_response(status, headers, exc_info=None):
             headers.append(('X-Powered-By', 'Werkzeug'))
             return start_response(status, headers, exc_info)
+
         if environ.get('QUERY_STRING') != 'macgybarchakku':
             return app(environ, injecting_start_response)
         injecting_start_response('200 OK', [('Content-Type', 'text/html')])
@@ -403,4 +409,5 @@ mj2Z/FM1vQWgDynsRwNvrWnJHlespkrp8+vO1jNaibm+PhqXPPv30YwDZ6jApe3wUjFQobghvW9p
 <pre>%s\n\n\n</pre>
 </body>
 </html>''' % gyver]
+
     return easteregged

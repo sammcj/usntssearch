@@ -48,7 +48,6 @@ __author__ = 'Kenneth Reitz'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2013 Kenneth Reitz'
 
-
 from . import utils
 from .models import Request, Response, PreparedRequest
 from .api import request, get, head, post, patch, put, delete, options
@@ -61,6 +60,7 @@ from .exceptions import (
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
+
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:

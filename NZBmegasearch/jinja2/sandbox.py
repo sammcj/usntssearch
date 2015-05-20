@@ -16,7 +16,7 @@ import operator
 from jinja2.environment import Environment
 from jinja2.exceptions import SecurityError
 from jinja2.utils import FunctionType, MethodType, TracebackType, CodeType, \
-     FrameType, GeneratorType
+    FrameType, GeneratorType
 
 
 #: maximum number of items a range may produce
@@ -28,7 +28,6 @@ UNSAFE_FUNCTION_ATTRIBUTES = set(['func_closure', 'func_code', 'func_dict',
 
 #: unsafe method attributes.  function attributes are unsafe for methods too
 UNSAFE_METHOD_ATTRIBUTES = set(['im_class', 'im_func', 'im_self'])
-
 
 import warnings
 
@@ -47,6 +46,7 @@ _mutable_sequence_types = (list,)
 try:
     from UserDict import UserDict, DictMixin
     from UserList import UserList
+
     _mutable_mapping_types += (UserDict, DictMixin)
     _mutable_set_types += (UserList,)
 except ImportError:
@@ -55,6 +55,7 @@ except ImportError:
 # if sets is still available, register the mutable set from there as well
 try:
     from sets import Set
+
     _mutable_set_types += (Set,)
 except ImportError:
     pass
@@ -62,6 +63,7 @@ except ImportError:
 #: register Python 2.6 abstract base classes
 try:
     from collections import MutableSet, MutableMapping, MutableSequence
+
     _mutable_set_types += (MutableSet,)
     _mutable_mapping_types += (MutableMapping,)
     _mutable_sequence_types += (MutableSequence,)
@@ -129,7 +131,7 @@ def is_internal_attribute(obj, attr):
             return True
     elif isinstance(obj, MethodType):
         if attr in UNSAFE_FUNCTION_ATTRIBUTES or \
-           attr in UNSAFE_METHOD_ATTRIBUTES:
+                        attr in UNSAFE_METHOD_ATTRIBUTES:
             return True
     elif isinstance(obj, type):
         if attr == 'mro':
@@ -186,21 +188,21 @@ class SandboxedEnvironment(Environment):
     #: available on each instance of a sandboxed environment as
     #: :attr:`binop_table`
     default_binop_table = {
-        '+':        operator.add,
-        '-':        operator.sub,
-        '*':        operator.mul,
-        '/':        operator.truediv,
-        '//':       operator.floordiv,
-        '**':       operator.pow,
-        '%':        operator.mod
+        '+': operator.add,
+        '-': operator.sub,
+        '*': operator.mul,
+        '/': operator.truediv,
+        '//': operator.floordiv,
+        '**': operator.pow,
+        '%': operator.mod
     }
 
     #: default callback table for the unary operators.  A copy of this is
     #: available on each instance of a sandboxed environment as
     #: :attr:`unop_table`
     default_unop_table = {
-        '+':        operator.pos,
-        '-':        operator.neg
+        '+': operator.pos,
+        '-': operator.neg
     }
 
     #: a set of binary operators that should be intercepted.  Each operator
@@ -250,7 +252,6 @@ class SandboxedEnvironment(Environment):
         .. versionadded:: 2.6
         """
         return False
-
 
     def __init__(self, *args, **kwargs):
         Environment.__init__(self, *args, **kwargs)
@@ -336,9 +337,9 @@ class SandboxedEnvironment(Environment):
         """Return an undefined object for unsafe attributes."""
         return self.undefined('access to attribute %r of %r '
                               'object is unsafe.' % (
-            attribute,
-            obj.__class__.__name__
-        ), name=attribute, obj=obj, exc=SecurityError)
+                                  attribute,
+                                  obj.__class__.__name__
+                              ), name=attribute, obj=obj, exc=SecurityError)
 
     def call(__self, __context, __obj, *args, **kwargs):
         """Call an object from sandboxed code."""

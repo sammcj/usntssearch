@@ -21,7 +21,7 @@ COPYING.txt included with the distribution).
 import time, re, logging
 
 from _clientcookie import reraise_unmasked_exceptions, FileCookieJar, Cookie, \
-     MISSING_FILENAME_TEXT, LoadError
+    MISSING_FILENAME_TEXT, LoadError
 from _headersutil import join_header_words, split_header_words
 from _util import iso2time, time2isoz
 
@@ -43,7 +43,7 @@ def lwp_cookie_str(cookie):
     if cookie.domain_initial_dot: h.append(("domain_dot", None))
     if cookie.secure: h.append(("secure", None))
     if cookie.expires: h.append(("expires",
-                               time2isoz(float(cookie.expires))))
+                                 time2isoz(float(cookie.expires))))
     if cookie.discard: h.append(("discard", None))
     if cookie.comment: h.append(("comment", cookie.comment))
     if cookie.comment_url: h.append(("commenturl", cookie.comment_url))
@@ -57,6 +57,7 @@ def lwp_cookie_str(cookie):
     h.append(("version", str(cookie.version)))
 
     return join_header_words([h])
+
 
 class LWPCookieJar(FileCookieJar):
     """
@@ -89,12 +90,14 @@ class LWPCookieJar(FileCookieJar):
                 debug("   Not saving %s: expired", cookie.name)
                 continue
             r.append("Set-Cookie3: %s" % lwp_cookie_str(cookie))
-        return "\n".join(r+[""])
+        return "\n".join(r + [""])
 
     def save(self, filename=None, ignore_discard=False, ignore_expires=False):
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         f = open(filename, "w")
         try:
@@ -173,7 +176,7 @@ class LWPCookieJar(FileCookieJar):
                                h("commenturl"),
                                rest,
                                h("rfc2109"),
-                               ) 
+                               )
                     if not ignore_discard and c.discard:
                         continue
                     if not ignore_expires and c.is_expired(now):
@@ -182,4 +185,3 @@ class LWPCookieJar(FileCookieJar):
         except:
             reraise_unmasked_exceptions((IOError,))
             raise LoadError("invalid Set-Cookie3 format file %s" % filename)
-

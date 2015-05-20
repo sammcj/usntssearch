@@ -14,7 +14,7 @@ import unittest
 from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Environment, Template, TemplateSyntaxError, \
-     UndefinedError, nodes
+    UndefinedError, nodes
 
 env = Environment()
 
@@ -28,7 +28,6 @@ else:
 
 
 class LexerTestCase(JinjaTestCase):
-
     def test_raw1(self):
         tmpl = env.from_string('{% raw %}foo{% endraw %}|'
                                '{%raw%}{{ bar }}|{% baz %}{%       endraw    %}')
@@ -63,11 +62,13 @@ class LexerTestCase(JinjaTestCase):
 
     def test_bytefallback(self):
         from pprint import pformat
+
         tmpl = env.from_string(u'''{{ 'foo'|pprint }}|{{ 'bär'|pprint }}''')
         assert tmpl.render() == pformat('foo') + '|' + pformat(u'bär')
 
     def test_operators(self):
         from jinja2.lexer import operators
+
         for test, expect in operators.iteritems():
             if test in '([{}])':
                 continue
@@ -84,7 +85,6 @@ class LexerTestCase(JinjaTestCase):
 
 
 class ParserTestCase(JinjaTestCase):
-
     def test_php_syntax(self):
         env = Environment('<?', '?>', '<?=', '?>', '<!--', '-->')
         tmpl = env.from_string('''\
@@ -140,7 +140,7 @@ and bar comment #}
     ${item} ## the rest of the stuff
 % endfor''')
         assert [int(x.strip()) for x in tmpl.render(seq=range(5)).split()] == \
-                range(5)
+               range(5)
 
     def test_line_syntax_priority(self):
         # XXX: why is the whitespace there in front of the newline?
@@ -195,7 +195,6 @@ and bar comment #}
 
 
 class SyntaxTestCase(JinjaTestCase):
-
     def test_call(self):
         env = Environment()
         env.globals['foo'] = lambda a, b, c, e, g: a + b + c + e + g
@@ -291,7 +290,7 @@ class SyntaxTestCase(JinjaTestCase):
         for should_fail, sig in tests:
             if should_fail:
                 self.assert_raises(TemplateSyntaxError,
-                    env.from_string, '{{ foo(%s) }}' % sig)
+                                   env.from_string, '{{ foo(%s) }}' % sig)
             else:
                 env.from_string('foo(%s)' % sig)
 
@@ -328,7 +327,7 @@ class SyntaxTestCase(JinjaTestCase):
         self.assert_raises(TemplateSyntaxError, env.from_string,
                            '{{ foo is string is sequence }}')
         env.from_string('{{ 42 is string or 42 is number }}'
-            ).render() == 'True'
+                        ).render() == 'True'
 
     def test_string_concatenation(self):
         tmpl = env.from_string('{{ "foo" "bar" "baz" }}')
@@ -343,6 +342,7 @@ class SyntaxTestCase(JinjaTestCase):
         class Foo(object):
             def __getitem__(self, x):
                 return x
+
         t = env.from_string('{{ foo[1, 2] }}')
         assert t.render(foo=Foo()) == u'(1, 2)'
 

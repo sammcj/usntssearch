@@ -15,8 +15,7 @@ import os
 import sys
 
 from _internal import _iter_modules, _DictAccessorProperty, \
-     _parse_signature, _missing
-
+    _parse_signature, _missing
 
 _format_re = re.compile(r'\$(?:(%s)|\{(%s)\})' % (('[a-zA-Z_][a-zA-Z0-9_]*',) * 2))
 _entity_re = re.compile(r'&([^;]+);')
@@ -59,6 +58,7 @@ class cached_property(object):
     def __init__(self, func, name=None, doc=None, writeable=False):
         if writeable:
             from warnings import warn
+
             warn(DeprecationWarning('the writeable argument to the '
                                     'cached property is a noop since 0.6 '
                                     'because the property is writeable '
@@ -140,6 +140,7 @@ class HTMLBuilder(object):
     """
 
     from htmlentitydefs import name2codepoint
+
     _entity_re = re.compile(r'&([^;]+);')
     _entities = name2codepoint.copy()
     _entities['apos'] = 39
@@ -165,6 +166,7 @@ class HTMLBuilder(object):
     def __getattr__(self, tag):
         if tag[:2] == '__':
             raise AttributeError(tag)
+
         def proxy(*children, **arguments):
             buffer = '<' + tag
             for key, value in arguments.iteritems():
@@ -191,7 +193,7 @@ class HTMLBuilder(object):
             buffer += '>'
 
             children_as_string = ''.join([unicode(x) for x in children
-                                         if x is not None])
+                                          if x is not None])
 
             if children_as_string:
                 if tag in self._plaintext_elements:
@@ -201,6 +203,7 @@ class HTMLBuilder(object):
                                          children_as_string + '/*]]>*/'
             buffer += children_as_string + '</' + tag + '>'
             return buffer
+
         return proxy
 
     def __repr__(self):
@@ -225,9 +228,9 @@ def get_content_type(mimetype, charset):
     :return: the content type.
     """
     if mimetype.startswith('text/') or \
-       mimetype == 'application/xml' or \
-       (mimetype.startswith('application/') and
-        mimetype.endswith('+xml')):
+                    mimetype == 'application/xml' or \
+            (mimetype.startswith('application/') and
+                 mimetype.endswith('+xml')):
         mimetype += '; charset=' + charset
     return mimetype
 
@@ -244,11 +247,13 @@ def format_string(string, context):
     :param string: the format string.
     :param context: a dict with the variables to insert.
     """
+
     def lookup_arg(match):
         x = context[match.group(1) or match.group(2)]
         if not isinstance(x, basestring):
             x = type(string)(x)
         return x
+
     return _format_re.sub(lookup_arg, string)
 
 
@@ -278,18 +283,19 @@ def secure_filename(filename):
     """
     if isinstance(filename, unicode):
         from unicodedata import normalize
+
         filename = normalize('NFKD', filename).encode('ascii', 'ignore')
     for sep in os.path.sep, os.path.altsep:
         if sep:
             filename = filename.replace(sep, ' ')
     filename = str(_filename_ascii_strip_re.sub('', '_'.join(
-                   filename.split()))).strip('._')
+        filename.split()))).strip('._')
 
     # on nt a couple of special files are present in each folder.  We
     # have to ensure that the target file is not such a filename.  In
     # this case we prepend an underline
     if os.name == 'nt' and filename and \
-       filename.split('.')[0].upper() in _windows_device_files:
+                    filename.split('.')[0].upper() in _windows_device_files:
         filename = '_' + filename
 
     return filename
@@ -323,6 +329,7 @@ def unescape(s):
 
     :param s: the string to unescape.
     """
+
     def handle_match(m):
         name = m.group(1)
         if name in HTMLBuilder._entities:
@@ -335,6 +342,7 @@ def unescape(s):
         except ValueError:
             pass
         return u''
+
     return _entity_re.sub(handle_match, s)
 
 
@@ -353,9 +361,11 @@ def redirect(location, code=302):
     :param code: the redirect status code. defaults to 302.
     """
     from wrappers import BaseResponse
+
     display_location = escape(location)
     if isinstance(location, unicode):
         from urls import iri_to_uri
+
         location = iri_to_uri(location)
     response = BaseResponse(
         '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n'
@@ -524,7 +534,7 @@ def bind_arguments(func, args, kwargs):
     :return: a :class:`dict` of bound keyword arguments.
     """
     args, kwargs, missing, extra, extra_positional, \
-        arg_spec, vararg_var, kwarg_var = _parse_signature(func)(args, kwargs)
+    arg_spec, vararg_var, kwarg_var = _parse_signature(func)(args, kwargs)
     values = {}
     for (name, has_default, default), value in zip(arg_spec, args):
         values[name] = value
@@ -552,10 +562,10 @@ class ArgumentValidationError(ValueError):
         self.extra = extra or {}
         self.extra_positional = extra_positional or []
         ValueError.__init__(self, 'function arguments invalid.  ('
-                            '%d missing, %d additional)' % (
-            len(self.missing),
-            len(self.extra) + len(self.extra_positional)
-        ))
+                                  '%d missing, %d additional)' % (
+                                len(self.missing),
+                                len(self.extra) + len(self.extra_positional)
+                            ))
 
 
 class ImportStringError(ImportError):
@@ -600,14 +610,13 @@ class ImportStringError(ImportError):
         return '<%s(%r, %r)>' % (self.__class__.__name__, self.import_name,
                                  self.exception)
 
-
 # circular dependencies
 from http import quote_header_value, unquote_header_value, \
-     cookie_date
+    cookie_date
 
 # DEPRECATED
 # these objects were previously in this module as well.  we import
 # them here for backwards compatibility with old pickles.
 from datastructures import MultiDict, CombinedMultiDict, \
-     Headers, EnvironHeaders
+    Headers, EnvironHeaders
 from http import parse_cookie, dump_cookie

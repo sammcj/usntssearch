@@ -39,6 +39,7 @@ except SyntaxError:
     name_re = re.compile(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b')
 else:
     from jinja2 import _stringdefs
+
     name_re = re.compile(r'[%s][%s]*' % (_stringdefs.xid_start,
                                          _stringdefs.xid_continue))
 
@@ -98,38 +99,38 @@ TOKEN_EOF = intern('eof')
 
 # bind operators to token types
 operators = {
-    '+':            TOKEN_ADD,
-    '-':            TOKEN_SUB,
-    '/':            TOKEN_DIV,
-    '//':           TOKEN_FLOORDIV,
-    '*':            TOKEN_MUL,
-    '%':            TOKEN_MOD,
-    '**':           TOKEN_POW,
-    '~':            TOKEN_TILDE,
-    '[':            TOKEN_LBRACKET,
-    ']':            TOKEN_RBRACKET,
-    '(':            TOKEN_LPAREN,
-    ')':            TOKEN_RPAREN,
-    '{':            TOKEN_LBRACE,
-    '}':            TOKEN_RBRACE,
-    '==':           TOKEN_EQ,
-    '!=':           TOKEN_NE,
-    '>':            TOKEN_GT,
-    '>=':           TOKEN_GTEQ,
-    '<':            TOKEN_LT,
-    '<=':           TOKEN_LTEQ,
-    '=':            TOKEN_ASSIGN,
-    '.':            TOKEN_DOT,
-    ':':            TOKEN_COLON,
-    '|':            TOKEN_PIPE,
-    ',':            TOKEN_COMMA,
-    ';':            TOKEN_SEMICOLON
+    '+': TOKEN_ADD,
+    '-': TOKEN_SUB,
+    '/': TOKEN_DIV,
+    '//': TOKEN_FLOORDIV,
+    '*': TOKEN_MUL,
+    '%': TOKEN_MOD,
+    '**': TOKEN_POW,
+    '~': TOKEN_TILDE,
+    '[': TOKEN_LBRACKET,
+    ']': TOKEN_RBRACKET,
+    '(': TOKEN_LPAREN,
+    ')': TOKEN_RPAREN,
+    '{': TOKEN_LBRACE,
+    '}': TOKEN_RBRACE,
+    '==': TOKEN_EQ,
+    '!=': TOKEN_NE,
+    '>': TOKEN_GT,
+    '>=': TOKEN_GTEQ,
+    '<': TOKEN_LT,
+    '<=': TOKEN_LTEQ,
+    '=': TOKEN_ASSIGN,
+    '.': TOKEN_DOT,
+    ':': TOKEN_COLON,
+    '|': TOKEN_PIPE,
+    ',': TOKEN_COMMA,
+    ';': TOKEN_SEMICOLON
 }
 
 reverse_operators = dict([(v, k) for k, v in operators.iteritems()])
 assert len(operators) == len(reverse_operators), 'operators dropped'
 operator_re = re.compile('(%s)' % '|'.join(re.escape(x) for x in
-                         sorted(operators, key=lambda x: -len(x))))
+                                           sorted(operators, key=lambda x: -len(x))))
 
 ignored_tokens = frozenset([TOKEN_COMMENT_BEGIN, TOKEN_COMMENT,
                             TOKEN_COMMENT_END, TOKEN_WHITESPACE,
@@ -143,18 +144,18 @@ def _describe_token_type(token_type):
     if token_type in reverse_operators:
         return reverse_operators[token_type]
     return {
-        TOKEN_COMMENT_BEGIN:        'begin of comment',
-        TOKEN_COMMENT_END:          'end of comment',
-        TOKEN_COMMENT:              'comment',
-        TOKEN_LINECOMMENT:          'comment',
-        TOKEN_BLOCK_BEGIN:          'begin of statement block',
-        TOKEN_BLOCK_END:            'end of statement block',
-        TOKEN_VARIABLE_BEGIN:       'begin of print statement',
-        TOKEN_VARIABLE_END:         'end of print statement',
-        TOKEN_LINESTATEMENT_BEGIN:  'begin of line statement',
-        TOKEN_LINESTATEMENT_END:    'end of line statement',
-        TOKEN_DATA:                 'template data / text',
-        TOKEN_EOF:                  'end of template'
+        TOKEN_COMMENT_BEGIN: 'begin of comment',
+        TOKEN_COMMENT_END: 'end of comment',
+        TOKEN_COMMENT: 'comment',
+        TOKEN_LINECOMMENT: 'comment',
+        TOKEN_BLOCK_BEGIN: 'begin of statement block',
+        TOKEN_BLOCK_END: 'end of statement block',
+        TOKEN_VARIABLE_BEGIN: 'begin of print statement',
+        TOKEN_VARIABLE_END: 'end of print statement',
+        TOKEN_LINESTATEMENT_BEGIN: 'begin of line statement',
+        TOKEN_LINESTATEMENT_END: 'end of line statement',
+        TOKEN_DATA: 'template data / text',
+        TOKEN_EOF: 'end of template'
     }.get(token_type, token_type)
 
 
@@ -440,7 +441,7 @@ class Lexer(object):
                     )] + [
                         r'(?P<%s_begin>\s*%s\-|%s)' % (n, r, r)
                         for n, r in root_tag_rules
-                    ])), (TOKEN_DATA, '#bygroup'), '#bygroup'),
+                        ])), (TOKEN_DATA, '#bygroup'), '#bygroup'),
                 # data
                 (c('.+'), TOKEN_DATA, None)
             ],
@@ -455,19 +456,19 @@ class Lexer(object):
             ],
             # blocks
             TOKEN_BLOCK_BEGIN: [
-                (c('(?:\-%s\s*|%s)%s' % (
-                    e(environment.block_end_string),
-                    e(environment.block_end_string),
-                    block_suffix_re
-                )), TOKEN_BLOCK_END, '#pop'),
-            ] + tag_rules,
+                                   (c('(?:\-%s\s*|%s)%s' % (
+                                       e(environment.block_end_string),
+                                       e(environment.block_end_string),
+                                       block_suffix_re
+                                   )), TOKEN_BLOCK_END, '#pop'),
+                               ] + tag_rules,
             # variables
             TOKEN_VARIABLE_BEGIN: [
-                (c('\-%s\s*|%s' % (
-                    e(environment.variable_end_string),
-                    e(environment.variable_end_string)
-                )), TOKEN_VARIABLE_END, '#pop')
-            ] + tag_rules,
+                                      (c('\-%s\s*|%s' % (
+                                          e(environment.variable_end_string),
+                                          e(environment.variable_end_string)
+                                      )), TOKEN_VARIABLE_END, '#pop')
+                                  ] + tag_rules,
             # raw block
             TOKEN_RAW_BEGIN: [
                 (c('(.*?)((?:\s*%s\-|%s)\s*endraw\s*(?:\-%s\s*|%s%s))' % (
@@ -481,12 +482,12 @@ class Lexer(object):
             ],
             # line statements
             TOKEN_LINESTATEMENT_BEGIN: [
-                (c(r'\s*(\n|$)'), TOKEN_LINESTATEMENT_END, '#pop')
-            ] + tag_rules,
+                                           (c(r'\s*(\n|$)'), TOKEN_LINESTATEMENT_END, '#pop')
+                                       ] + tag_rules,
             # line comments
             TOKEN_LINECOMMENT_BEGIN: [
                 (c(r'(.*?)()(?=\n|$)'), (TOKEN_LINECOMMENT,
-                 TOKEN_LINECOMMENT_END), '#pop')
+                                         TOKEN_LINECOMMENT_END), '#pop')
             ]
         }
 
@@ -576,8 +577,8 @@ class Lexer(object):
                 # is the operator rule. do this only if the end tags look
                 # like operators
                 if balancing_stack and \
-                   tokens in ('variable_end', 'block_end',
-                              'linestatement_end'):
+                                tokens in ('variable_end', 'block_end',
+                                           'linestatement_end'):
                     continue
 
                 # tuples support more options

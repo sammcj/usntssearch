@@ -15,8 +15,8 @@ import shutil
 import unittest
 
 from jinja2.testsuite import JinjaTestCase, dict_loader, \
-     package_loader, filesystem_loader, function_loader, \
-     choice_loader, prefix_loader
+    package_loader, filesystem_loader, function_loader, \
+    choice_loader, prefix_loader
 
 from jinja2 import Environment, loaders
 from jinja2.loaders import split_template_path
@@ -24,7 +24,6 @@ from jinja2.exceptions import TemplateNotFound
 
 
 class LoaderTestCase(JinjaTestCase):
-
     def test_dict_loader(self):
         env = Environment(loader=dict_loader)
         tmpl = env.get_template('justdict.html')
@@ -69,9 +68,11 @@ class LoaderTestCase(JinjaTestCase):
 
     def test_caching(self):
         changed = False
+
         class TestLoader(loaders.BaseLoader):
             def get_source(self, environment, template):
                 return u'foo', None, lambda: not changed
+
         env = Environment(loader=TestLoader(), cache_size=-1)
         tmpl = env.get_template('template')
         assert tmpl is env.get_template('template')
@@ -168,6 +169,7 @@ class ModuleLoaderTestCase(JinjaTestCase):
 
         try:
             import gc
+
             gc.collect()
         except:
             pass

@@ -17,8 +17,8 @@ from werkzeug.testsuite import WerkzeugTestCase
 
 from werkzeug import wrappers
 from werkzeug.datastructures import MultiDict, ImmutableOrderedMultiDict, \
-     ImmutableList, ImmutableTypeConversionDict, CharsetAccept, \
-     CombinedMultiDict
+    ImmutableList, ImmutableTypeConversionDict, CharsetAccept, \
+    CombinedMultiDict
 from werkzeug.test import Client, create_environ, run_wsgi_app
 
 
@@ -41,12 +41,12 @@ def request_demo_app(environ, start_response):
     assert 'werkzeug.request' in environ
     start_response('200 OK', [('Content-Type', 'text/plain')])
     return [pickle.dumps({
-        'args':             request.args,
-        'args_as_list':     request.args.lists(),
-        'form':             request.form,
-        'form_as_list':     request.form.lists(),
-        'environ':          prepare_environ_pickle(request.environ),
-        'data':             request.data
+        'args': request.args,
+        'args_as_list': request.args.lists(),
+        'form': request.form,
+        'form_as_list': request.form.lists(),
+        'environ': prepare_environ_pickle(request.environ),
+        'data': request.data
     })]
 
 
@@ -62,7 +62,6 @@ def prepare_environ_pickle(environ):
 
 
 class WrappersTestCase(WerkzeugTestCase):
-
     def assert_environ(self, environ, method):
         assert environ['REQUEST_METHOD'] == method
         assert environ['PATH_INFO'] == '/'
@@ -162,7 +161,7 @@ class WrappersTestCase(WerkzeugTestCase):
         assert response.headers.to_list() == [
             ('Content-Type', 'text/plain; charset=utf-8'),
             ('Set-Cookie', 'foo=bar; Domain=example.org; expires=Thu, '
-             '01-Jan-1970 00:00:00 GMT; Max-Age=60; Path=/blub')
+                           '01-Jan-1970 00:00:00 GMT; Max-Age=60; Path=/blub')
         ]
 
         # delete cookie
@@ -175,13 +174,17 @@ class WrappersTestCase(WerkzeugTestCase):
 
         # close call forwarding
         closed = []
+
         class Iterable(object):
             def next(self):
                 raise StopIteration()
+
             def __iter__(self):
                 return self
+
             def close(self):
                 closed.append(True)
+
         response = wrappers.BaseResponse(Iterable())
         response.call_on_close(lambda: closed.append(True))
         app_iter, status, headers = run_wsgi_app(response,
@@ -209,6 +212,7 @@ class WrappersTestCase(WerkzeugTestCase):
         def wsgi_application(environ, start_response):
             start_response('200 OK', [('Content-Type', 'text/html')])
             return ['Hello World!']
+
         base_response = wrappers.BaseResponse('Hello World!', content_type='text/html')
 
         class SpecialResponse(wrappers.Response):
@@ -231,8 +235,8 @@ class WrappersTestCase(WerkzeugTestCase):
 
     def test_accept_mixin(self):
         request = wrappers.Request({
-            'HTTP_ACCEPT':  'text/xml,application/xml,application/xhtml+xml,'
-                            'text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+            'HTTP_ACCEPT': 'text/xml,application/xml,application/xhtml+xml,'
+                           'text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
             'HTTP_ACCEPT_CHARSET': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'HTTP_ACCEPT_ENCODING': 'gzip,deflate',
             'HTTP_ACCEPT_LANGUAGE': 'en-us,en;q=0.5'
@@ -253,10 +257,10 @@ class WrappersTestCase(WerkzeugTestCase):
 
     def test_etag_request_mixin(self):
         request = wrappers.Request({
-            'HTTP_CACHE_CONTROL':       'no-store, no-cache',
-            'HTTP_IF_MATCH':            'w/"foo", bar, "baz"',
-            'HTTP_IF_NONE_MATCH':       'w/"foo", bar, "baz"',
-            'HTTP_IF_MODIFIED_SINCE':   'Tue, 22 Jan 2008 11:18:44 GMT',
+            'HTTP_CACHE_CONTROL': 'no-store, no-cache',
+            'HTTP_IF_MATCH': 'w/"foo", bar, "baz"',
+            'HTTP_IF_NONE_MATCH': 'w/"foo", bar, "baz"',
+            'HTTP_IF_MODIFIED_SINCE': 'Tue, 22 Jan 2008 11:18:44 GMT',
             'HTTP_IF_UNMODIFIED_SINCE': 'Tue, 22 Jan 2008 11:18:44 GMT'
         })
         assert request.cache_control.no_store
@@ -311,8 +315,8 @@ class WrappersTestCase(WerkzeugTestCase):
         assert 'date' not in response.headers
         env = create_environ()
         env.update({
-            'REQUEST_METHOD':       'GET',
-            'HTTP_IF_NONE_MATCH':   response.get_etag()[0]
+            'REQUEST_METHOD': 'GET',
+            'HTTP_IF_NONE_MATCH': response.get_etag()[0]
         })
         response.make_conditional(env)
         assert 'date' in response.headers
@@ -340,6 +344,7 @@ class WrappersTestCase(WerkzeugTestCase):
     def test_etag_response_mixin_freezing(self):
         class WithFreeze(wrappers.ETagResponseMixin, wrappers.BaseResponse):
             pass
+
         class WithoutFreeze(wrappers.BaseResponse, wrappers.ETagResponseMixin):
             pass
 
@@ -409,16 +414,15 @@ class WrappersTestCase(WerkzeugTestCase):
         response.content_language.add('fr')
         assert response.headers['Content-Language'] == 'en-US, fr'
 
-
     def test_common_request_descriptors_mixin(self):
         request = wrappers.Request.from_values(content_type='text/html; charset=utf-8',
                                                content_length='23',
                                                headers={
-            'Referer':      'http://www.example.com/',
-            'Date':         'Sat, 28 Feb 2009 19:04:35 GMT',
-            'Max-Forwards': '10',
-            'Pragma':       'no-cache'
-        })
+                                                   'Referer': 'http://www.example.com/',
+                                                   'Date': 'Sat, 28 Feb 2009 19:04:35 GMT',
+                                                   'Max-Forwards': '10',
+                                                   'Pragma': 'no-cache'
+                                               })
 
         assert request.content_type == 'text/html; charset=utf-8'
         assert request.mimetype == 'text/html'
@@ -458,9 +462,11 @@ class WrappersTestCase(WerkzeugTestCase):
         assert not r.is_streamed
         r = wrappers.Response(["foo", "bar"])
         assert not r.is_streamed
+
         def gen():
             if 0:
                 yield None
+
         r = wrappers.Response(gen())
         assert r.is_streamed
 
@@ -468,6 +474,7 @@ class WrappersTestCase(WerkzeugTestCase):
         def generate():
             yield "foo"
             yield "bar"
+
         resp = wrappers.Response(generate())
         resp.freeze()
         assert resp.response == ['foo', 'bar']
@@ -488,7 +495,7 @@ class WrappersTestCase(WerkzeugTestCase):
         resp.headers['Content-Location'] = u'http://☃.net/'
         headers = resp.get_wsgi_headers(create_environ())
         assert headers['location'] == \
-            'http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th'
+               'http://%C3%BCser:p%C3%A4ssword@xn--n3h.net/p%C3%A5th'
         assert headers['content-location'] == 'http://xn--n3h.net/'
 
     def test_new_response_iterator_behavior(self):
@@ -569,8 +576,9 @@ class WrappersTestCase(WerkzeugTestCase):
             dict_storage_class = dict
             list_storage_class = list
             parameter_storage_class = dict
+
         req = MyRequest.from_values('/?foo=baz', headers={
-            'Cookie':   'foo=bar'
+            'Cookie': 'foo=bar'
         })
         assert type(req.cookies) is dict
         assert req.cookies == {'foo': 'bar'}
@@ -581,7 +589,7 @@ class WrappersTestCase(WerkzeugTestCase):
         assert req.values['foo'] == 'baz'
 
         req = wrappers.Request.from_values(headers={
-            'Cookie':   'foo=bar'
+            'Cookie': 'foo=bar'
         })
         assert type(req.cookies) is ImmutableTypeConversionDict
         assert req.cookies == {'foo': 'bar'}
@@ -636,6 +644,7 @@ class WrappersTestCase(WerkzeugTestCase):
     def test_disabled_auto_content_length(self):
         class MyResponse(wrappers.Response):
             automatically_set_content_length = False
+
         resp = MyResponse('Hello World!')
         self.assert_(resp.content_length is None)
 
@@ -645,8 +654,10 @@ class WrappersTestCase(WerkzeugTestCase):
 
     def test_location_header_autocorrect(self):
         env = create_environ()
+
         class MyResponse(wrappers.Response):
             autocorrect_location_header = False
+
         resp = MyResponse('Hello World!')
         resp.headers['Location'] = '/test'
         self.assert_equal(resp.get_wsgi_headers(env)['Location'], '/test')

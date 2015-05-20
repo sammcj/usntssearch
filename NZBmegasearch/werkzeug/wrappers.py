@@ -24,26 +24,26 @@ import urlparse
 from datetime import datetime, timedelta
 
 from http import HTTP_STATUS_CODES, \
-     parse_accept_header, parse_cache_control_header, parse_etags, \
-     parse_date, generate_etag, is_resource_modified, unquote_etag, \
-     quote_etag, parse_set_header, parse_authorization_header, \
-     parse_www_authenticate_header, remove_entity_headers, \
-     parse_options_header, dump_options_header, http_date, \
-     parse_if_range_header, parse_cookie, dump_cookie, \
-     parse_range_header, parse_content_range_header, dump_header
+    parse_accept_header, parse_cache_control_header, parse_etags, \
+    parse_date, generate_etag, is_resource_modified, unquote_etag, \
+    quote_etag, parse_set_header, parse_authorization_header, \
+    parse_www_authenticate_header, remove_entity_headers, \
+    parse_options_header, dump_options_header, http_date, \
+    parse_if_range_header, parse_cookie, dump_cookie, \
+    parse_range_header, parse_content_range_header, dump_header
 from urls import url_decode, iri_to_uri
 from formparser import FormDataParser, default_stream_factory
 from utils import cached_property, environ_property, \
-     header_property, get_content_type
+    header_property, get_content_type
 from wsgi import get_current_url, get_host, LimitedStream, \
-     ClosingIterator
+    ClosingIterator
 from datastructures import MultiDict, CombinedMultiDict, Headers, \
-     EnvironHeaders, ImmutableMultiDict, ImmutableTypeConversionDict, \
-     ImmutableList, MIMEAccept, CharsetAccept, LanguageAccept, \
-     ResponseCacheControl, RequestCacheControl, CallbackDict, \
-     ContentRange
+    EnvironHeaders, ImmutableMultiDict, ImmutableTypeConversionDict, \
+    ImmutableList, MIMEAccept, CharsetAccept, LanguageAccept, \
+    ResponseCacheControl, RequestCacheControl, CallbackDict, \
+    ContentRange
 from _internal import _empty_stream, _decode_unicode, \
-     _patch_wrapper, _get_environ
+    _patch_wrapper, _get_environ
 
 
 def _run_wsgi_app(*args):
@@ -52,6 +52,7 @@ def _run_wsgi_app(*args):
     """
     global _run_wsgi_app
     from test import run_wsgi_app as _run_wsgi_app
+
     return _run_wsgi_app(*args)
 
 
@@ -61,6 +62,7 @@ def _warn_if_string(iterable):
     """
     if isinstance(iterable, basestring):
         from warnings import warn
+
         warn(Warning('response iterable was set to a string.  This appears '
                      'to work but means that the server will send the '
                      'data to the client char, by char.  This is almost '
@@ -222,6 +224,7 @@ class BaseRequest(object):
         :return: request object
         """
         from test import EnvironBuilder
+
         charset = kwargs.pop('charset', cls.charset)
         builder = EnvironBuilder(*args, **kwargs)
         try:
@@ -247,10 +250,10 @@ class BaseRequest(object):
         #: the request.  The return value is then called with the latest
         #: two arguments.  This makes it possible to use this decorator for
         #: both methods and standalone WSGI functions.
-        return _patch_wrapper(f, lambda *a: f(*a[:-2]+(cls(a[-2]),))(*a[-2:]))
+        return _patch_wrapper(f, lambda *a: f(*a[:-2] + (cls(a[-2]),))(*a[-2:]))
 
     def _get_file_stream(self, total_content_length, content_type, filename=None,
-                        content_length=None):
+                         content_length=None):
         """Called to get a stream for the file upload.
 
         This must provide a file-like class with `read()`, `readline()`
@@ -346,8 +349,8 @@ class BaseRequest(object):
         return self.stream
 
     input_stream = environ_property('wsgi.input', 'The WSGI input stream.\n'
-        'In general it\'s a bad idea to use this one because you can easily '
-        'read past the boundary.  Use the :attr:`stream` instead.')
+                                                  'In general it\'s a bad idea to use this one because you can easily '
+                                                  'read past the boundary.  Use the :attr:`stream` instead.')
 
     @cached_property
     def args(self):
@@ -465,9 +468,9 @@ class BaseRequest(object):
         return get_host(self.environ)
 
     query_string = environ_property('QUERY_STRING', '', read_only=True, doc=
-        '''The URL parameters as raw bytestring.''')
+    '''The URL parameters as raw bytestring.''')
     method = environ_property('REQUEST_METHOD', 'GET', read_only=True, doc=
-        '''The transmission method. (For example ``'GET'`` or ``'POST'``).''')
+    '''The transmission method. (For example ``'GET'`` or ``'POST'``).''')
 
     @cached_property
     def access_route(self):
@@ -730,24 +733,28 @@ class BaseResponse(object):
 
     def _get_status_code(self):
         return self._status_code
+
     def _set_status_code(self, code):
         self._status_code = code
         try:
             self._status = '%d %s' % (code, HTTP_STATUS_CODES[code].upper())
         except KeyError:
             self._status = '%d UNKNOWN' % code
+
     status_code = property(_get_status_code, _set_status_code,
                            doc='The HTTP Status code as number')
     del _get_status_code, _set_status_code
 
     def _get_status(self):
         return self._status
+
     def _set_status(self, value):
         self._status = value
         try:
             self._status_code = int(self._status.split(None, 1)[0])
         except ValueError:
             self._status_code = 0
+
     status = property(_get_status, _set_status, doc='The HTTP Status code')
     del _get_status, _set_status
 
@@ -761,6 +768,7 @@ class BaseResponse(object):
         """
         self._ensure_sequence()
         return ''.join(self.iter_encoded())
+
     def _set_data(self, value):
         # if an unicode string is set, it's encoded directly so that we
         # can set the content length
@@ -769,6 +777,7 @@ class BaseResponse(object):
         self.response = [value]
         if self.automatically_set_content_length:
             self.headers['Content-Length'] = str(len(value))
+
     data = property(_get_data, _set_data, doc=_get_data.__doc__)
     del _get_data, _set_data
 
@@ -819,8 +828,9 @@ class BaseResponse(object):
            The `charset` parameter was deprecated and became a no-op.
         """
         # XXX: deprecated
-        if __debug__ and charset is not None: # pragma: no cover
+        if __debug__ and charset is not None:  # pragma: no cover
             from warnings import warn
+
             warn(DeprecationWarning('charset was deprecated and is ignored.'),
                  stacklevel=2)
         charset = self.charset
@@ -852,8 +862,8 @@ class BaseResponse(object):
                      span the whole domain.
         """
         self.headers.add('Set-Cookie', dump_cookie(key, value, max_age,
-                         expires, path, domain, secure, httponly,
-                         self.charset))
+                                                   expires, path, domain, secure, httponly,
+                                                   self.charset))
 
     def delete_cookie(self, key, path='/', domain=None):
         """Delete a cookie.  Fails silently if key doesn't exist.
@@ -867,10 +877,11 @@ class BaseResponse(object):
         self.set_cookie(key, expires=0, max_age=0, path=path, domain=domain)
 
     @property
-    def header_list(self): # pragma: no cover
+    def header_list(self):  # pragma: no cover
         # XXX: deprecated
         if __debug__:
             from warnings import warn
+
             warn(DeprecationWarning('header_list is deprecated'),
                  stacklevel=2)
         return self.headers.to_list(self.charset)
@@ -925,6 +936,7 @@ class BaseResponse(object):
         # XXX: deprecated
         if __debug__:
             from warnings import warn
+
             warn(DeprecationWarning('called into deprecated fix_headers baseclass '
                                     'method.  Use get_wsgi_headers instead.'),
                  stacklevel=2)
@@ -987,7 +999,7 @@ class BaseResponse(object):
 
         # make sure the content location is a URL
         if content_location is not None and \
-           isinstance(content_location, unicode):
+                isinstance(content_location, unicode):
             headers['Content-Location'] = iri_to_uri(content_location)
 
         # remove entity headers and set content length to zero if needed.
@@ -1005,7 +1017,7 @@ class BaseResponse(object):
         # the response.  We however should not do that if we have a 304
         # response.
         if self.automatically_set_content_length and \
-           self.is_sequence and content_length is None and status != 304:
+                self.is_sequence and content_length is None and status != 304:
             try:
                 content_length = sum(len(str(x)) for x in self.response)
             except UnicodeError:
@@ -1033,7 +1045,7 @@ class BaseResponse(object):
         """
         status = self.status_code
         if environ['REQUEST_METHOD'] == 'HEAD' or \
-           100 <= status < 200 or status in (204, 304):
+                                100 <= status < 200 or status in (204, 304):
             return ()
         if self.direct_passthrough:
             if __debug__:
@@ -1057,9 +1069,10 @@ class BaseResponse(object):
         # XXX: code for backwards compatibility with custom fix_headers
         # methods.
         if self.fix_headers.func_code is not \
-           BaseResponse.fix_headers.func_code:
+                BaseResponse.fix_headers.func_code:
             if __debug__:
                 from warnings import warn
+
                 warn(DeprecationWarning('fix_headers changed behavior in 0.6 '
                                         'and is now called get_wsgi_headers. '
                                         'See documentation for more details.'),
@@ -1199,6 +1212,7 @@ class UserAgentMixin(object):
     def user_agent(self):
         """The current user agent."""
         from useragents import UserAgent
+
         return UserAgent(self.environ)
 
 
@@ -1232,11 +1246,13 @@ class ETagResponseMixin(object):
         directives that MUST be obeyed by all caching mechanisms along the
         request/response chain.
         """
+
         def on_update(cache_control):
             if not cache_control and 'cache-control' in self.headers:
                 del self.headers['cache-control']
             elif cache_control:
                 self.headers['Cache-Control'] = cache_control.to_header()
+
         return parse_cache_control_header(self.headers.get('cache-control'),
                                           on_update,
                                           ResponseCacheControl)
@@ -1313,6 +1329,7 @@ class ETagResponseMixin(object):
                 del self.headers['content-range']
             else:
                 self.headers['Content-Range'] = rng.to_header()
+
         rv = parse_content_range_header(self.headers.get('content-range'),
                                         on_update)
         # always provide a content range object to make the descriptor
@@ -1321,6 +1338,7 @@ class ETagResponseMixin(object):
         if rv is None:
             rv = ContentRange(None, None, None, on_update=on_update)
         return rv
+
     def _set_content_range(self, value):
         if not value:
             del self.headers['content-range']
@@ -1328,6 +1346,7 @@ class ETagResponseMixin(object):
             self.headers['Content-Range'] = value
         else:
             self.headers['Content-Range'] = value.to_header()
+
     content_range = property(_get_content_range, _set_content_range, doc='''
         The `Content-Range` header as
         :class:`~werkzeug.datastructures.ContentRange` object.  Even if the
@@ -1474,6 +1493,7 @@ class CommonResponseDescriptorsMixin(object):
         def on_update(d):
             self.headers['Content-Type'] = \
                 dump_options_header(self.mimetype, d)
+
         d = parse_options_header(self.headers.get('content-type', ''))[1]
         return CallbackDict(d, on_update)
 
@@ -1545,6 +1565,7 @@ class CommonResponseDescriptorsMixin(object):
         elif value.isdigit():
             return datetime.utcnow() + timedelta(seconds=int(value))
         return parse_date(value)
+
     def _set_retry_after(self, value):
         if value is None:
             if 'retry-after' in self.headers:
@@ -1570,7 +1591,9 @@ class CommonResponseDescriptorsMixin(object):
                     del self.headers[name]
                 elif header_set:
                     self.headers[name] = header_set.to_header()
+
             return parse_set_header(self.headers.get(name), on_update)
+
         def fset(self, value):
             if not value:
                 del self.headers[name]
@@ -1578,6 +1601,7 @@ class CommonResponseDescriptorsMixin(object):
                 self.headers[name] = value
             else:
                 self.headers[name] = dump_header(value)
+
         return property(fget, fset, doc=doc)
 
     vary = _set_property('Vary', doc='''
@@ -1607,11 +1631,13 @@ class WWWAuthenticateMixin(object):
     @property
     def www_authenticate(self):
         """The `WWW-Authenticate` header in a parsed form."""
+
         def on_update(www_auth):
             if not www_auth and 'www-authenticate' in self.headers:
                 del self.headers['www-authenticate']
             elif www_auth:
                 self.headers['WWW-Authenticate'] = www_auth.to_header()
+
         header = self.headers.get('www-authenticate')
         return parse_www_authenticate_header(header, on_update)
 

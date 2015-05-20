@@ -16,6 +16,7 @@ from ..utils import cached_property, import_string
 from ..wrappers import Response
 
 from warnings import warn
+
 warn(DeprecationWarning('werkzeug.contrib.testtools is deprecated and '
                         'will be removed with Werkzeug 1.0'))
 
@@ -39,6 +40,7 @@ class ContentAccessors(object):
                 return etree.XML(self.body)
         raise RuntimeError('You must have ElementTree installed '
                            'to use TestResponse.xml')
+
     xml = cached_property(xml)
 
     def lxml(self):
@@ -46,13 +48,15 @@ class ContentAccessors(object):
         if ('html' not in self.mimetype and 'xml' not in self.mimetype):
             raise AttributeError('Not an HTML/XML response')
         from lxml import etree
+
         try:
             from lxml.html import fromstring
         except ImportError:
             fromstring = etree.HTML
-        if self.mimetype=='text/html':
+        if self.mimetype == 'text/html':
             return fromstring(self.data)
         return etree.XML(self.data)
+
     lxml = cached_property(lxml)
 
     def json(self):
@@ -64,6 +68,7 @@ class ContentAccessors(object):
         except ImportError:
             from json import loads
         return loads(self.data)
+
     json = cached_property(json)
 
 

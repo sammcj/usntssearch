@@ -14,14 +14,13 @@ from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Environment
 from jinja2.sandbox import SandboxedEnvironment, \
-     ImmutableSandboxedEnvironment, unsafe
+    ImmutableSandboxedEnvironment, unsafe
 from jinja2 import Markup, escape
 from jinja2.exceptions import SecurityError, TemplateSyntaxError, \
-     TemplateRuntimeError
+    TemplateRuntimeError
 
 
 class PrivateStuff(object):
-
     def bar(self):
         return 23
 
@@ -42,7 +41,6 @@ class PublicStuff(object):
 
 
 class SandboxTestCase(JinjaTestCase):
-
     def test_unsafe(self):
         env = SandboxedEnvironment()
         self.assert_raises(SecurityError, env.from_string("{{ foo.foo() }}").render,
@@ -53,7 +51,7 @@ class SandboxTestCase(JinjaTestCase):
                            foo=PublicStuff())
         self.assert_equal(env.from_string("{{ foo.bar() }}").render(foo=PublicStuff()), '23')
         self.assert_equal(env.from_string("{{ foo.__class__ }}").render(foo=42), '')
-        self.assert_equal(env.from_string("{{ foo.func_code }}").render(foo=lambda:None), '')
+        self.assert_equal(env.from_string("{{ foo.func_code }}").render(foo=lambda: None), '')
         # security error comes from __class__ already.
         self.assert_raises(SecurityError, env.from_string(
             "{{ foo.__class__.__subclasses__() }}").render, foo=42)
@@ -68,9 +66,9 @@ class SandboxTestCase(JinjaTestCase):
     def test_restricted(self):
         env = SandboxedEnvironment()
         self.assert_raises(TemplateSyntaxError, env.from_string,
-                      "{% for item.attribute in seq %}...{% endfor %}")
+                           "{% for item.attribute in seq %}...{% endfor %}")
         self.assert_raises(TemplateSyntaxError, env.from_string,
-                      "{% for foo, bar.baz in seq %}...{% endfor %}")
+                           "{% for foo, bar.baz in seq %}...{% endfor %}")
 
     def test_markup_operations(self):
         # adding two strings should escape the unsafe one
@@ -96,8 +94,10 @@ class SandboxTestCase(JinjaTestCase):
         class Foo(object):
             def __html__(self):
                 return '<em>awesome</em>'
+
             def __unicode__(self):
                 return 'awesome'
+
         assert Markup(Foo()) == '<em>awesome</em>'
         assert Markup('<strong>%s</strong>') % Foo() == \
                '<strong><em>awesome</em></strong>'
@@ -127,6 +127,7 @@ class SandboxTestCase(JinjaTestCase):
     def test_binary_operator_intercepting(self):
         def disable_op(left, right):
             raise TemplateRuntimeError('that operator so does not work')
+
         for expr, ctx, rv in ('1 + 2', {}, '3'), ('a + 2', {'a': 2}, '4'):
             env = SandboxedEnvironment()
             env.binop_table['+'] = disable_op
@@ -144,6 +145,7 @@ class SandboxTestCase(JinjaTestCase):
     def test_unary_operator_intercepting(self):
         def disable_op(arg):
             raise TemplateRuntimeError('that operator so does not work')
+
         for expr, ctx, rv in ('-1', {}, '-1'), ('-a', {'a': 2}, '-2'):
             env = SandboxedEnvironment()
             env.unop_table['-'] = disable_op

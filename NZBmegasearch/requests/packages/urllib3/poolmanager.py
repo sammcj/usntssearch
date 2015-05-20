@@ -12,9 +12,7 @@ from .connectionpool import connection_from_url, port_by_scheme
 from .request import RequestMethods
 from .util import parse_url
 
-
 __all__ = ['PoolManager', 'ProxyManager', 'proxy_from_url']
-
 
 pool_classes_by_scheme = {
     'http': HTTPConnectionPool,

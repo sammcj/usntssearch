@@ -18,16 +18,17 @@ from werkzeug import local
 
 
 class LocalTestCase(WerkzeugTestCase):
-
     def test_basic_local(self):
         l = local.Local()
         l.foo = 0
         values = []
+
         def value_setter(idx):
             time.sleep(0.01 * idx)
             l.foo = idx
             time.sleep(0.02)
             values.append(l.foo)
+
         threads = [Thread(target=value_setter, args=(x,))
                    for x in [1, 2, 3]]
         for thread in threads:
@@ -37,6 +38,7 @@ class LocalTestCase(WerkzeugTestCase):
 
         def delfoo():
             del l.foo
+
         delfoo()
         self.assert_raises(AttributeError, lambda: l.foo)
         self.assert_raises(AttributeError, delfoo)

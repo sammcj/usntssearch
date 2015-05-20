@@ -11,30 +11,21 @@ All credits to the original authors.
 
 ## Updates
 
-**Changes in v0.50**
-- Merged Pillone's retention fix #calbinbui
-- Merged retention api #calbinbui
-- Merged NZBClub url fix #calbinbui
-
-**Changes in v0.49**
-- Changed auto update to this repo
-- Changed all urls to this repo
-- Changed tvrage www. to service. 
-- Changed style.css #Cozza38
-- Changed Toggle dereferer #McGriddle
-- fixed sickbeard rss issue #cytec
-- fixed NZBDrone RSS/Api header content error #jonharris
-
-**Changes in v0.46**
-
-- Extended NZB analysis from search results, displays no. ARCHIVE,PAR2,NFO
-- Smart category download
-- Providers check in config
-- Reverse proxy updates
-- Bug fixes
+**Changes in v0.53 (20/5/2015)**
++ no longer asks for the wrong login/pw on accessing the config
++ Little code cleanup & reformatting
++ Added Anime to Newznab class
++ Movie without _HD/_SD will now search both
++ Added additional codes for XXX categories
++ Fix NzbDrone api Integration
++ Fix Sickbeard api integration
++ removed nzb.cc
++ changed Fanzub to AnimeDB
++ upped version numbering
++ changed default cache
 
 
-More updates are available in changelog.txt
+Purged older updates....More updates are available in changelog.txt of main repo
 
 <a title="website statistics" href="http://statcounter.com/" 
 target="_blank"><img

@@ -93,11 +93,13 @@ def parse_form_data(environ, stream_factory=None, charset='utf-8',
 
 def exhaust_stream(f):
     """Helper decorator for methods that exhausts the stream on return."""
+
     def wrapper(self, stream, *args, **kwargs):
         try:
             return f(self, stream, *args, **kwargs)
         finally:
             stream.exhaust()
+
     return update_wrapper(wrapper, f)
 
 
@@ -175,7 +177,7 @@ class FormDataParser(object):
         :return: A tuple in the form ``(stream, form, files)``.
         """
         if self.max_content_length is not None and \
-           content_length > self.max_content_length:
+                        content_length > self.max_content_length:
             raise RequestEntityTooLarge()
         if options is None:
             options = {}
@@ -203,7 +205,7 @@ class FormDataParser(object):
     @exhaust_stream
     def _parse_urlencoded(self, stream, mimetype, content_length, options):
         if self.max_form_memory_size is not None and \
-           content_length > self.max_form_memory_size:
+                        content_length > self.max_form_memory_size:
             raise RequestEntityTooLarge()
         form = url_decode_stream(stream, self.charset,
                                  errors=self.errors, cls=self.cls)
@@ -211,9 +213,9 @@ class FormDataParser(object):
 
     #: mapping of mimetypes to parsing functions
     parse_functions = {
-        'multipart/form-data':                  _parse_multipart,
-        'application/x-www-form-urlencoded':    _parse_urlencoded,
-        'application/x-url-encoded':            _parse_urlencoded
+        'multipart/form-data': _parse_multipart,
+        'application/x-www-form-urlencoded': _parse_urlencoded,
+        'application/x-url-encoded': _parse_urlencoded
     }
 
 
@@ -264,7 +266,6 @@ def parse_multipart_headers(iterable):
 
 
 class MultiPartParser(object):
-
     def __init__(self, stream_factory=None, charset='utf-8', errors='replace',
                  max_form_memory_size=None, cls=None, buffer_size=10 * 1024):
         self.stream_factory = stream_factory
@@ -314,7 +315,7 @@ class MultiPartParser(object):
     def get_part_encoding(self, headers):
         transfer_encoding = headers.get('content-transfer-encoding')
         if transfer_encoding is not None and \
-           transfer_encoding in _supported_multipart_encodings:
+                        transfer_encoding in _supported_multipart_encodings:
             return transfer_encoding
 
     def get_part_charset(self, headers):
@@ -345,7 +346,7 @@ class MultiPartParser(object):
             self.fail('Missing boundary')
         if not is_valid_multipart_boundary(boundary):
             self.fail('Invalid boundary: %s' % boundary)
-        if len(boundary) > self.buffer_size: # pragma: no cover
+        if len(boundary) > self.buffer_size:  # pragma: no cover
             # this should never happen because we check for a minimum size
             # of 1024 and boundaries may not be longer than 200.  The only
             # situation when this happen is for non debug builds where
@@ -443,7 +444,7 @@ class MultiPartParser(object):
                     in_memory += len(line)
                     if in_memory > self.max_form_memory_size:
                         self.in_memory_threshold_reached(in_memory)
-            else: # pragma: no cover
+            else:  # pragma: no cover
                 raise ValueError('unexpected end of part')
 
             # if we have a leftover in the buffer that is not a newline

@@ -395,7 +395,7 @@ class DoParallelSearch:
 
         if ('nzbget_url' in self.cgen):
             if (len(self.cgen['nzbget_url'])):
-                rq_url = 'http://' + self.cgen['nzbget_user'] + ':' + self.cgen['nzbget_pwd'] + '@' + self.cgen[
+                rq_url = 'https://' + self.cgen['nzbget_user'] + ':' + self.cgen['nzbget_pwd'] + '@' + self.cgen[
                     'nzbget_url'] + '/xmlrpc'
                 print rq_url
                 try:

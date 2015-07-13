@@ -794,8 +794,8 @@
 				chk1 = /^\d+$/.test(port_v);
 				if(!chk1 || (chk1==true && (parseInt(port_v)> 65535 ||  parseInt(port_v)< 1024 )) )
 				{
-					alert('<strong>ERROR</strong>: [Port] is a number-only field between [1024,65535]');
-					return false
+					alert('<strong>ERROR</strong>: Root access required for a port between 1024-65535');
+					return true
 				}
 
 				var usr_v = cfgform.general_usr.value.replace(/\s+/g, ' ')

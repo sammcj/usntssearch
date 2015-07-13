@@ -14,7 +14,7 @@
 # ~ You should have received a copy of the GNU General Public License
 # ~ along with NZBmegasearch.  If not, see <http://www.gnu.org/licenses/>.
 # # ## # ## # ## # ## # ## # ## # ## # ## # ## # ## # ## # ## # ## # ## #    
-
+from urlparse import urlparse
 from flask import render_template
 from ConfigParser import SafeConfigParser
 import sys
@@ -146,7 +146,10 @@ class CfgSettings:
         if (len(nzbget_url)):
             if (nzbget_url[-1] == '/'):
                 nzbget_url = sab_url[:-1]
-        parser.set('general', 'nzbget_url', nzbget_url)
+	parsed_nzbget_url = urlparse(str(nzbget_url))
+	parser.set('general', 'nzbget_url', nzbget_url)
+        parser.set('general', 'nzbget_scheme', parsed_nzbget_url.scheme)
+        parser.set('general', 'nzbget_url_port', parsed_nzbget_url.netloc)
         parser.set('general', 'nzbget_user', request_form['nzbget_user'].replace(" ", ""))
         parser.set('general', 'nzbget_pwd', request_form['nzbget_pwd'].replace(" ", ""))
 

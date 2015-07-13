@@ -395,7 +395,7 @@ class DoParallelSearch:
 
         if ('nzbget_url' in self.cgen):
             if (len(self.cgen['nzbget_url'])):
-                rq_url = 'https://' + self.cgen['nzbget_user'] + ':' + self.cgen['nzbget_pwd'] + '@' + self.cgen['nzbget_url'] + '/xmlrpc'
+                rq_url = self.cgen['nzbget_scheme'] + '://' + self.cgen['nzbget_user'] + ':' + self.cgen['nzbget_pwd'] + '@' + self.cgen['nzbget_url_port'] + '/xmlrpc'
                 print rq_url
                 try:
                     server = ServerProxy(rq_url)

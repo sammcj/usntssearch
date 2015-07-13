@@ -377,7 +377,7 @@ class CfgSettings:
                      'search_default': gen_search_default,
                      'trends_qty': gen_trends_qty,
                      'sabnzbd_url': '', 'sabnzbd_api': '',
-                     'nzbget_url': '', 'nzbget_user': '', 'nzbget_pwd': '',
+                     'nzbget_url': '', 'nzbget_user': '', 'nzbget_pwd': '', 'nzbget_scheme': '', 'nzbget_url_port': '',
                      'general_apikey': '',
                      'general_restrictopt1': 0,
                      'general_dereferer': 0,
@@ -435,6 +435,10 @@ class CfgSettings:
                 self.cgen['nzbget_user'] = cst_parser.get('general', 'nzbget_user')
             if (cst_parser.has_option('general', 'nzbget_pwd')):
                 self.cgen['nzbget_pwd'] = cst_parser.get('general', 'nzbget_pwd')
+            if (cst_parser.has_option('general', 'nzbget_scheme')):
+                self.cgen['nzbget_scheme'] = cst_parser.get('general', 'nzbget_scheme')
+            if (cst_parser.has_option('general', 'nzbget_url_port')):
+                self.cgen['nzbget_url_port'] = cst_parser.get('general', 'nzbget_url_port')
             if (cst_parser.has_option('general', 'general_https')):
                 self.cgen['general_https'] = cst_parser.getint('general', 'general_https')
             if (cst_parser.has_option('general', 'port')):

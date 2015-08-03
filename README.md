@@ -1,4 +1,4 @@
-**NZBmegasearcH** edited by Mirabis
+**NZBmegasearcH**
 ======================
 
 *Aggregate automatically NZB search results. Easy. Quick. Clean.*

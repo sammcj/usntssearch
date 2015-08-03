@@ -56,7 +56,7 @@
 
 		<div id="container">
 			<div  class="titlemain"><a href='\'><img src="static/title.png" width="387" height="" alt="NZBmegasearcH"/></a></div>
-			<form action="{{ cgen['revproxy'] }}/s" method="get" class="form-wrapper-01">
+			<form action="{{cgen['revproxy']}}/s" method="get" class="form-wrapper-01">
 
 					<input type="text" id="search" placeholder="" name="q" value="{{ sstring }}">
 					<dl id="selcat_ddown" class="dropdown">
@@ -207,13 +207,21 @@
 						<td class="titlecell">
 							{% if send2sab_exist   -%}
 								<a href= "" id=tosab_lnk name=tosab_info{{ row['id'] }}>
-								<input type="hidden" value="{{ row['url_encr'] }}" name=tosab_info{{ row['id'] }}>
+								{% if cgen['use_warp'] == 1  -%}
+									<input type="hidden" value=" {{ row['url_encr'] }}" name=tosab_info{{ row['id'] }}>
+								{%- else %}
+									<input type="hidden" value=" {{ row['url'] }}" name=tosab_info{{ row['id'] }}>
+								{%- endif %}
 								<img src="static/sab2_16.png" style='vertical-align: middle;' width="16" height="16"/ name=tosab_info{{ row['id'] }}_img></a>
 							{%- endif %}
   
 							{% if send2nzbget_exist   -%}
 								<a href= "" id=tonzbget_lnk name=tonzbget_info{{ row['id'] }}>
-								<input type="hidden" value="{{ row['url_encr'] }}" name=tonzbget_info{{ row['id'] }}>
+								{% if cgen['use_warp'] == 1  -%}
+									<input type="hidden" value=" {{ row['url_encr'] }}" name=tonzbget_info{{ row['id'] }}>
+								{%- else %}
+									<input type="hidden" value=" {{ row['url'] }}" name=tonzbget_info{{ row['id'] }}>
+								{%- endif %}
 								<img src="static/nzb2_16.png" style='vertical-align: middle;' width="16" height="16"/ name=tonzbget_info{{ row['id'] }}_img></a>
 							{%- endif %}
 							<input type="checkbox" id="smartnzb" name="{{ row['id'] }}" class="nzbanalize_cbox">
@@ -261,18 +269,30 @@
 						<td class="titlecell">
 							{% if send2sab_exist   -%}
 								<a href= "" id=tosab_lnk name=tosab_info{{ row['id'] }}>
-								<input type="hidden" value="{{ row['url_encr'] }}" name=tosab_info{{ row['id'] }}>
+								{% if cgen['use_warp'] == 1  -%}
+									<input type="hidden" value=" {{ row['url_encr'] }}" name=tosab_info{{ row['id'] }}>
+								{%- else %}
+									<input type="hidden" value=" {{ row['url'] }}" name=tosab_info{{ row['id'] }}>
+								{%- endif %}
 								<img src="static/sab2_16.png" style='vertical-align: middle;' width="16" height="16"/ name=tosab_info{{ row['id'] }}_img></a>
 							{%- endif %}
 
 							{% if send2nzbget_exist   -%}
 								<a href= "" id=tonzbget_lnk name=tonzbget_info{{ row['id'] }}>
-								<input type="hidden" value="{{ row['url_encr'] }}" name=tonzbget_info{{ row['id'] }}>
+								{% if cgen['use_warp'] == 1  -%}
+									<input type="hidden" value=" {{ row['url_encr'] }}" name=tonzbget_info{{ row['id'] }}>
+								{%- else %}
+									<input type="hidden" value=" {{ row['url'] }}" name=tonzbget_info{{ row['id'] }}>
+								{%- endif %}
 								<img src="static/nzb2_16.png" style='vertical-align: middle;' width="16" height="16"/ name=tonzbget_info{{ row['id'] }}_img></a>
 							{%- endif %}
 							<input type="checkbox" id="smartnzb" name="{{ row['id'] }}" class="nzbanalize_cbox">
-							
-							<a href= "{{ row['url_encr'] }}" id=nzburl{{ row['id'] }}>{{ row['title'] }}</a> 
+
+							{% if cgen['use_warp'] == 1  -%}
+								<a href= "{{ row['url_encr'] }}" id=nzburl{{ row['id'] }}>{{ row['title'] }}</a>
+							{%- else %}
+								<a href= "{{ row['url'] }}" id=nzburl{{ row['id'] }}>{{ row['title'] }}</a>
+							{%- endif %}
 
 							{% if row['predb'] == 2 -%}
 							<span class = "predbcell">							

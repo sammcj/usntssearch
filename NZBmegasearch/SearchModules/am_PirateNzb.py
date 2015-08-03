@@ -18,6 +18,10 @@ import ConfigParser
 from SearchModule import *
 from urllib2 import urlparse
 import time
+import logging
+from collections import OrderedDict
+
+log = logging.getLogger(__name__)
 
 
 
@@ -65,88 +69,40 @@ class am_PirateNzb(SearchModule):
                 self.category_inv[str(val)] = prettyval
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
     def search(self, queryString, cfg): #OMG
-
-        urlParams = dict(
+        urlParams = OrderedDict(
             apikey=cfg['pwd'],
             t='search',
-            q=queryString,
+            #q=queryString,
             o='json',
             extended=1
         )
-
-        return self.search_internal(urlParams, self.queryURL, cfg)
-
-    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-    def search_internal(self, urlParams, urlq, cfg):
-        timestamp_s = time.time()
-
         try:
-            http_result = requests.get(url=urlq, params=urlParams, verify=False, timeout=cfg['timeout'])
+            http_result = requests.get(url=self.queryURL, params=urlParams, verify=False)
         except Exception as e:
-            log.critical(str(e))
-            if (cfg is not None):
-                cfg['retcode'] = [600, 'Server timeout', tout, self.name]
-            return []
-
-        timestamp_e = time.time()
-        log.info('TS ' + self.baseURL + " " + str(timestamp_e - timestamp_s))
-
-        try:
-            data = http_result.json()
-        except Exception as e:
-            if (cfg is not None):
-                cfg['retcode'] = [700, 'Server responded in unexpected format', timestamp_e - timestamp_s, self.name]
-            return []
-
+                print e
+                return []
+        data = http_result.json()
         parsed_data = []
-
-        if ('notice' in data):
-            log.info('Wrong api/pass ' + self.baseURL + " " + str(timestamp_e - timestamp_s))
-            if (cfg is not None):
-                cfg['retcode'] = [100, 'Incorrect user credentials', timestamp_e - timestamp_s, self.name]
-
-            return []
         for i in xrange(len(data)):
-            if (('guid' in data[i]) and ('title' in data[i]) and ('size' in data[i]) and (
-                'pubDate' in data[i]) and ('description' in data[i])):
-
-                category_found = {}
-                if ('category' in data[i]):
-                    val = str(data[i]['category'])
-                    if (val in self.category_inv):
-                        category_found[self.category_inv[val]] = 1
-                if (len(category_found) == 0):
-                    category_found['N/A'] = 1
-
-                d1 = {
-                    'title': data[i]['title'],
-                    'poster': 'poster',
-                    'size': int(data[i]['size']),
-                    'url': data[i]['link'],
-                    'filelist_preview': '',
-                    'group': 'alt.binaries',
-                    'posting_date_timestamp': int(data[i]['pubDate']),
-                    'release_comments': data[i]['description'],
-                    'categ': data[i]['category'],
-                    'ignore': 0,
-                    'provider': self.baseURL,
-                    'providertitle': self.name
-                }
-
-                parsed_data.append(d1)
-
-        if (cfg is not None):
-            returncode = self.default_retcode
-            if (len(parsed_data) == 0 and len(data) < 300):
-               returncode = self.checkreturn(data)
-            returncode[2] = timestamp_e - timestamp_s
-            returncode[3] = self.name
-            cfg['retcode'] = copy.deepcopy(returncode)
-
+            d1 = {
+				'title': data[i]['searchname'],
+				'poster': data[i]['fromname'],
+				'size': data[i]['size'],
+				'url': 'https://piratenzb.com/api?apikey='+cfg['pwd']+'&t=get&id='+ str(data[i]['nzbguid']),
+				'filelist_preview': '',
+                'group':  data[i]['group_name'],
+                'posting_date_timestamp': int(data[i]['postdate']),
+				'release_description': 'description',
+				'release_comments': 'comments',
+                'categ': data[i]['categoryid'],
+				'ignore':0,
+				'provider':self.baseURL
+			}
+            parsed_data.append(d1)
         return parsed_data
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
 
 

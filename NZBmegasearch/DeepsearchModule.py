@@ -127,7 +127,7 @@ class DeepSearch_one:
         self.br.set_handle_referer(True)
         self.br.set_handle_robots(False)
         self.br.addheaders = [('User-agent',
-                               'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+                               'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')]
         self.cur_cfg = cur_cfg
         self.timeout = cgen['default_timeout']
         self.baseURL = self.cur_cfg['url']
@@ -461,7 +461,7 @@ class DeepSearchGinga_one(DeepSearch_one):
         self.extra_cl = 0
         self.active = 0
         self.login = 1
-        self.basicurl = 'https://www.gingadaddy.com'
+        self.basicurl = 'http://www.gingadaddy.com'
 
         opts = {'builtin': self.builtin,
                 'active': self.active,

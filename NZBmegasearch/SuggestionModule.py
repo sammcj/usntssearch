@@ -28,6 +28,7 @@ import threading
 import logging
 import json
 
+
 # ~ BEST_K_YEAR = 5
 # ~ BEST_K_VOTES = 3
 MAX_TRENDS = 50
@@ -58,7 +59,7 @@ class SuggestionResponses:
             'Connection': 'keep-alive;',
             'Cache-Control': 'max-age=0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
             'Referer': 'http://services.tvrage.com/info.php?page=main',
             'Accept-Encoding': 'gzip,deflate,sdch',
             'Accept-Language': 'en-US,en;q=0.8',
@@ -335,7 +336,7 @@ class SuggestionResponses:
                           'year': str(data[i]['year']),
                           'rating_count': data[i]['ratings']['votes'],
                           'tvrage_id': data[i]['tvrage_id'],
-                          'tvdb_url': self.dereferer + 'http://thetvdb.com/?tab=series&id=' + data[i]['tvdb_id']}
+                          'tvdb_url': self.dereferer + 'http://thetvdb.com/?tab=series&id=' + str(data[i]['tvdb_id'])}
                 # ~ print p_data
                 # ~ print '------------------'
                 parsed_data.append(p_data)

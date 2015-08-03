@@ -277,6 +277,8 @@ class WrappersTestCase(WerkzeugTestCase):
 
     def test_user_agent_mixin(self):
         user_agents = [
+            ('Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'),
+            ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.124 Safari/537.36'),
             ('Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.11) '
              'Gecko/20071127 Firefox/2.0.0.11', 'firefox', 'macos', '2.0.0.11',
              'en-US'),

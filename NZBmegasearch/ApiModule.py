@@ -49,7 +49,7 @@ class ApiResponses:
             'Connection': 'keep-alive;',
             'Cache-Control': 'max-age=0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
             'Referer': 'http://services.tvrage.com/info.php?page=main',
             'Accept-Encoding': 'gzip,deflate,sdch',
             'Accept-Language': 'en-US,en;q=0.8',
@@ -425,9 +425,14 @@ class ApiResponses:
                 dt1 = datetime.datetime.fromtimestamp(int(results[i]['posting_date_timestamp']))
                 human_readable_time = dt1.strftime("%a, %d %b %Y %H:%M:%S")
 
+                if(self.cgen['revproxy'].find('http') != -1):
+                    url = self.cgen['revproxy'] + '/warp?x='+qryforwarp
+                else:
+                    url = self.rqurl + self.cgen['revproxy'] + '/warp?x='+qryforwarp
+
                 niceResults_row = {
                     # ~ 'url': results[i]['url'],
-                    'url': self.rqurl + self.cgen['revproxy'] + '/warp?x=' + qryforwarp,
+                    'url': url,
                     'encodedurl': uuid.uuid4(),
                     'title': results[i]['title'],
                     'filesize': results[i]['size'],

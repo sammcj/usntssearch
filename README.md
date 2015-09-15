@@ -11,6 +11,19 @@ All credits to the original authors.
 
 ## Updates
 
+
+**Changes in v0.55 (3/8/2015)**
++ Changed default timeouts (higher)
++ gingadaddy is no longer set to use https
++ updated jQuery to 2.1.4
++ added option to disable url warping
++ changed user agents
++ fixed piratenzb not returning any results
++ merged fix from cauchy49:cauchy49-patch-api-url-with-proxy-1
+
+**Changes in v0.54**
++ Fix issue in tvdbid being an int and it expecting a string
+
 **Changes in v0.53 (20/5/2015)**
 + no longer asks for the wrong login/pw on accessing the config
 + Little code cleanup & reformatting

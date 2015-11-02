@@ -216,7 +216,7 @@ class ApiResponses:
                 return self.generate_tvserie_nabresponse(tvrage_show)
             else:
                 return render_template('api_error.html')
-        if (self.args.has_key('tvdbid')):
+        elif (self.args.has_key('tvdbid')):
             # ~ print 'requested series ID'
             # ~ request tvdbid
             tvrage_show = self.tvrage_getshowinfo(self.args['tvdbid'],'tvdb')

@@ -1,6 +1,20 @@
 **NZBmegasearcH**
 ======================
 
+## Important Note
+To use this version of NZBmegasearcH with another program (SickBeard, Sonarr) you need to add a Trakt.tv API key.
+
+Create and apporve a new application at the [Trakt.tv API Applications page.](https://trakt.tv/oauth/applications/)
+
+Insert the "Client ID" into the file NZBmegasearch/ApiModules.py where it has "trakt-api-key".
+
+> 'trakt-api-key': ''
+
+to
+
+> 'trakt-api-key': 'YOUR CLIENT ID HERE'
+
+
 *Aggregate automatically NZB search results. Easy. Quick. Clean.*
 
 NZBmegasearcH collects all your (not only) newznab-based accounts to one place. It is your meta-search engine and your SB, CP unique NZB provider.

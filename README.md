@@ -1,6 +1,3 @@
-**NZBmegasearcH**
-======================
-
 ## Important Note
 To use this version of NZBmegasearcH with another program (SickBeard, Sonarr) you need to add a Trakt.tv API key.
 
@@ -14,6 +11,9 @@ to
 
 > 'trakt-api-key': 'YOUR CLIENT ID HERE'
 
+
+**NZBmegasearcH**
+======================
 
 *Aggregate automatically NZB search results. Easy. Quick. Clean.*
 

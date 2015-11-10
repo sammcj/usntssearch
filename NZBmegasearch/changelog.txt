@@ -1,6 +1,12 @@
 Updates
 ================
 
+Changes in v0.56
++ Merged Undeadhunters NzbGet fix
++ Merged HackedServers rearranged search priority + tvbid (replaced)
++ Replaced tvbid by tvmaze as workaround
++ removal of AnimeNzb
+
 Changes in v0.55
 + Changed default timeouts (higher)
 + gingadaddy is no longer set to use https

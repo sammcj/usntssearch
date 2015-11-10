@@ -10,7 +10,12 @@ NZBmegasearcH collects all your (not only) newznab-based accounts to one place. 
 All credits to the original authors. 
 
 ## Updates
-
+**Changes in v0.56 (11/11/2015)**
++ Merged Undeadhunters NzbGet fix
++ Merged HackedServers rearranged search priority + tvbid (replaced)
++ Replaced tvbid/tvrage by tvmaze as workaround
++ implemented thetvdb lookup for (possible) future implementations
++ removal of AnimeNzb
 
 **Changes in v0.55 (3/8/2015)**
 + Changed default timeouts (higher)

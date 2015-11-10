@@ -405,40 +405,67 @@ class DoParallelSearch:
                     return 0
 
                 try:
-                    myrq = args['data'].replace("warp?", "")
-                    pulrlparse = dict(urlparse.parse_qsl(myrq))
-                    if ('m' in args):
-                        pulrlparse['m'] = args['m']
 
-                    print pulrlparse
-                    res = self.wrp.beam(pulrlparse)
+                    # ~ print args
+                    
+                    NZBFilename = 'nzbFromNZNMegaSearch'
+                    urlToFetch = args['data']
+                    print 'Fetching URL preStrip: "' + urlToFetch + '"'
+                    urlToFetch = urlToFetch.strip()
+                    print 'Fetching URL: "' + urlToFetch + '"'
+
+
+                    
+                    # Download file to send to NZBGet 
+                    nzbFileRequest = requests.get(urlToFetch, verify=False)
+                    
+                    nzbcontent64 = standard_b64encode(nzbFileRequest.content)
+
+                    # Get Filename from file header
+                    rheaders = nzbFileRequest.headers['content-disposition']
+                    idxsfind = rheaders.find('=')
+                    NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
+
+
+                    # Send to NZBGet 
+                    sendToServer = server.append(NZBFilename, nzbcontent64,'',0,False,False,'',0,'SCORE')
+                    
+                    print 'Send to Server code: ' + str(sendToServer)
+                    
+                    #myrq = args['data'].replace("warp?", "")
+                    #pulrlparse = dict(urlparse.parse_qsl(myrq))
+                    #if ('m' in args):
+                    #    pulrlparse['m'] = args['m']
+
+                    #print pulrlparse
+                    #res = self.wrp.beam(pulrlparse)
                     # ~ print res.headers
 
-                    if ('Location' in res.headers):
-                        # ~ for redirect
-                        log.info('tonzbget: Warp is treated as 302 redirector')
-                        geturl_rq = res.headers['Location']
-                        r = requests.get(geturl_rq, verify=False)
-                        nzbname = 'nzbfromNZBmegasearcH'
-                        if ('content-disposition' in r.headers):
-                            rheaders = r.headers['content-disposition']
-                            idxsfind = rheaders.find('=')
-                            if (idxsfind != -1):
-                                nzbname = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
-                        nzbcontent64 = standard_b64encode(r.content)
-                        server.append(nzbname, '', False, nzbcontent64)
-                    else:
-                        # ~ for downloaded
-                        log.info('tonzbget: Warp gets full content')
-                        nzbname = 'nzbfromNZBmegasearcH'
-                        if ('content-disposition' in res.headers):
-                            rheaders = res.headers['content-disposition']
-                            idxsfind = rheaders.find('=')
-                            if (idxsfind != -1):
-                                nzbname = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
-                        # ~ print res.data
-                        nzbcontent64 = standard_b64encode(res.data)
-                        server.append(nzbname, '', False, nzbcontent64)
+                    #if ('Location' in res.headers):
+                    #    # ~ for redirect
+                    #    log.info('tonzbget: Warp is treated as 302 redirector')
+                    #    geturl_rq = res.headers['Location']
+                    #    r = requests.get(geturl_rq, verify=False)
+                    #    nzbname = 'nzbfromNZBmegasearcH'
+                    #    if ('content-disposition' in r.headers):
+                    #        rheaders = r.headers['content-disposition']
+                    #        idxsfind = rheaders.find('=')
+                    #        if (idxsfind != -1):
+                    #            nzbname = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
+                    #    nzbcontent64 = standard_b64encode(r.content)
+                    #    server.append(nzbname, '', False, nzbcontent64)
+                    #else:
+                    #    # ~ for downloaded
+                    #    log.info('tonzbget: Warp gets full content')
+                    #    nzbname = 'nzbfromNZBmegasearcH'
+                    #    if ('content-disposition' in res.headers):
+                    #        rheaders = res.headers['content-disposition']
+                    #        idxsfind = rheaders.find('=')
+                    #        if (idxsfind != -1):
+                    #            nzbname = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
+                    #    # ~ print res.data
+                    #    nzbcontent64 = standard_b64encode(res.data)
+                    #    server.append(nzbname, '', False, nzbcontent64)
 
 
                 except Exception as e:

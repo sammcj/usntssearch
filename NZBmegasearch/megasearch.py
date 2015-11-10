@@ -410,7 +410,7 @@ class DoParallelSearch:
                     if ('m' in args):
                         pulrlparse['m'] = args['m']
 
-                    # ~ print pulrlparse
+                    print pulrlparse
                     res = self.wrp.beam(pulrlparse)
                     # ~ print res.headers
 

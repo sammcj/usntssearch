@@ -255,6 +255,6 @@ class Warper:
 
             log.info('WARPNGD: ' + decodedurl)
 
-            # ~ print response.headers
+            print response.headers
 
             return response

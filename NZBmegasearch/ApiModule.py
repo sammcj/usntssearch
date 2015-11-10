@@ -205,16 +205,31 @@ class ApiResponses:
         if (self.args.has_key('rid')):
             # ~ print 'requested series ID'
             # ~ request rage
-            tvrage_show = self.tvrage_getshowinfo(self.args['rid'])
+            tvrage_show = self.tvmaze_getshowinfo(self.args['rid'], 'tvrage')
             if (len(tvrage_show['showtitle'])):
                 return self.generate_tvserie_nabresponse(tvrage_show)
             else:
                 return render_template('api_error.html')
+        elif (self.args.has_key('tvdbid')):
+            # ~ print 'requested series ID'
+            # ~ request tvdbid
+            tvrage_show = self.tvmaze_getshowinfo(self.args['tvdbid'], 'thetvdb')
+            if (len(tvrage_show['showtitle'])):
+                return self.generate_tvserie_nabresponse(tvrage_show)
+            else:
+                return render_template('api_error.html')
+        elif (self.args.has_key('q')):
+            query = {'showtitle': self.args['q']}
+            return self.generate_tvserie_nabresponse(query)
         elif (self.args.has_key('cat')):
             if ((self.args['cat'].find('5030') != -1) or (self.args['cat'].find('5040') != -1)):
                 return self.generate_tvserie_nabresponse_broadcast();
             else:
                 return render_template('api_error.html')
+            # if user searches for a query, look it up
+        # use userdefined category
+        elif (self.args.has_key('cat')):
+            return self.generate_tvserie_nabresponse_broadcast(self.args['cat']);
         else:
             return render_template('api_default.html')
 
@@ -270,12 +285,12 @@ class ApiResponses:
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-    def tvrage_getshowinfo(self, rid):
+    def tvmaze_getshowinfo(self, rid, idtype):
         parsed_data = {'showtitle': ''}
 
         url_tvrage = 'http://api.tvmaze.com/lookup/shows'
 
-        urlParams = { 'tvrage': rid }
+        urlParams = { idtype : rid }
         # ~ loading
         try:
             request = requests.get(url=url_tvrage, params=urlParams, verify=False, timeout=self.timeout,
@@ -296,9 +311,6 @@ class ApiResponses:
 
         if (showtitle is not None):
             parsed_data['showtitle'] = showtitle
-
-        if (data['externals'] is not None and data['externals']['thetvdb'] is not None):
-            parsed_data['thetvdb_id'] = data['externals']['thetvdb'] #might be handy for future
 
         return parsed_data
 

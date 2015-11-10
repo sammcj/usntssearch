@@ -206,20 +206,36 @@ class ApiResponses:
 
 
     #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
     def sickbeard_req(self):
-        if(self.args.has_key('rid')):
-            #~ print 'requested series ID'
-            #~ request rage
-            tvrage_show = self.tvrage_getshowinfo(self.args['rid'])
-            if(len(tvrage_show['showtitle'])):
+        if (self.args.has_key('rid')):
+            # ~ print 'requested series ID'
+            # ~ request rage
+            tvrage_show = self.tvrage_getshowinfo(self.args['rid'],'tvrage')
+            if (len(tvrage_show['showtitle'])):
                 return self.generate_tvserie_nabresponse(tvrage_show)
             else:
                 return render_template('api_error.html')
-        elif(self.args.has_key('cat')):
-            if((self.args['cat'].find('5030') != -1) or (self.args['cat'].find('5040') != -1)):
+        elif (self.args.has_key('tvdbid')):
+            # ~ print 'requested series ID'
+            # ~ request tvdbid
+            tvrage_show = self.tvrage_getshowinfo(self.args['tvdbid'],'tvdb')
+            if (len(tvrage_show['showtitle'])):
+                return self.generate_tvserie_nabresponse(tvrage_show)
+            else:
+                return render_template('api_error.html')
+        elif (self.args.has_key('q')):
+            query = {'showtitle': self.args['q']}
+            return self.generate_tvserie_nabresponse(query)
+        elif (self.args.has_key('cat')):
+            if ((self.args['cat'].find('5030') != -1) or (self.args['cat'].find('5040') != -1)):
                 return self.generate_tvserie_nabresponse_broadcast();
             else:
                 return render_template('api_error.html')
+            # if user searches for a query, look it up
+        # use userdefined category
+        elif (self.args.has_key('cat')):
+            return self.generate_tvserie_nabresponse_broadcast(self.args['cat']);
         else:
             return render_template('api_default.html')
 
@@ -275,16 +291,15 @@ class ApiResponses:
       
     #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
+    def tvrage_getshowinfo(self, rid, querytype):
+                parsed_data = {'showtitle': ''}
 
-    def tvrage_getshowinfo(self, rid):
-        parsed_data = {'showtitle': ''}
-
-        url_tvrage = 'https://api-v2launch.trakt.tv/search'
-        urlParams = {'id_type': 'tvrage', 'id': rid}
-        request = requests.get(url=url_tvrage, params=urlParams, timeout=self.timeout, headers=self.tvrage_rqheaders)
-        data = request.json()
-        parsed_data["showtitle"] = data[0]["show"]["title"]
-        return parsed_data
+                url_tvrage = 'https://api-v2launch.trakt.tv/search'
+                urlParams = {'id_type': querytype, 'id': rid}
+                request = requests.get(url=url_tvrage, params=urlParams, timeout=self.timeout, headers=self.tvrage_r$
+                data = request.json()
+                parsed_data["showtitle"] = data[0]["show"]["title"]
+                return parsed_data
         
     #~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 

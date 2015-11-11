@@ -1,3 +1,5 @@
+Doesn't seem to play ball with automation tools... thinking of an alternative/fresh start
+
 **NZBmegasearcH**
 ======================
 

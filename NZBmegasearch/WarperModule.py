@@ -120,7 +120,22 @@ class Warper:
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_localwarp(self, urltouse):
-        return redirect(urltouse, 302)
+        #return redirect(urltouse, 302)
+        print "using URL " + str(urltouse)
+        
+        print "Trying to get file"
+        nzbFileRequest = requests.get(urltouse, verify=False)
+        print "Did we get file?"
+        
+        # Get Filename from file header
+        rheaders = nzbFileRequest.headers['content-disposition']
+        idxsfind = rheaders.find('=')
+        NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
+
+
+        # Send to client
+        print "Let's send it to the people!"
+        return send_file(nzbFileRequest, mimetype='application/x-nzb;', as_attachment=True, attachment_filename=NZBFilename, add_etags=False, cache_timeout=None, conditional=False)
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_cookie(self, urltouse, args):
@@ -220,7 +235,7 @@ class Warper:
         response = Response('Hey there!')
         response.headers['X-Accel-Redirect'] = '/warpme/' + urltouse
         response.headers['Content-Type'] = 'application/x-nzb;'
-
+        
         return response
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -229,7 +244,7 @@ class Warper:
 
         if ('m' in arguments and 'x' in arguments):
             decodedurl = self.chash64_decode(arguments['x'])
-
+            
             if (len(decodedurl) == 0):
                 return -1
             rprnt = all(c in string.printable for c in decodedurl)
@@ -254,7 +269,5 @@ class Warper:
                 response = self.beam_notenc(decodedurl)
 
             log.info('WARPNGD: ' + decodedurl)
-
-            print response.headers
 
             return response

@@ -166,8 +166,7 @@ class ApiResponses:
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     def proxy_NZB_file(self):
-        # ~ fullurl = self.wrp.chash64_decode(self.args['id'])
-        # ~ print fullurl
+
         arguments = {}
         sq = self.args['id'].split('&');
         arguments['x'] = sq[0]

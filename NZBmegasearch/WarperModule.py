@@ -28,6 +28,8 @@ import threading
 import logging
 import base64
 import SearchModule
+import sys
+import StringIO
 
 from random import shuffle, seed
 
@@ -120,7 +122,27 @@ class Warper:
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_localwarp(self, urltouse):
-        return redirect(urltouse, 302)
+        print "using URL " + str(urltouse)
+        
+        #print "Trying to get file"
+        try:
+            r = requests.get(urltouse, stream=True)
+            print "Got file" 
+        except:
+            print "Error Getting File"
+            print sys.exc_info()
+        #print "Did we get file?"
+        print r.headers
+
+        strIO = StringIO.StringIO()
+        strIO.write(r.content)
+        strIO.seek(0)                    
+        
+        rheaders = r.headers['content-disposition']
+        idxsfind = rheaders.find('=')
+        NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
+
+        return send_file(strIO,NZBFilename,as_attachment=true)
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_cookie(self, urltouse, args):
@@ -255,6 +277,5 @@ class Warper:
 
             log.info('WARPNGD: ' + decodedurl)
 
-            print response.headers
 
             return response

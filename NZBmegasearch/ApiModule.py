@@ -30,7 +30,6 @@ import urllib2
 import os
 import logging
 import copy
-from base64 import standard_b64encode
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +70,7 @@ class ApiResponses:
     def dosearch(self, arguments, hname):
         self.args = arguments
         self.rqurl = hname.scheme + '://' + hname.netloc
-        # print arguments
+        print arguments
 
         # ~ restore originals
         self.cfg = copy.deepcopy(self.cfg_cpy)
@@ -90,7 +89,6 @@ class ApiResponses:
                 # ~ response = self.headphones_req()
             elif (typesearch == 'get'):
                 filetosend = self.proxy_NZB_file()
-                # Going to be returning the file back to the requester                
                 return filetosend
             else:
                 print '>> UNKNOWN REQ -- ignore'
@@ -168,17 +166,7 @@ class ApiResponses:
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     def proxy_NZB_file(self):
-        #print "Let's get this file back! "
-        #fullurl = self.wrp.chash64_decode(self.args['id'])
-        #try: 
-        #    r = requests.get(fullurl, stream=True, data=data)
-        #    print "File has been getten!"
-        #except:
-        #    print "Error requesting files"
-        
-        #print r.headers
 
-        #print "full URL: " + fullurl
         arguments = {}
         sq = self.args['id'].split('&');
         arguments['x'] = sq[0]
@@ -194,8 +182,6 @@ class ApiResponses:
                 # ~ if('m' in self.args):
                 # ~ arguments['m'] = self.args['m']
         return self.wrp.beam(arguments)
-        #return         
-        
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def couchpotato_req(self):

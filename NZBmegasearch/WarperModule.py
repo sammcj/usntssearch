@@ -133,7 +133,7 @@ class Warper:
             print sys.exc_info()
         #print "Did we get file?"
         print r.headers
-	#print r.text
+
         strIO = StringIO.StringIO()
         strIO.write(r.content)
         strIO.seek(0)                    
@@ -143,9 +143,6 @@ class Warper:
         NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
 
         return send_file(strIO,NZBFilename,as_attachment=true)
-        
-        #return redirect(urltouse, 302)
-
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_cookie(self, urltouse, args):
@@ -245,7 +242,7 @@ class Warper:
         response = Response('Hey there!')
         response.headers['X-Accel-Redirect'] = '/warpme/' + urltouse
         response.headers['Content-Type'] = 'application/x-nzb;'
-        
+
         return response
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -254,7 +251,7 @@ class Warper:
 
         if ('m' in arguments and 'x' in arguments):
             decodedurl = self.chash64_decode(arguments['x'])
-            
+
             if (len(decodedurl) == 0):
                 return -1
             rprnt = all(c in string.printable for c in decodedurl)
@@ -279,5 +276,6 @@ class Warper:
                 response = self.beam_notenc(decodedurl)
 
             log.info('WARPNGD: ' + decodedurl)
+
 
             return response

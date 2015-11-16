@@ -431,7 +431,6 @@ class DoParallelSearch:
                     sendToServer = server.append(NZBFilename, nzbcontent64,'',0,False,False,'',0,'SCORE')
                     
                     print 'Send to Server code: ' + str(sendToServer)
-
                 except Exception as e:
                     # ~ print 'Error connecting server or downloading nzb '+str(e)
                     log.info('Error connecting server or downloading nzb: ' + str(e))
@@ -639,7 +638,7 @@ class DoParallelSearch:
         scat = ''
         if ('selcat' in params['args']):
             scat = params['args']['selcat']
-        print "use warp: " + str(self.cgen['use_warp'])
+
         return render_template('main_page.html', results=niceResults, exist=existduplicates,
                                vr=ver_notify, args=args, nc=svalid, sugg=sugg_list,
                                speed_class_sel=speed_class_sel,

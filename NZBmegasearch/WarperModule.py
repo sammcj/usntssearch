@@ -28,6 +28,8 @@ import threading
 import logging
 import base64
 import SearchModule
+import sys
+import StringIO
 
 from random import shuffle, seed
 
@@ -120,22 +122,30 @@ class Warper:
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_localwarp(self, urltouse):
-        #return redirect(urltouse, 302)
         print "using URL " + str(urltouse)
         
-        print "Trying to get file"
-        nzbFileRequest = requests.get(urltouse, verify=False)
-        print "Did we get file?"
+        #print "Trying to get file"
+        try:
+            r = requests.get(urltouse, stream=True)
+            print "Got file" 
+        except:
+            print "Error Getting File"
+            print sys.exc_info()
+        #print "Did we get file?"
+        print r.headers
+	#print r.text
+        strIO = StringIO.StringIO()
+        strIO.write(r.content)
+        strIO.seek(0)                    
         
-        # Get Filename from file header
-        rheaders = nzbFileRequest.headers['content-disposition']
+        rheaders = r.headers['content-disposition']
         idxsfind = rheaders.find('=')
         NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
 
+        return send_file(strIO,NZBFilename,as_attachment=true)
+        
+        #return redirect(urltouse, 302)
 
-        # Send to client
-        print "Let's send it to the people!"
-        return send_file(nzbFileRequest, mimetype='application/x-nzb;', as_attachment=True, attachment_filename=NZBFilename, add_etags=False, cache_timeout=None, conditional=False)
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
     def beam_cookie(self, urltouse, args):

@@ -168,8 +168,16 @@ class ApiResponses:
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     def proxy_NZB_file(self):
-        print "Let's get this file back! "
+        #print "Let's get this file back! "
         #fullurl = self.wrp.chash64_decode(self.args['id'])
+        #try: 
+        #    r = requests.get(fullurl, stream=True, data=data)
+        #    print "File has been getten!"
+        #except:
+        #    print "Error requesting files"
+        
+        #print r.headers
+
         #print "full URL: " + fullurl
         arguments = {}
         sq = self.args['id'].split('&');
@@ -185,11 +193,8 @@ class ApiResponses:
                 # ~ print self.args
                 # ~ if('m' in self.args):
                 # ~ arguments['m'] = self.args['m']
-        
-        
-        
         return self.wrp.beam(arguments)
-        
+        #return         
         
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~

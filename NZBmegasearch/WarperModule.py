@@ -143,7 +143,7 @@ class Warper:
         idxsfind = rheaders.find('=')
         NZBFilename = rheaders[idxsfind + 1:len(rheaders)].replace('"', '')
 
-        return send_file(strIO,NZBFilename,as_attachment=true)
+        return send_file(strIO,NZBFilename,as_attachment=False)
 
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~

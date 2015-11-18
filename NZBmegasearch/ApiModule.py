@@ -30,6 +30,7 @@ import urllib2
 import os
 import logging
 import copy
+import uuid
 
 log = logging.getLogger(__name__)
 
@@ -434,7 +435,7 @@ class ApiResponses:
 
                 # ~ non CP request generate might errors if no url is found in the permalink
                 if (self.typesearch != 0):
-                    niceResults_row['encodedurl'] = 'http://bogus.gu/bog'
+                    niceResults_row['encodedurl'] = self.rqurl + '/' + str(uuid.uuid4())
 
                 niceResults.append(niceResults_row)
 

@@ -430,7 +430,7 @@ class ApiResponses:
                     'filesize': results[i]['size'],
                     'age': human_readable_time,
                     'providertitle': results[i]['providertitle'],
-                    'providerurl': results[i]['provider']
+                    'providerurl': 'http://www.derefer.me/?' + results[i]['release_comments']
                 }
 
                 # ~ non CP request generate might errors if no url is found in the permalink

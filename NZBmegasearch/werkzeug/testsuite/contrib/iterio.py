@@ -15,7 +15,6 @@ from werkzeug.contrib.iterio import IterIO, greenlet
 
 
 class IterOTestSuite(WerkzeugTestCase):
-
     def test_basic(self):
         io = IterIO(["Hello", "World", "1", "2", "3"])
         assert io.tell() == 0
@@ -51,13 +50,13 @@ class IterOTestSuite(WerkzeugTestCase):
 
 
 class IterITestSuite(WerkzeugTestCase):
-
     def test_basic(self):
         def producer(out):
             out.write('1\n')
             out.write('2\n')
             out.flush()
             out.write('3\n')
+
         iterable = IterIO(producer)
         self.assert_equal(iterable.next(), '1\n2\n')
         self.assert_equal(iterable.next(), '3\n')

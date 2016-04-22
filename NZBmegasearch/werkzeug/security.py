@@ -20,17 +20,17 @@ from random import SystemRandom
 # (or factory functions with changed API)
 try:
     from hashlib import sha1, md5
+
     _hash_funcs = _hash_mods = {'sha1': sha1, 'md5': md5}
     _sha1_mod = sha1
     _md5_mod = md5
 except ImportError:
     import sha as _sha1_mod, md5 as _md5_mod
+
     _hash_mods = {'sha1': _sha1_mod, 'md5': _md5_mod}
     _hash_funcs = {'sha1': _sha1_mod.new, 'md5': _md5_mod.new}
 
-
 SALT_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-
 
 _sys_rng = SystemRandom()
 _os_alt_seps = list(sep for sep in [os.path.sep, os.path.altsep]

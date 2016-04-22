@@ -17,16 +17,15 @@ from jinja2.visitor import NodeVisitor
 from jinja2.exceptions import TemplateAssertionError
 from jinja2.utils import Markup, concat, escape, is_python_keyword, next
 
-
 operators = {
-    'eq':       '==',
-    'ne':       '!=',
-    'gt':       '>',
-    'gteq':     '>=',
-    'lt':       '<',
-    'lteq':     '<=',
-    'in':       'in',
-    'notin':    'not in'
+    'eq': '==',
+    'ne': '!=',
+    'gt': '>',
+    'gteq': '>=',
+    'lt': '<',
+    'lteq': '<=',
+    'in': 'in',
+    'notin': 'not in'
 }
 
 try:
@@ -48,9 +47,13 @@ else:
 # does if 0: dummy(x) get us x into the scope?
 def unoptimize_before_dead_code():
     x = 42
+
     def f():
         if 0: dummy(x)
+
     return f
+
+
 unoptimize_before_dead_code = bool(unoptimize_before_dead_code().func_closure)
 
 
@@ -283,7 +286,7 @@ class FrameIdentifierVisitor(NodeVisitor):
         elif node.ctx == 'param':
             self.identifiers.declared_parameter.add(node.name)
         elif node.ctx == 'load' and not \
-             self.identifiers.is_declared(node.name):
+                self.identifiers.is_declared(node.name):
             self.identifiers.undeclared.add(node.name)
 
     def visit_If(self, node):
@@ -364,7 +367,6 @@ class CompilerExit(Exception):
 
 
 class CodeGenerator(NodeVisitor):
-
     def __init__(self, environment, name, filename, stream=None,
                  defer_init=False):
         if stream is None:
@@ -761,6 +763,7 @@ class CodeGenerator(NodeVisitor):
         eval_ctx = EvalContext(self.environment, self.name)
 
         from jinja2.runtime import __all__ as exported
+
         self.writeline('from __future__ import division')
         self.writeline('from jinja2.runtime import ' + ', '.join(exported))
         if not unoptimize_before_dead_code:
@@ -869,7 +872,7 @@ class CodeGenerator(NodeVisitor):
                 level += 1
         context = node.scoped and 'context.derived(locals())' or 'context'
         self.writeline('for event in context.blocks[%r][0](%s):' % (
-                       node.name, context), node)
+            node.name, context), node)
         self.indent()
         self.simple_write('event', frame)
         self.outdent(level)
@@ -1007,10 +1010,10 @@ class CodeGenerator(NodeVisitor):
                            'included_template.__name__, '
                            'name=%r)' %
                            (alias, 'the template %%r (imported on %s) does '
-                           'not export the requested name %s' % (
+                                   'not export the requested name %s' % (
                                 self.position(node),
                                 repr(name)
-                           ), name))
+                            ), name))
             self.outdent()
             if frame.toplevel:
                 var_names.append(alias)
@@ -1049,8 +1052,8 @@ class CodeGenerator(NodeVisitor):
         # is necessary if the loop is in recursive mode if the special loop
         # variable is accessed in the body.
         extended_loop = node.recursive or 'loop' in \
-                        find_undeclared(node.iter_child_nodes(
-                            only=('body',)), ('loop',))
+                                          find_undeclared(node.iter_child_nodes(
+                                              only=('body',)), ('loop',))
 
         # if we don't have an recursive loop we have to find the shadowed
         # variables at that point.  Because loops can be nested but the loop
@@ -1083,13 +1086,13 @@ class CodeGenerator(NodeVisitor):
         # loop is accessing the special loop variable and no parent loop
         # exists.
         if 'loop' not in aliases and 'loop' in find_undeclared(
-           node.iter_child_nodes(only=('else_', 'test')), ('loop',)):
+                node.iter_child_nodes(only=('else_', 'test')), ('loop',)):
             self.writeline("l_loop = environment.undefined(%r, name='loop')" %
-                ("'loop' is undefined. the filter section of a loop as well "
-                 "as the else block don't have access to the special 'loop'"
-                 " variable of the current loop.  Because there is no parent "
-                 "loop it's undefined.  Happened in loop on %s" %
-                 self.position(node)))
+                           ("'loop' is undefined. the filter section of a loop as well "
+                            "as the else block don't have access to the special 'loop'"
+                            " variable of the current loop.  Because there is no parent "
+                            "loop it's undefined.  Happened in loop on %s" %
+                            self.position(node)))
 
         self.writeline('for ', node)
         self.visit(node.target, loop_frame)
@@ -1421,7 +1424,7 @@ class CodeGenerator(NodeVisitor):
     def binop(operator, interceptable=True):
         def visitor(self, node, frame):
             if self.environment.sandboxed and \
-               operator in self.environment.intercepted_binops:
+                            operator in self.environment.intercepted_binops:
                 self.write('environment.call_binop(context, %r, ' % operator)
                 self.visit(node.left, frame)
                 self.write(', ')
@@ -1432,18 +1435,20 @@ class CodeGenerator(NodeVisitor):
                 self.write(' %s ' % operator)
                 self.visit(node.right, frame)
             self.write(')')
+
         return visitor
 
     def uaop(operator, interceptable=True):
         def visitor(self, node, frame):
             if self.environment.sandboxed and \
-               operator in self.environment.intercepted_unops:
+                            operator in self.environment.intercepted_unops:
                 self.write('environment.call_unop(context, %r, ' % operator)
                 self.visit(node.node, frame)
             else:
                 self.write('(' + operator)
                 self.visit(node.node, frame)
             self.write(')')
+
         return visitor
 
     visit_Add = binop('+')
@@ -1552,8 +1557,8 @@ class CodeGenerator(NodeVisitor):
             if node.expr2 is not None:
                 return self.visit(node.expr2, frame)
             self.write('environment.undefined(%r)' % ('the inline if-'
-                       'expression on %s evaluated to false and '
-                       'no else section was defined.' % self.position(node)))
+                                                      'expression on %s evaluated to false and '
+                                                      'no else section was defined.' % self.position(node)))
 
         if not have_condexpr:
             self.write('((')

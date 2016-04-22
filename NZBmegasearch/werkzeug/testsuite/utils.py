@@ -24,7 +24,6 @@ from werkzeug.test import Client, run_wsgi_app
 
 
 class GeneralUtilityTestCase(WerkzeugTestCase):
-
     def test_redirect(self):
         resp = utils.redirect(u'/füübär')
         assert '/f%C3%BC%C3%BCb%C3%A4r' in resp.data
@@ -51,10 +50,12 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
 
     def test_cached_property(self):
         foo = []
+
         class A(object):
             def prop(self):
                 foo.append(42)
                 return 42
+
             prop = utils.cached_property(prop)
 
         a = A()
@@ -64,10 +65,12 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         assert foo == [42]
 
         foo = []
+
         class A(object):
             def _prop(self):
                 foo.append(42)
                 return 42
+
             prop = utils.cached_property(_prop, name='prop')
             del _prop
 
@@ -87,14 +90,16 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
             number = utils.environ_property('number', load_func=int)
             broken_number = utils.environ_property('broken_number', load_func=int)
             date = utils.environ_property('date', None, parse_date, http_date,
-                                    read_only=False)
+                                          read_only=False)
             foo = utils.environ_property('foo')
 
         a = A()
         assert a.string == 'abc'
         assert a.missing == 'spam'
+
         def test_assign():
             a.read_only = 'something'
+
         self.assert_raises(AttributeError, test_assign)
         assert a.number == 42
         assert a.broken_number == None
@@ -106,6 +111,7 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         class Foo(str):
             def __html__(self):
                 return unicode(self)
+
         assert utils.escape(None) == ''
         assert utils.escape(42) == '42'
         assert utils.escape('<>') == '&lt;&gt;'
@@ -132,13 +138,17 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         self.assert_raises(StopIteration, app_iter.next)
 
         got_close = []
+
         class CloseIter(object):
             def __init__(self):
                 self.iterated = False
+
             def __iter__(self):
                 return self
+
             def close(self):
                 got_close.append(None)
+
             def next(self):
                 if self.iterated:
                     raise StopIteration()
@@ -163,6 +173,7 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
     def test_import_string(self):
         import cgi
         from werkzeug.debug import DebuggedApplication
+
         assert utils.import_string('cgi.escape') is cgi.escape
         assert utils.import_string(u'cgi.escape') is cgi.escape
         assert utils.import_string('cgi:escape') is cgi.escape
@@ -175,8 +186,8 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
 
     def test_find_modules(self):
         assert list(utils.find_modules('werkzeug.debug')) == \
-            ['werkzeug.debug.console', 'werkzeug.debug.repr',
-             'werkzeug.debug.tbtools']
+               ['werkzeug.debug.console', 'werkzeug.debug.repr',
+                'werkzeug.debug.tbtools']
 
     def test_html_builder(self):
         html = utils.html
@@ -202,9 +213,9 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         assert html.input(disabled=None) == '<input>'
         assert xhtml.input(disabled=None) == '<input />'
         assert html.script('alert("Hello World");') == '<script>' \
-            'alert("Hello World");</script>'
+                                                       'alert("Hello World");</script>'
         assert xhtml.script('alert("Hello World");') == '<script>' \
-            '/*<![CDATA[*/alert("Hello World");/*]]>*/</script>'
+                                                        '/*<![CDATA[*/alert("Hello World");/*]]>*/</script>'
 
     def test_validate_arguments(self):
         take_none = lambda: None
@@ -217,13 +228,13 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         assert utils.validate_arguments(take_two_one_default, (1, 2), {}) == ((1, 2), {})
 
         self.assert_raises(utils.ArgumentValidationError,
-            utils.validate_arguments, take_two, (), {})
+                           utils.validate_arguments, take_two, (), {})
 
         assert utils.validate_arguments(take_none, (1, 2,), {'c': 3}) == ((), {})
         self.assert_raises(utils.ArgumentValidationError,
-               utils.validate_arguments, take_none, (1,), {}, drop_extra=False)
+                           utils.validate_arguments, take_none, (1,), {}, drop_extra=False)
         self.assert_raises(utils.ArgumentValidationError,
-               utils.validate_arguments, take_none, (), {'a': 1}, drop_extra=False)
+                           utils.validate_arguments, take_none, (), {'a': 1}, drop_extra=False)
 
     def test_header_set_duplication_bug(self):
         headers = Headers([
@@ -243,6 +254,7 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
     def test_append_slash_redirect(self):
         def app(env, sr):
             return utils.append_slash_redirect(env)(env, sr)
+
         client = Client(app, BaseResponse)
         response = client.get('foo', base_url='http://example.org/app')
         assert response.status_code == 301
@@ -253,6 +265,7 @@ class GeneralUtilityTestCase(WerkzeugTestCase):
         def foo():
             """testing"""
             return 42
+
         assert foo.__doc__ == 'testing'
         assert foo.__name__ == 'foo'
         assert foo.__module__ == __name__

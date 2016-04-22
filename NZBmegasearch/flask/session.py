@@ -11,6 +11,7 @@
 """
 
 from warnings import warn
+
 warn(DeprecationWarning('please use flask.sessions instead'))
 
 from .sessions import SecureCookieSession, NullSession

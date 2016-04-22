@@ -176,17 +176,17 @@ class Request(RequestHooksMixin):
       <PreparedRequest [GET]>
 
     """
-    def __init__(self,
-        method=None,
-        url=None,
-        headers=None,
-        files=None,
-        data=dict(),
-        params=dict(),
-        auth=None,
-        cookies=None,
-        hooks=None):
 
+    def __init__(self,
+                 method=None,
+                 url=None,
+                 headers=None,
+                 files=None,
+                 data=dict(),
+                 params=dict(),
+                 auth=None,
+                 cookies=None,
+                 hooks=None):
         # Default empty dicts for dict params.
         data = [] if data is None else data
         files = [] if files is None else files

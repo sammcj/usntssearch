@@ -25,6 +25,7 @@ from ..exceptions import BadRequest
 from ..utils import cached_property
 from ..http import dump_options_header, parse_options_header
 from .._internal import _decode_unicode
+
 try:
     from simplejson import loads
 except ImportError:

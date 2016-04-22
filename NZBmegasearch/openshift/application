@@ -6,7 +6,6 @@ sys.path.insert(0, os.path.dirname(__file__) or '.')
 PY_VERSION = 'python-' + ('.'.join(map(str, sys.version_info[:2])))
 PY_DIR = os.environ['HOME'] + '/' + PY_VERSION
 
-
 virtenv = PY_DIR + '/virtenv/'
 
 PY_CACHE = virtenv + 'lib/' + PY_VERSION + '/site-packages'
@@ -19,6 +18,5 @@ try:
 except IOError:
     pass
 
-#~ this is for exclusive usage of Openshift
+# ~ this is for exclusive usage of Openshift
 from mega2 import app as application
-

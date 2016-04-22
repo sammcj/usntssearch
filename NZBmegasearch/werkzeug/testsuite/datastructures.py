@@ -480,9 +480,9 @@ class HeadersTestCase(WerkzeugTestCase):
         # defaults
         headers = self.storage_class([
             ('Content-Type', 'text/plain'),
-            ('X-Foo',        'bar'),
-            ('X-Bar',        '1'),
-            ('X-Bar',        '2')
+            ('X-Foo', 'bar'),
+            ('X-Bar', '1'),
+            ('X-Bar', '2')
         ])
         assert headers.getlist('x-bar') == ['1', '2']
         assert headers.get('x-Bar') == '1'
@@ -549,12 +549,12 @@ class EnvironHeadersTestCase(WerkzeugTestCase):
         # this happens in multiple WSGI servers because they
         # use a vary naive way to convert the headers;
         broken_env = {
-            'HTTP_CONTENT_TYPE':        'text/html',
-            'CONTENT_TYPE':             'text/html',
-            'HTTP_CONTENT_LENGTH':      '0',
-            'CONTENT_LENGTH':           '0',
-            'HTTP_ACCEPT':              '*',
-            'wsgi.version':             (1, 0)
+            'HTTP_CONTENT_TYPE': 'text/html',
+            'CONTENT_TYPE': 'text/html',
+            'HTTP_CONTENT_LENGTH': '0',
+            'CONTENT_LENGTH': '0',
+            'HTTP_ACCEPT': '*',
+            'wsgi.version': (1, 0)
         }
         headers = self.storage_class(broken_env)
         assert headers

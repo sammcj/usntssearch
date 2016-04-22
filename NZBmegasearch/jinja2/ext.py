@@ -136,6 +136,7 @@ def _make_new_gettext(func):
         if __context.eval_ctx.autoescape:
             rv = Markup(rv)
         return rv % variables
+
     return gettext
 
 
@@ -147,6 +148,7 @@ def _make_new_ngettext(func):
         if __context.eval_ctx.autoescape:
             rv = Markup(rv)
         return rv % variables
+
     return ngettext
 
 
@@ -368,9 +370,9 @@ class InternationalizationExtension(Extension):
             node = nodes.MarkSafeIfAutoescape(node)
             if variables:
                 node = nodes.Mod(node, nodes.Dict([
-                    nodes.Pair(nodes.Const(key), value)
-                    for key, value in variables.items()
-                ]))
+                                                      nodes.Pair(nodes.Const(key), value)
+                                                      for key, value in variables.items()
+                                                      ]))
         return nodes.Output([node])
 
 
@@ -413,8 +415,8 @@ class WithExtension(Extension):
             expr = parser.parse_expression()
             assignments.append(nodes.Assign(target, expr, lineno=lineno))
         node.body = assignments + \
-            list(parser.parse_statements(('name:endwith',),
-                                         drop_needle=True))
+                    list(parser.parse_statements(('name:endwith',),
+                                                 drop_needle=True))
         return node
 
 
@@ -470,13 +472,13 @@ def extract_from_ast(node, gettext_functions=GETTEXT_FUNCTIONS,
     """
     for node in node.find_all(nodes.Call):
         if not isinstance(node.node, nodes.Name) or \
-           node.node.name not in gettext_functions:
+                        node.node.name not in gettext_functions:
             continue
 
         strings = []
         for arg in node.args:
             if isinstance(arg, nodes.Const) and \
-               isinstance(arg.value, basestring):
+                    isinstance(arg.value, basestring):
                 strings.append(arg.value)
             else:
                 strings.append(None)
@@ -602,7 +604,6 @@ def babel_extract(fileobj, keywords, comment_tags, options):
     finder = _CommentFinder(tokens, comment_tags)
     for lineno, func, message in extract_from_ast(node, keywords):
         yield lineno, func, message, finder.find_comments(lineno)
-
 
 #: nicer import names
 i18n = InternationalizationExtension

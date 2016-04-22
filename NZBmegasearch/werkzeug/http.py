@@ -18,23 +18,24 @@
 """
 import re
 from time import time
+
 try:
     from email.utils import parsedate_tz
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from email.Utils import parsedate_tz
 from urllib2 import parse_http_list as _parse_list_header
 from datetime import datetime, timedelta
+
 try:
     from hashlib import md5
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     from md5 import new as md5
 
 
 #: HTTP_STATUS_CODES is "exported" from this module.
 #: XXX: move to werkzeug.consts or something
 from _internal import HTTP_STATUS_CODES, _dump_date, \
-     _ExtendedCookie, _ExtendedMorsel, _decode_unicode
-
+    _ExtendedCookie, _ExtendedMorsel, _decode_unicode
 
 _accept_re = re.compile(r'([^\s;,]+)(?:[^,]*?;\s*q=(\d*(?:\.\d+)?))?')
 _token_chars = frozenset("!#$%&'*+-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -43,7 +44,7 @@ _etag_re = re.compile(r'([Ww]/)?(?:"(.*?)"|(.*?))(?:\s*,\s*|$)')
 _unsafe_header_chars = set('()<>@,;:\"/[]?={} \t')
 _quoted_string_re = r'"[^"\\]*(?:\\.[^"\\]*)*"'
 _option_header_piece_re = re.compile(r';\s*([^\s;=]+|%s)\s*(?:=\s*([^;]+|%s))?\s*' %
-    (_quoted_string_re, _quoted_string_re))
+                                     (_quoted_string_re, _quoted_string_re))
 
 _entity_headers = frozenset([
     'allow', 'content-encoding', 'content-language', 'content-length',
@@ -228,6 +229,7 @@ def parse_options_header(value):
     :param value: the header to parse.
     :return: (str, options)
     """
+
     def _tokenize(string):
         for match in _option_header_piece_re.finditer(string):
             key, value = match.groups()
@@ -828,14 +830,13 @@ def is_byte_range_valid(start, stop, length):
         return False
     return 0 <= start < length
 
-
 # circular dependency fun
 from datastructures import Accept, HeaderSet, ETags, Authorization, \
-     WWWAuthenticate, TypeConversionDict, IfRange, Range, ContentRange, \
-     RequestCacheControl
+    WWWAuthenticate, TypeConversionDict, IfRange, Range, ContentRange, \
+    RequestCacheControl
 
 
 # DEPRECATED
 # backwards compatible imports
 from datastructures import MIMEAccept, CharsetAccept, \
-     LanguageAccept, Headers
+    LanguageAccept, Headers

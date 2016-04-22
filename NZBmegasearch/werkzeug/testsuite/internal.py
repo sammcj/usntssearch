@@ -21,7 +21,6 @@ from werkzeug.test import create_environ
 
 
 class InternalTestCase(WerkzeugTestCase):
-
     def test_date_to_unix(self):
         assert internal._date_to_unix(datetime(1970, 1, 1)) == 0
         assert internal._date_to_unix(datetime(1970, 1, 1, 1, 0, 0)) == 3600

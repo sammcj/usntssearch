@@ -35,6 +35,7 @@ __all__ = ['Request', 'Response', 'TemplateNotFound', 'TemplateLoader',
            'GenshiTemplateLoader', 'Application']
 
 from warnings import warn
+
 warn(DeprecationWarning('werkzeug.contrib.kickstart is deprecated and '
                         'will be removed in Werkzeug 1.0'))
 
@@ -45,7 +46,7 @@ class Request(RequestBase):
     """
 
     def __init__(self, environ, url_map,
-            session_store=None, cookie_name=None):
+                 session_store=None, cookie_name=None):
         # call the parent for initialization
         RequestBase.__init__(self, environ)
         # create an adapter
@@ -141,7 +142,7 @@ class Application(object):
         # create a request - with or without session support
         if self.store is not None:
             request = Request(environ, self.url_map,
-                session_store=self.store, cookie_name='%s_sid' % self.name)
+                              session_store=self.store, cookie_name='%s_sid' % self.name)
         else:
             request = Request(environ, self.url_map)
 
@@ -182,7 +183,6 @@ class Application(object):
 
         # return the completely processed response
         return response(environ, start_response)
-
 
     def config_session(self, store, expiration='session'):
         """
@@ -246,6 +246,7 @@ class GenshiTemplateLoader(TemplateLoader):
     The default output type is 'html', but can be adjusted easily by changing
     the `output_type` attribute.
     """
+
     def __init__(self, search_path, encoding='utf-8', **kwargs):
         TemplateLoader.__init__(self, search_path, encoding)
         # import Genshi here, because we don't want a general Genshi
@@ -262,7 +263,7 @@ class GenshiTemplateLoader(TemplateLoader):
 
         # now, all arguments are clean, pass them on
         self.loader = GenshiLoader(search_path, default_encoding=encoding,
-                auto_reload=reload_template, **kwargs)
+                                   auto_reload=reload_template, **kwargs)
 
         # the default output is HTML but can be overridden easily
         self.output_type = 'html'

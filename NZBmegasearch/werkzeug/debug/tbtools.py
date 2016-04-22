@@ -29,7 +29,6 @@ try:
 except NameError:
     pass
 
-
 HEADER = u'''\
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
@@ -130,11 +129,11 @@ SOURCE_LINE_HTML = u'''\
 
 def render_console_html(secret):
     return CONSOLE_HTML % {
-        'evalex':           'true',
-        'console':          'true',
-        'title':            'Console',
-        'secret':           secret,
-        'traceback_id':     -1
+        'evalex': 'true',
+        'console': 'true',
+        'title': 'Console',
+        'secret': secret,
+        'traceback_id': -1
     }
 
 
@@ -175,13 +174,14 @@ class Line(object):
         if self.current:
             rv.append('current')
         return rv
+
     classes = property(classes)
 
     def render(self):
         return SOURCE_LINE_HTML % {
-            'classes':      u' '.join(self.classes),
-            'lineno':       self.lineno,
-            'code':         escape(self.code)
+            'classes': u' '.join(self.classes),
+            'lineno': self.lineno,
+            'code': escape(self.code)
         }
 
 
@@ -244,12 +244,14 @@ class Traceback(object):
     def is_syntax_error(self):
         """Is it a syntax error?"""
         return isinstance(self.exc_value, SyntaxError)
+
     is_syntax_error = property(is_syntax_error)
 
     def exception(self):
         """String representation of the exception."""
         buf = traceback.format_exception_only(self.exc_type, self.exc_value)
         return ''.join(buf).strip().decode('utf-8', 'replace')
+
     exception = property(exception)
 
     def log(self, logfile=None):
@@ -262,6 +264,7 @@ class Traceback(object):
     def paste(self, lodgeit_url):
         """Create a paste and return the paste id."""
         from xmlrpclib import ServerProxy
+
         srv = ServerProxy('%sxmlrpc/' % lodgeit_url)
         return srv.pastes.newPaste('pytb', self.plaintext, '', '', '', True)
 
@@ -292,10 +295,10 @@ class Traceback(object):
             description_wrapper = u'<blockquote>%s</blockquote>'
 
         return SUMMARY_HTML % {
-            'classes':      u' '.join(classes),
-            'title':        title and u'<h3>%s</h3>' % title or u'',
-            'frames':       u'\n'.join(frames),
-            'description':  description_wrapper % escape(self.exception)
+            'classes': u' '.join(classes),
+            'title': title and u'<h3>%s</h3>' % title or u'',
+            'frames': u'\n'.join(frames),
+            'description': description_wrapper % escape(self.exception)
         }
 
     def render_full(self, evalex=False, lodgeit_url=None,
@@ -303,17 +306,17 @@ class Traceback(object):
         """Render the Full HTML page with the traceback info."""
         exc = escape(self.exception)
         return PAGE_HTML % {
-            'evalex':           evalex and 'true' or 'false',
-            'console':          'false',
-            'lodgeit_url':      escape(lodgeit_url),
-            'title':            exc,
-            'exception':        exc,
-            'exception_type':   escape(self.exception_type),
-            'summary':          self.render_summary(include_title=False),
-            'plaintext':        self.plaintext,
-            'plaintext_cs':     re.sub('-{2,}', '-', self.plaintext),
-            'traceback_id':     self.id,
-            'secret':           secret
+            'evalex': evalex and 'true' or 'false',
+            'console': 'false',
+            'lodgeit_url': escape(lodgeit_url),
+            'title': exc,
+            'exception': exc,
+            'exception_type': escape(self.exception_type),
+            'summary': self.render_summary(include_title=False),
+            'plaintext': self.plaintext,
+            'plaintext_cs': re.sub('-{2,}', '-', self.plaintext),
+            'traceback_id': self.id,
+            'secret': secret
         }
 
     def generate_plaintext_traceback(self):
@@ -330,6 +333,7 @@ class Traceback(object):
 
     def plaintext(self):
         return u'\n'.join(self.generate_plaintext_traceback())
+
     plaintext = cached_property(plaintext)
 
     id = property(lambda x: id(x))
@@ -368,11 +372,11 @@ class Frame(object):
     def render(self):
         """Render a single frame in a traceback."""
         return FRAME_HTML % {
-            'id':               self.id,
-            'filename':         escape(self.filename),
-            'lineno':           self.lineno,
-            'function_name':    escape(self.function_name),
-            'current_line':     escape(self.current_line.strip())
+            'id': self.id,
+            'filename': escape(self.filename),
+            'lineno': self.lineno,
+            'function_name': escape(self.function_name),
+            'current_line': escape(self.current_line.strip())
         }
 
     def get_annotated_lines(self):

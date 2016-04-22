@@ -232,7 +232,7 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
         dictionary = {}
         for cookie in iter(self):
             if (domain is None or cookie.domain == domain) and (path is None
-                                                or cookie.path == path):
+                                                                or cookie.path == path):
                 dictionary[cookie.name] = cookie.value
         return dictionary
 
@@ -332,7 +332,7 @@ def create_cookie(name, value, **kwargs):
         comment=None,
         comment_url=None,
         rest={'HttpOnly': None},
-        rfc2109=False,)
+        rfc2109=False, )
 
     badargs = set(kwargs) - set(result)
     if badargs:
@@ -367,7 +367,7 @@ def morsel_to_cookie(morsel):
         comment=morsel['comment'],
         comment_url=bool(morsel['comment']),
         rest={'HttpOnly': morsel['httponly']},
-        rfc2109=False,)
+        rfc2109=False, )
     return c
 
 

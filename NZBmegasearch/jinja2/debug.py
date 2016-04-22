@@ -66,6 +66,7 @@ def make_frame_proxy(frame):
     proxy = TracebackFrameProxy(frame)
     if tproxy is None:
         return proxy
+
     def operation_handler(operation, *args, **kwargs):
         if operation in ('__getattribute__', '__getattr__'):
             return getattr(proxy, args[0])
@@ -73,6 +74,7 @@ def make_frame_proxy(frame):
             proxy.__setattr__(*args, **kwargs)
         else:
             return getattr(proxy, operation)(*args, **kwargs)
+
     return tproxy(TracebackType, operation_handler)
 
 
@@ -102,6 +104,7 @@ class ProcessedTraceback(object):
     def render_as_html(self, full=False):
         """Return a unicode string with the traceback as rendered HTML."""
         from jinja2.debugrenderer import render_traceback
+
         return u'%s\n\n<!--\n%s\n-->' % (
             render_traceback(self, full=full),
             self.render_as_text().decode('utf-8', 'replace')
@@ -218,14 +221,14 @@ def fake_exc_info(exc_info, filename, lineno):
 
     # assamble fake globals we need
     globals = {
-        '__name__':             filename,
-        '__file__':             filename,
-        '__jinja_exception__':  exc_info[:2],
+        '__name__': filename,
+        '__file__': filename,
+        '__jinja_exception__': exc_info[:2],
 
         # we don't want to keep the reference to the template around
         # to not cause circular dependencies, but we mark it as Jinja
         # frame for the ProcessedTraceback
-        '__jinja_template__':   None
+        '__jinja_template__': None
     }
 
     # and fake the exception
@@ -281,6 +284,7 @@ def _init_ugly_crap():
     # regular python
     class _PyObject(ctypes.Structure):
         pass
+
     _PyObject._fields_ = [
         ('ob_refcnt', _Py_ssize_t),
         ('ob_type', ctypes.POINTER(_PyObject))
@@ -290,6 +294,7 @@ def _init_ugly_crap():
     if hasattr(sys, 'getobjects'):
         class _PyObject(ctypes.Structure):
             pass
+
         _PyObject._fields_ = [
             ('_ob_next', ctypes.POINTER(_PyObject)),
             ('_ob_prev', ctypes.POINTER(_PyObject)),
@@ -299,6 +304,7 @@ def _init_ugly_crap():
 
     class _Traceback(_PyObject):
         pass
+
     _Traceback._fields_ = [
         ('tb_next', ctypes.POINTER(_Traceback)),
         ('tb_frame', ctypes.POINTER(_PyObject)),
@@ -309,7 +315,7 @@ def _init_ugly_crap():
     def tb_set_next(tb, next):
         """Set the tb_next attribute of a traceback object."""
         if not (isinstance(tb, TracebackType) and
-                (next is None or isinstance(next, TracebackType))):
+                    (next is None or isinstance(next, TracebackType))):
             raise TypeError('tb_set_next arguments must be traceback objects')
         obj = _Traceback.from_address(id(tb))
         if tb.tb_next is not None:
@@ -323,7 +329,6 @@ def _init_ugly_crap():
             obj.tb_next = ctypes.pointer(next)
 
     return tb_set_next
-
 
 # try to get a tb_set_next implementation if we don't have transparent
 # proxies.

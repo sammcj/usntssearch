@@ -59,6 +59,7 @@
 import os
 import re
 import tempfile
+
 try:
     from hashlib import md5
 except ImportError:
@@ -255,7 +256,7 @@ class SimpleCache(BaseCache):
             timeout = self.default_timeout
         self._prune()
         self._cache[key] = (time() + timeout, pickle.dumps(value,
-            pickle.HIGHEST_PROTOCOL))
+                                                           pickle.HIGHEST_PROTOCOL))
 
     def add(self, key, value, timeout=None):
         if timeout is None:
@@ -263,7 +264,7 @@ class SimpleCache(BaseCache):
         if len(self._cache) > self._threshold:
             self._prune()
         item = (time() + timeout, pickle.dumps(value,
-            pickle.HIGHEST_PROTOCOL))
+                                               pickle.HIGHEST_PROTOCOL))
         self._cache.setdefault(key, item)
 
     def delete(self, key):
@@ -271,6 +272,7 @@ class SimpleCache(BaseCache):
 
 
 _test_memcached_key = re.compile(r'[^\x00-\x21\xff]{1,250}$').match
+
 
 class MemcachedCache(BaseCache):
     """A cache that uses memcached as backend.
@@ -440,7 +442,6 @@ class MemcachedCache(BaseCache):
             pass
         else:
             return memcache.Client(servers)
-
 
 # backwards compatibility
 GAEMemcachedCache = MemcachedCache

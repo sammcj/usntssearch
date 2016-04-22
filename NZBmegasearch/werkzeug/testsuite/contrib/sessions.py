@@ -19,7 +19,6 @@ from tempfile import mkdtemp, gettempdir
 
 
 class SessionTestCase(WerkzeugTestCase):
-
     def setup(self):
         self.session_folder = mkdtemp()
 

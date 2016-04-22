@@ -24,11 +24,12 @@ from .adapters import HTTPAdapter
 from .utils import requote_uri, get_environ_proxies, get_netrc_auth
 
 from .status_codes import codes
+
 REDIRECT_STATI = (
-    codes.moved, # 301
-    codes.found, # 302
-    codes.other, # 303
-    codes.temporary_moved, # 307
+    codes.moved,  # 301
+    codes.found,  # 302
+    codes.other,  # 303
+    codes.temporary_moved,  # 307
 )
 DEFAULT_REDIRECT_LIMIT = 30
 
@@ -121,12 +122,12 @@ class SessionRedirectMixin(object):
 
             # http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
             if (resp.status_code == codes.see_other and
-                    prepared_request.method != 'HEAD'):
+                        prepared_request.method != 'HEAD'):
                 method = 'GET'
 
             # Do what the browsers do, despite standards...
             if (resp.status_code in (codes.moved, codes.found) and
-                    prepared_request.method == 'POST'):
+                        prepared_request.method == 'POST'):
                 method = 'GET'
 
             prepared_request.method = method
@@ -230,19 +231,19 @@ class Session(SessionRedirectMixin):
         self.close()
 
     def request(self, method, url,
-        params=None,
-        data=None,
-        headers=None,
-        cookies=None,
-        files=None,
-        auth=None,
-        timeout=None,
-        allow_redirects=True,
-        proxies=None,
-        hooks=None,
-        stream=None,
-        verify=None,
-        cert=None):
+                params=None,
+                data=None,
+                headers=None,
+                cookies=None,
+                files=None,
+                auth=None,
+                timeout=None,
+                allow_redirects=True,
+                proxies=None,
+                hooks=None,
+                stream=None,
+                verify=None,
+                cert=None):
 
         cookies = cookies or {}
         proxies = proxies or {}
@@ -375,7 +376,7 @@ class Session(SessionRedirectMixin):
         :param \*\*kwargs: Optional arguments that ``request`` takes.
         """
 
-        return self.request('PATCH', url,  data=data, **kwargs)
+        return self.request('PATCH', url, data=data, **kwargs)
 
     def delete(self, url, **kwargs):
         """Sends a DELETE request. Returns :class:`Response` object.

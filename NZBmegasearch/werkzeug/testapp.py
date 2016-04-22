@@ -16,7 +16,6 @@ from textwrap import wrap
 from wrappers import BaseRequest as Request, BaseResponse as Response
 from utils import escape
 
-
 logo = Response('''R0lGODlhoACgAOMIAAEDACwpAEpCAGdgAJaKAM28AOnVAP3rAP/////////
 //////////////////////yH5BAEKAAgALAAAAACgAKAAAAT+EMlJq704680R+F0ojmRpnuj0rWnrv
 nB8rbRs33gu0bzu/0AObxgsGn3D5HHJbCUFyqZ0ukkSDlAidctNFg7gbI9LZlrBaHGtzAae0eloe25
@@ -51,7 +50,6 @@ Oco1srWtkaVrMUzIErrKri85keKqRQYX9VX0/eAUK1hrSu6HMEX3Qh2sCh0q0D2CtnUqS4hj62sE/z
 aDs2Sg7MBS6xnQeooc2R2tC9YrKpEi9pLXfYXp20tDCpSP8rKlrD4axprb9u1Df5hSbz9QU0cRpfgn
 kiIzwKucd0wsEHlLpe5yHXuc6FrNelOl7pY2+11kTWx7VpRu97dXA3DO1vbkhcb4zyvERYajQgAADs
 ='''.decode('base64'), mimetype='image/png')
-
 
 TEMPLATE = u'''\
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -191,15 +189,15 @@ def render_testapp(req):
         ))
 
     return TEMPLATE % {
-        'python_version':   '<br>'.join(escape(sys.version).splitlines()),
-        'platform':         escape(sys.platform),
-        'os':               escape(os.name),
-        'api_version':      sys.api_version,
-        'byteorder':        sys.byteorder,
+        'python_version': '<br>'.join(escape(sys.version).splitlines()),
+        'platform': escape(sys.platform),
+        'os': escape(os.name),
+        'api_version': sys.api_version,
+        'byteorder': sys.byteorder,
         'werkzeug_version': werkzeug.__version__,
-        'python_eggs':      '\n'.join(python_eggs),
-        'wsgi_env':         '\n'.join(wsgi_env),
-        'sys_path':         '\n'.join(sys_path)
+        'python_eggs': '\n'.join(python_eggs),
+        'wsgi_env': '\n'.join(wsgi_env),
+        'sys_path': '\n'.join(sys_path)
     }
 
 
@@ -227,4 +225,5 @@ def test_app(environ, start_response):
 
 if __name__ == '__main__':
     from serving import run_simple
+
     run_simple('localhost', 5000, test_app, use_reloader=True)

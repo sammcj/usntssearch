@@ -19,7 +19,6 @@ from werkzeug.test import create_environ
 
 
 class RoutingTestCase(WerkzeugTestCase):
-
     def test_basic_routing(self):
         map = r.Map([
             r.Rule('/', endpoint='index'),
@@ -160,20 +159,20 @@ class RoutingTestCase(WerkzeugTestCase):
         ])
         adapter = map.bind('example.org', '/')
 
-        assert adapter.match('/') == ('page', {'name':'FrontPage'})
+        assert adapter.match('/') == ('page', {'name': 'FrontPage'})
         self.assert_raises(r.RequestRedirect, lambda: adapter.match('/FrontPage'))
         assert adapter.match('/Special') == ('special', {})
-        assert adapter.match('/2007') == ('year', {'year':2007})
-        assert adapter.match('/Some/Page') == ('page', {'name':'Some/Page'})
-        assert adapter.match('/Some/Page/edit') == ('editpage', {'name':'Some/Page'})
-        assert adapter.match('/Foo/silly/bar') == ('sillypage', {'name':'Foo', 'name2':'bar'})
-        assert adapter.match('/Foo/silly/bar/edit') == ('editsillypage', {'name':'Foo', 'name2':'bar'})
-        assert adapter.match('/Talk:Foo/Bar') == ('talk', {'name':'Foo/Bar'})
-        assert adapter.match('/User:thomas') == ('user', {'username':'thomas'})
+        assert adapter.match('/2007') == ('year', {'year': 2007})
+        assert adapter.match('/Some/Page') == ('page', {'name': 'Some/Page'})
+        assert adapter.match('/Some/Page/edit') == ('editpage', {'name': 'Some/Page'})
+        assert adapter.match('/Foo/silly/bar') == ('sillypage', {'name': 'Foo', 'name2': 'bar'})
+        assert adapter.match('/Foo/silly/bar/edit') == ('editsillypage', {'name': 'Foo', 'name2': 'bar'})
+        assert adapter.match('/Talk:Foo/Bar') == ('talk', {'name': 'Foo/Bar'})
+        assert adapter.match('/User:thomas') == ('user', {'username': 'thomas'})
         assert adapter.match('/User:thomas/projects/werkzeug') == \
-            ('userpage', {'username':'thomas', 'name':'projects/werkzeug'})
+               ('userpage', {'username': 'thomas', 'name': 'projects/werkzeug'})
         assert adapter.match('/Files/downloads/werkzeug/0.2.zip') == \
-            ('files', {'file':'downloads/werkzeug/0.2.zip'})
+               ('files', {'file': 'downloads/werkzeug/0.2.zip'})
 
     def test_dispatch(self):
         env = create_environ('/')
@@ -184,12 +183,14 @@ class RoutingTestCase(WerkzeugTestCase):
         adapter = map.bind_to_environ(env)
 
         raise_this = None
+
         def view_func(endpoint, values):
             if raise_this is not None:
                 raise raise_this
             return Response(repr((endpoint, values)))
+
         dispatch = lambda p, q=False: Response.force_type(adapter.dispatch(view_func, p,
-                                                          catch_http_exceptions=q), env)
+                                                                           catch_http_exceptions=q), env)
 
         assert dispatch('/').data == "('root', {})"
         assert dispatch('/foo').status_code == 301
@@ -199,13 +200,13 @@ class RoutingTestCase(WerkzeugTestCase):
 
     def test_http_host_before_server_name(self):
         env = {
-            'HTTP_HOST':            'wiki.example.com',
-            'SERVER_NAME':          'web0.example.com',
-            'SERVER_PORT':          '80',
-            'SCRIPT_NAME':          '',
-            'PATH_INFO':            '',
-            'REQUEST_METHOD':       'GET',
-            'wsgi.url_scheme':      'http'
+            'HTTP_HOST': 'wiki.example.com',
+            'SERVER_NAME': 'web0.example.com',
+            'SERVER_PORT': '80',
+            'SCRIPT_NAME': '',
+            'PATH_INFO': '',
+            'REQUEST_METHOD': 'GET',
+            'wsgi.url_scheme': 'http'
         }
         map = r.Map([r.Rule('/', endpoint='index', subdomain='wiki')])
         adapter = map.bind_to_environ(env, server_name='example.com')
@@ -219,10 +220,10 @@ class RoutingTestCase(WerkzeugTestCase):
 
     def test_adapter_url_parameter_sorting(self):
         map = r.Map([r.Rule('/', endpoint='index')], sort_parameters=True,
-                     sort_key=lambda x: x[1])
+                    sort_key=lambda x: x[1])
         adapter = map.bind('localhost', '/')
         assert adapter.build('index', {'x': 20, 'y': 10, 'z': 30},
-            force_external=True) == 'http://localhost/?y=10&x=20&z=30'
+                             force_external=True) == 'http://localhost/?y=10&x=20&z=30'
 
     def test_request_direct_charset_bug(self):
         map = r.Map([r.Rule(u'/öäü/')])
@@ -281,7 +282,7 @@ class RoutingTestCase(WerkzeugTestCase):
 
     def test_rule_emptying(self):
         rule = r.Rule('/foo', {'meh': 'muh'}, 'x', ['POST'],
-                   False, 'x', True, None)
+                      False, 'x', True, None)
         rule2 = rule.empty()
         assert rule.__dict__ == rule2.__dict__
         rule.methods.add('GET')
@@ -292,27 +293,27 @@ class RoutingTestCase(WerkzeugTestCase):
 
     def test_rule_templates(self):
         testcase = r.RuleTemplate(
-            [ r.Submount('/test/$app',
-              [ r.Rule('/foo/', endpoint='handle_foo')
-              , r.Rule('/bar/', endpoint='handle_bar')
-              , r.Rule('/baz/', endpoint='handle_baz')
-              ]),
-              r.EndpointPrefix('${app}',
-              [ r.Rule('/${app}-blah', endpoint='bar')
-              , r.Rule('/${app}-meh', endpoint='baz')
-              ]),
-              r.Subdomain('$app',
-              [ r.Rule('/blah', endpoint='x_bar')
-              , r.Rule('/meh', endpoint='x_baz')
-              ])
-            ])
+            [r.Submount('/test/$app',
+                        [r.Rule('/foo/', endpoint='handle_foo')
+                            , r.Rule('/bar/', endpoint='handle_bar')
+                            , r.Rule('/baz/', endpoint='handle_baz')
+                         ]),
+             r.EndpointPrefix('${app}',
+                              [r.Rule('/${app}-blah', endpoint='bar')
+                                  , r.Rule('/${app}-meh', endpoint='baz')
+                               ]),
+             r.Subdomain('$app',
+                         [r.Rule('/blah', endpoint='x_bar')
+                             , r.Rule('/meh', endpoint='x_baz')
+                          ])
+             ])
 
         url_map = r.Map(
-            [ testcase(app='test1')
-            , testcase(app='test2')
-            , testcase(app='test3')
-            , testcase(app='test4')
-            ])
+            [testcase(app='test1')
+                , testcase(app='test2')
+                , testcase(app='test3')
+                , testcase(app='test4')
+             ])
 
         out = sorted([(x.rule, x.subdomain, x.endpoint)
                       for x in url_map.iter_rules()])
@@ -392,6 +393,7 @@ class RoutingTestCase(WerkzeugTestCase):
         class MyMap(r.Map):
             default_converters = r.Map.default_converters.copy()
             default_converters['foo'] = r.UnicodeConverter
+
         assert isinstance(r.Map.default_converters, ImmutableDict)
         m = MyMap([
             r.Rule('/a/<foo:a>', endpoint='a'),
@@ -409,10 +411,10 @@ class RoutingTestCase(WerkzeugTestCase):
             r.Rule('/bar/<float:bazf>', endpoint='barf')
         ])
         adapter = map.bind('example.org', '/', subdomain='blah')
-        assert adapter.build('barf', {'bazf': 0.815, 'bif' : 1.0}) == \
-            'http://example.org/bar/0.815?bif=1.0'
-        assert adapter.build('barf', {'bazf': 0.815, 'bif' : 1.0},
-            append_unknown=False) == 'http://example.org/bar/0.815'
+        assert adapter.build('barf', {'bazf': 0.815, 'bif': 1.0}) == \
+               'http://example.org/bar/0.815?bif=1.0'
+        assert adapter.build('barf', {'bazf': 0.815, 'bif': 1.0},
+                             append_unknown=False) == 'http://example.org/bar/0.815'
 
     def test_method_fallback(self):
         map = r.Map([
@@ -447,7 +449,7 @@ class RoutingTestCase(WerkzeugTestCase):
         a = m.bind('example.org')
         assert a.build('x', {'foo': 'x:y'}) == '/x:y'
         assert a.build('x', {'foo': 'x:y'}, force_external=True) == \
-            'http://example.org/x:y'
+               'http://example.org/x:y'
 
     def test_allowed_methods_querying(self):
         m = r.Map([r.Rule('/<foo>', methods=['GET', 'HEAD']),
@@ -486,7 +488,7 @@ class RoutingTestCase(WerkzeugTestCase):
         args, kwargs = r.parse_converter_args(u'test, a=1, b=3.0')
 
         assert args == ('test',)
-        assert kwargs == {'a': 1, 'b': 3.0 }
+        assert kwargs == {'a': 1, 'b': 3.0}
 
         args, kwargs = r.parse_converter_args('')
         assert not args and not kwargs
@@ -618,7 +620,7 @@ class RoutingTestCase(WerkzeugTestCase):
             a.match(u'/войти')
         except r.RequestRedirect, e:
             self.assert_equal(e.new_url, 'http://xn--n3h.example.com/'
-                              '%D0%B2%D0%BE%D0%B9%D1%82%D0%B8/')
+                                         '%D0%B2%D0%BE%D0%B9%D1%82%D0%B8/')
         endpoint, values = a.match(u'/войти/')
         self.assert_equal(endpoint, 'enter')
         self.assert_equal(values, {})

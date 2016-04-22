@@ -75,20 +75,18 @@ import inspect
 import getopt
 from os.path import basename
 
-
 argument_types = {
-    bool:       'boolean',
-    str:        'string',
-    int:        'integer',
-    float:      'float'
+    bool: 'boolean',
+    str: 'string',
+    int: 'integer',
+    float: 'float'
 }
 
-
 converters = {
-    'boolean':  lambda x: x.lower() in ('1', 'true', 'yes', 'on'),
-    'string':   str,
-    'integer':  int,
-    'float':    float
+    'boolean': lambda x: x.lower() in ('1', 'true', 'yes', 'on'),
+    'string': str,
+    'integer': int,
+    'float': float
 }
 
 
@@ -257,6 +255,7 @@ def make_shell(init_func=None, banner=None, use_ipython=True):
         banner = 'Interactive Werkzeug Shell'
     if init_func is None:
         init_func = dict
+
     def action(ipython=use_ipython):
         """Start a new interactive python session."""
         namespace = init_func()
@@ -264,9 +263,11 @@ def make_shell(init_func=None, banner=None, use_ipython=True):
             try:
                 try:
                     from IPython.frontend.terminal.embed import InteractiveShellEmbed
+
                     sh = InteractiveShellEmbed(banner1=banner)
                 except ImportError:
                     from IPython.Shell import IPShellEmbed
+
                     sh = IPShellEmbed(banner=banner)
             except ImportError:
                 pass
@@ -274,7 +275,9 @@ def make_shell(init_func=None, banner=None, use_ipython=True):
                 sh(global_ns={}, local_ns=namespace)
                 return
         from code import interact
+
         interact(banner, local=namespace)
+
     return action
 
 
@@ -301,13 +304,16 @@ def make_runserver(app_factory, hostname='localhost', port=5000,
     :param extra_files: optional list of extra files to track for reloading.
     :param ssl_context: optional SSL context for running server in HTTPS mode.
     """
+
     def action(hostname=('h', hostname), port=('p', port),
                reloader=use_reloader, debugger=use_debugger,
                evalex=use_evalex, threaded=threaded, processes=processes):
         """Start a new development server."""
         from serving import run_simple
+
         app = app_factory()
         run_simple(hostname, port, app, reloader, debugger, evalex,
                    extra_files, 1, threaded, processes,
                    static_files=static_files, ssl_context=ssl_context)
+
     return action

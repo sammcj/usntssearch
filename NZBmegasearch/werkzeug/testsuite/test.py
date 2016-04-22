@@ -86,7 +86,6 @@ def multi_value_post_app(environ, start_response):
 
 
 class TestTestCase(WerkzeugTestCase):
-
     def test_cookie_forging(self):
         c = Client(cookie_app)
         c.set_cookie('localhost', 'foo', 'bar')
@@ -213,28 +212,28 @@ class TestTestCase(WerkzeugTestCase):
 
             form = parse_form_data({'wsgi.input': stream, 'CONTENT_LENGTH': str(length),
                                     'CONTENT_TYPE': 'multipart/form-data; boundary="%s"' %
-                                    boundary})[1]
+                                                    boundary})[1]
             assert form == d
 
     def test_create_environ(self):
         env = create_environ('/foo?bar=baz', 'http://example.org/')
         expected = {
-            'wsgi.multiprocess':    False,
-            'wsgi.version':         (1, 0),
-            'wsgi.run_once':        False,
-            'wsgi.errors':          sys.stderr,
-            'wsgi.multithread':     False,
-            'wsgi.url_scheme':      'http',
-            'SCRIPT_NAME':          '',
-            'CONTENT_TYPE':         '',
-            'CONTENT_LENGTH':       '0',
-            'SERVER_NAME':          'example.org',
-            'REQUEST_METHOD':       'GET',
-            'HTTP_HOST':            'example.org',
-            'PATH_INFO':            '/foo',
-            'SERVER_PORT':          '80',
-            'SERVER_PROTOCOL':      'HTTP/1.1',
-            'QUERY_STRING':         'bar=baz'
+            'wsgi.multiprocess': False,
+            'wsgi.version': (1, 0),
+            'wsgi.run_once': False,
+            'wsgi.errors': sys.stderr,
+            'wsgi.multithread': False,
+            'wsgi.url_scheme': 'http',
+            'SCRIPT_NAME': '',
+            'CONTENT_TYPE': '',
+            'CONTENT_LENGTH': '0',
+            'SERVER_NAME': 'example.org',
+            'REQUEST_METHOD': 'GET',
+            'HTTP_HOST': 'example.org',
+            'PATH_INFO': '/foo',
+            'SERVER_PORT': '80',
+            'SERVER_PROTOCOL': 'HTTP/1.1',
+            'QUERY_STRING': 'bar=baz'
         }
         for key, value in expected.iteritems():
             assert env[key] == value
@@ -244,9 +243,11 @@ class TestTestCase(WerkzeugTestCase):
 
     def test_file_closing(self):
         closed = []
+
         class SpecialInput(object):
             def read(self):
                 return ''
+
             def close(self):
                 closed.append(self)
 
@@ -280,7 +281,7 @@ class TestTestCase(WerkzeugTestCase):
         env = create_environ('/', base_url='http://localhost')
         c = Client(external_redirect_demo_app)
         self.assert_raises(RuntimeError, lambda:
-            c.get(environ_overrides=env, follow_redirects=True))
+        c.get(environ_overrides=env, follow_redirects=True))
 
     def test_follow_external_redirect_on_same_subdomain(self):
         env = create_environ('/', base_url='http://example.com')
@@ -290,12 +291,12 @@ class TestTestCase(WerkzeugTestCase):
         # check that this does not work for real external domains
         env = create_environ('/', base_url='http://localhost')
         self.assert_raises(RuntimeError, lambda:
-            c.get(environ_overrides=env, follow_redirects=True))
+        c.get(environ_overrides=env, follow_redirects=True))
 
         # check that subdomain redirects fail if no `allow_subdomain_redirects` is applied
         c = Client(external_subdomain_redirect_demo_app)
         self.assert_raises(RuntimeError, lambda:
-            c.get(environ_overrides=env, follow_redirects=True))
+        c.get(environ_overrides=env, follow_redirects=True))
 
     def test_follow_redirect_loop(self):
         c = Client(redirect_loop_app, response_wrapper=BaseResponse)
@@ -312,6 +313,7 @@ class TestTestCase(WerkzeugTestCase):
         def test_app(environ, start_response):
             start_response('200 OK', [('Content-Type', 'text/plain')])
             return [environ['PATH_INFO'] + '\n' + environ['SCRIPT_NAME']]
+
         c = Client(test_app, response_wrapper=BaseResponse)
         resp = c.get('/foo%40bar')
         assert resp.data == '/foo@bar\n'
@@ -322,13 +324,13 @@ class TestTestCase(WerkzeugTestCase):
     def test_multi_value_submit(self):
         c = Client(multi_value_post_app, response_wrapper=BaseResponse)
         data = {
-            'field': ['val1','val2']
+            'field': ['val1', 'val2']
         }
         resp = c.post('/', data=data)
         assert resp.status_code == 200
         c = Client(multi_value_post_app, response_wrapper=BaseResponse)
         data = MultiDict({
-            'field': ['val1','val2']
+            'field': ['val1', 'val2']
         })
         resp = c.post('/', data=data)
         assert resp.status_code == 200
@@ -342,6 +344,7 @@ class TestTestCase(WerkzeugTestCase):
         def simple_app(environ, start_response):
             start_response('200 OK', [('Content-Type', 'text/html')])
             return ['Hello World!']
+
         app_iter, status, headers = run_wsgi_app(simple_app, {})
         assert status == '200 OK'
         assert headers == [('Content-Type', 'text/html')]
@@ -351,6 +354,7 @@ class TestTestCase(WerkzeugTestCase):
             start_response('200 OK', [('Content-Type', 'text/html')])
             yield 'Hello '
             yield 'World!'
+
         app_iter, status, headers = run_wsgi_app(yielding_app, {})
         assert status == '200 OK'
         assert headers == [('Content-Type', 'text/html')]
@@ -363,6 +367,7 @@ class TestTestCase(WerkzeugTestCase):
             response.set_cookie('test1', 'foo')
             response.set_cookie('test2', 'bar')
             return response
+
         client = Client(test_app, Response)
         resp = client.get('/')
         assert resp.data == '[]'

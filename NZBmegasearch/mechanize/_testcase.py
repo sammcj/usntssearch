@@ -6,7 +6,6 @@ import unittest
 
 
 class SetupStack(object):
-
     def __init__(self):
         self._on_teardown = []
 
@@ -19,7 +18,6 @@ class SetupStack(object):
 
 
 class TearDownConvenience(object):
-
     def __init__(self, setup_stack=None):
         self._own_setup_stack = setup_stack is None
         if setup_stack is None:
@@ -33,25 +31,27 @@ class TearDownConvenience(object):
 
 
 class TempDirMaker(TearDownConvenience):
-
     def make_temp_dir(self, dir_=None):
         temp_dir = tempfile.mkdtemp(prefix="tmp-%s-" % self.__class__.__name__,
                                     dir=dir_)
+
         def tear_down():
             shutil.rmtree(temp_dir)
+
         self._setup_stack.add_teardown(tear_down)
         return temp_dir
 
 
 class MonkeyPatcher(TearDownConvenience):
-
     Unset = object()
 
     def monkey_patch(self, obj, name, value):
         orig_value = getattr(obj, name)
         setattr(obj, name, value)
+
         def reverse_patch():
             setattr(obj, name, orig_value)
+
         self._setup_stack.add_teardown(reverse_patch)
 
     def _set_environ(self, env, name, value):
@@ -66,13 +66,14 @@ class MonkeyPatcher(TearDownConvenience):
     def monkey_patch_environ(self, name, value, env=os.environ):
         orig_value = env.get(name, self.Unset)
         self._set_environ(env, name, value)
+
         def reverse_patch():
             self._set_environ(env, name, orig_value)
+
         self._setup_stack.add_teardown(reverse_patch)
 
 
 class FixtureFactory(object):
-
     def __init__(self):
         self._setup_stack = SetupStack()
         self._context_managers = {}
@@ -99,7 +100,6 @@ class FixtureFactory(object):
 
 
 class TestCase(unittest.TestCase):
-
     def setUp(self):
         self._setup_stack = SetupStack()
         self._monkey_patcher = MonkeyPatcher(self._setup_stack)
@@ -138,10 +138,9 @@ class TestCase(unittest.TestCase):
                         (got, expected))
 
 
-#  http://lackingrhoticity.blogspot.com/2009/01/testing-using-golden-files-in-python.html
+# http://lackingrhoticity.blogspot.com/2009/01/testing-using-golden-files-in-python.html
 
 class GoldenTestCase(TestCase):
-
     run_meld = False
 
     def assert_golden(self, dir_got, dir_expect):

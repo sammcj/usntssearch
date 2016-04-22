@@ -18,8 +18,8 @@ from werkzeug import urls, utils
 from _internal import _decode_unicode
 from datastructures import MultiDict
 
-
 from warnings import warn
+
 warn(DeprecationWarning('werkzeug.templates is deprecated and '
                         'will be removed in Werkzeug 1.0'))
 
@@ -41,7 +41,7 @@ namestart_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
 undefined = type('UndefinedType', (object,), {
     '__iter__': lambda x: iter(()),
     '__repr__': lambda x: 'Undefined',
-    '__str__':  lambda x: ''
+    '__str__': lambda x: ''
 })()
 runtime_vars = frozenset(['Undefined', '__to_unicode', '__context',
                           '__write', '__write_many'])
@@ -94,15 +94,14 @@ def transform(node, filename):
 
 
 class TemplateSyntaxError(SyntaxError):
-
     def __init__(self, msg, filename, lineno):
         from linecache import getline
+
         l = getline(filename, lineno)
         SyntaxError.__init__(self, msg, (filename, lineno, len(l) or 1, l))
 
 
 class Parser(object):
-
     def __init__(self, gen, filename):
         self.gen = gen
         self.filename = filename
@@ -241,7 +240,7 @@ class Parser(object):
                 token, pos = match_or_fail(offset + 1)
                 while pos < end:
                     if text[pos] == '.' and pos + 1 < end and \
-                       text[pos + 1] in namestart_chars:
+                                    text[pos + 1] in namestart_chars:
                         token, pos = match_or_fail(pos + 1)
                     elif text[pos] in '([':
                         pos += 1
@@ -259,12 +258,11 @@ class Parser(object):
         write_data(text[pos:])
 
         return ast.Discard(call_stmt(len(nodes) == 1 and '__write' or
-                           '__write_many', nodes, start_lineno),
+                                     '__write_many', nodes, start_lineno),
                            lineno=start_lineno)
 
 
 class Context(object):
-
     def __init__(self, namespace, charset, errors):
         self.charset = charset
         self.errors = errors
@@ -311,7 +309,6 @@ class Context(object):
 
 
 class TemplateCodeGenerator(ModuleCodeGenerator):
-
     def __init__(self, node, filename):
         ModuleCodeGenerator.__init__(self, transform(node, filename))
 
@@ -327,10 +324,10 @@ class Template(object):
     """
 
     default_context = {
-        'escape':           utils.escape,
-        'url_quote':        urls.url_quote,
-        'url_quote_plus':   urls.url_quote_plus,
-        'url_encode':       urls.url_encode
+        'escape': utils.escape,
+        'url_quote': urls.url_quote,
+        'url_quote_plus': urls.url_quote_plus,
+        'url_encode': urls.url_encode
     }
 
     def __init__(self, source, filename='<template>', charset='utf-8',

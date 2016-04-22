@@ -81,10 +81,12 @@ class HTTPException(Exception):
         """This method returns a new subclass of the exception provided that
         also is a subclass of `BadRequest`.
         """
+
         class newcls(cls, exception):
             def __init__(self, arg=None, description=None):
                 cls.__init__(self, description)
                 exception.__init__(self, arg)
+
         newcls.__module__ = sys._getframe(1).f_globals.get('__name__')
         newcls.__name__ = name or cls.__name__ + exception.__name__
         return newcls
@@ -102,15 +104,15 @@ class HTTPException(Exception):
     def get_body(self, environ):
         """Get the HTML body."""
         return (
-            '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n'
-            '<title>%(code)s %(name)s</title>\n'
-            '<h1>%(name)s</h1>\n'
-            '%(description)s\n'
-        ) % {
-            'code':         self.code,
-            'name':         escape(self.name),
-            'description':  self.get_description(environ)
-        }
+                   '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n'
+                   '<title>%(code)s %(name)s</title>\n'
+                   '<h1>%(name)s</h1>\n'
+                   '%(description)s\n'
+               ) % {
+                   'code': self.code,
+                   'name': escape(self.name),
+                   'description': self.get_description(environ)
+               }
 
     def get_headers(self, environ):
         """Get a list of headers."""
@@ -128,6 +130,7 @@ class HTTPException(Exception):
         # are circular dependencies when bootstrapping the module.
         environ = _get_environ(environ)
         from wrappers import BaseResponse
+
         headers = self.get_headers(environ)
         return BaseResponse(self.get_body(environ), self.code, headers)
 
@@ -279,7 +282,7 @@ class NotAcceptable(HTTPException):
         'generating response entities which have content characteristics '
         'not acceptable according to the accept headers sent in the '
         'request.</p>'
-        )
+    )
 
 
 class RequestTimeout(HTTPException):
@@ -483,14 +486,17 @@ class ServiceUnavailable(HTTPException):
 default_exceptions = {}
 __all__ = ['HTTPException']
 
+
 def _find_exceptions():
     for name, obj in globals().iteritems():
         try:
             if getattr(obj, 'code', None) is not None:
                 default_exceptions[obj.code] = obj
                 __all__.append(obj.__name__)
-        except TypeError: # pragma: no cover
+        except TypeError:  # pragma: no cover
             continue
+
+
 _find_exceptions()
 del _find_exceptions
 
@@ -523,6 +529,7 @@ class Aborter(object):
         if code not in self.mapping:
             raise LookupError('no exception for %r' % code)
         raise self.mapping[code](*args, **kwargs)
+
 
 abort = Aborter()
 

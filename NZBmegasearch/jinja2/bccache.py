@@ -20,6 +20,7 @@ import marshal
 import tempfile
 import cPickle as pickle
 import fnmatch
+
 try:
     from hashlib import sha1
 except ImportError:
@@ -30,6 +31,7 @@ from jinja2.utils import open_if_exists
 # marshal works better on 3.x, one hack less required
 if sys.version_info > (3, 0):
     from io import BytesIO
+
     marshal_dump = marshal.dump
     marshal_load = marshal.load
 else:
@@ -46,7 +48,6 @@ else:
             return marshal.load(f)
         return marshal.loads(f.read())
 
-
 bc_version = 2
 
 # magic version used to only change with new jinja versions.  With 2.6
@@ -55,8 +56,8 @@ bc_version = 2
 # versions because someone thought it would be a good idea to reuse opcodes
 # or make Python incompatible with earlier versions.
 bc_magic = 'j2'.encode('ascii') + \
-    pickle.dumps(bc_version, 2) + \
-    pickle.dumps((sys.version_info[0] << 24) | sys.version_info[1])
+           pickle.dumps(bc_version, 2) + \
+           pickle.dumps((sys.version_info[0] << 24) | sys.version_info[1])
 
 
 class Bucket(object):
@@ -234,6 +235,7 @@ class FileSystemBytecodeCache(BytecodeCache):
         # write access on the file system and the function does not exist
         # normally.
         from os import remove
+
         files = fnmatch.filter(listdir(self.directory), self.pattern % '*')
         for filename in files:
             try:

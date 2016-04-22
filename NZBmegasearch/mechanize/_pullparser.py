@@ -43,6 +43,7 @@ from _html import unescape, unescape_charref
 
 class NoMoreTokensError(Exception): pass
 
+
 class Token:
     """Represents an HTML tag, declaration, processing instruction etc.
 
@@ -68,24 +69,30 @@ class Token:
      (or None if token does not represent an opening tag)
 
     """
+
     def __init__(self, type, data, attrs=None):
         self.type = type
         self.data = data
         self.attrs = attrs
+
     def __iter__(self):
         return iter((self.type, self.data, self.attrs))
+
     def __eq__(self, other):
         type, data, attrs = other
         if (self.type == type and
-            self.data == data and
-            self.attrs == attrs):
+                    self.data == data and
+                    self.attrs == attrs):
             return True
         else:
             return False
-    def __ne__(self, other): return not self.__eq__(other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __repr__(self):
         args = ", ".join(map(repr, [self.type, self.data, self.attrs]))
-        return self.__class__.__name__+"(%s)" % args
+        return self.__class__.__name__ + "(%s)" % args
 
     def __str__(self):
         """
@@ -152,6 +159,7 @@ def iter_until_exception(fn, exception, *args, **kwds):
 class _AbstractParser:
     chunk = 1024
     compress_re = re.compile(r"\s+")
+
     def __init__(self, fh, textify={"img": "alt", "applet": "alt"},
                  encoding="ascii", entitydefs=None):
         """
@@ -200,7 +208,8 @@ class _AbstractParser:
             entitydefs = htmlentitydefs.name2codepoint
         self._entitydefs = entitydefs
 
-    def __iter__(self): return self
+    def __iter__(self):
+        return self
 
     def tags(self, *names):
         return iter_until_exception(self.get_tag, NoMoreTokensError, *names)
@@ -299,7 +308,7 @@ class _AbstractParser:
             if tok.type == "data":
                 text.append(tok.data)
             elif tok.type == "entityref":
-                t = unescape("&%s;"%tok.data, self._entitydefs, self.encoding)
+                t = unescape("&%s;" % tok.data, self._entitydefs, self.encoding)
                 text.append(t)
             elif tok.type == "charref":
                 t = unescape_charref(tok.data, self.encoding)
@@ -334,58 +343,75 @@ class _AbstractParser:
 
     def handle_startendtag(self, tag, attrs):
         self._tokenstack.append(Token("startendtag", tag, attrs))
+
     def handle_starttag(self, tag, attrs):
         self._tokenstack.append(Token("starttag", tag, attrs))
+
     def handle_endtag(self, tag):
         self._tokenstack.append(Token("endtag", tag))
+
     def handle_charref(self, name):
         self._tokenstack.append(Token("charref", name))
+
     def handle_entityref(self, name):
         self._tokenstack.append(Token("entityref", name))
+
     def handle_data(self, data):
         self._tokenstack.append(Token("data", data))
+
     def handle_comment(self, data):
         self._tokenstack.append(Token("comment", data))
+
     def handle_decl(self, decl):
         self._tokenstack.append(Token("decl", decl))
+
     def unknown_decl(self, data):
         # XXX should this call self.error instead?
-        #self.error("unknown declaration: " + `data`)
+        # self.error("unknown declaration: " + `data`)
         self._tokenstack.append(Token("decl", data))
+
     def handle_pi(self, data):
         self._tokenstack.append(Token("pi", data))
 
     def unescape_attr(self, name):
         return unescape(name, self._entitydefs, self.encoding)
+
     def unescape_attrs(self, attrs):
         escaped_attrs = []
         for key, val in attrs:
             escaped_attrs.append((key, self.unescape_attr(val)))
         return escaped_attrs
 
+
 class PullParser(_AbstractParser, HTMLParser.HTMLParser):
     def __init__(self, *args, **kwds):
         HTMLParser.HTMLParser.__init__(self)
         _AbstractParser.__init__(self, *args, **kwds)
+
     def unescape(self, name):
         # Use the entitydefs passed into constructor, not
         # HTMLParser.HTMLParser's entitydefs.
         return self.unescape_attr(name)
 
+
 class TolerantPullParser(_AbstractParser, sgmllib.SGMLParser):
     def __init__(self, *args, **kwds):
         sgmllib.SGMLParser.__init__(self)
         _AbstractParser.__init__(self, *args, **kwds)
+
     def unknown_starttag(self, tag, attrs):
         attrs = self.unescape_attrs(attrs)
         self._tokenstack.append(Token("starttag", tag, attrs))
+
     def unknown_endtag(self, tag):
         self._tokenstack.append(Token("endtag", tag))
 
 
 def _test():
-   import doctest, _pullparser
-   return doctest.testmod(_pullparser)
+    import doctest, _pullparser
+
+    return doctest.testmod(_pullparser)
+
 
 if __name__ == "__main__":
-   _test()
+    _test()

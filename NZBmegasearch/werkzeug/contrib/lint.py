@@ -38,11 +38,10 @@ class HTTPWarning(Warning):
 def check_string(context, obj, stacklevel=3):
     if type(obj) is not str:
         warn(WSGIWarning('%s requires bytestrings, got %s' %
-            (context, obj.__class__.__name__)))
+                         (context, obj.__class__.__name__)))
 
 
 class InputStream(object):
-
     def __init__(self, stream):
         self._stream = stream
 
@@ -86,7 +85,6 @@ class InputStream(object):
 
 
 class ErrorStream(object):
-
     def __init__(self, stream):
         self._stream = stream
 
@@ -108,7 +106,6 @@ class ErrorStream(object):
 
 
 class GuardedWrite(object):
-
     def __init__(self, write, chunks):
         self._write = write
         self._chunks = chunks
@@ -120,7 +117,6 @@ class GuardedWrite(object):
 
 
 class GuardedIterator(object):
-
     def __init__(self, iterator, headers_set, chunks):
         self._iterator = iterator
         self._next = iter(iterator).next
@@ -157,9 +153,9 @@ class GuardedIterator(object):
                 for key, value in headers:
                     key = key.lower()
                     if key not in ('expires', 'content-location') and \
-                       is_entity_header(key):
+                            is_entity_header(key):
                         warn(HTTPWarning('entity header %r found in 304 '
-                            'response' % key))
+                                         'response' % key))
                 if bytes_sent:
                     warn(HTTPWarning('304 responses must not have a body'))
             elif 100 <= status_code < 200 or status_code == 204:
@@ -219,7 +215,7 @@ class LintMiddleware(object):
                     'wsgi.run_once'):
             if key not in environ:
                 warn(WSGIWarning('required environment key %r not found'
-                     % key), stacklevel=3)
+                                 % key), stacklevel=3)
         if environ['wsgi.version'] != (1, 0):
             warn(WSGIWarning('environ is not a WSGI 1.0 environ'),
                  stacklevel=3)
@@ -232,7 +228,6 @@ class LintMiddleware(object):
         if path_info[:1] != '/':
             warn(WSGIWarning('PATH_INFO does not start with a slash: %r'
                              % path_info), stacklevel=3)
-
 
     def check_start_response(self, status, headers, exc_info):
         check_string('status', status)
@@ -260,7 +255,7 @@ class LintMiddleware(object):
             if name.lower() == 'status':
                 warn(WSGIWarning('The status header is not supported due to '
                                  'conflicts with the CGI spec.'),
-                                 stacklevel=3)
+                     stacklevel=3)
 
         if exc_info is not None and not isinstance(exc_info, tuple):
             warn(WSGIWarning('invalid value for exc_info'), stacklevel=3)
@@ -313,7 +308,7 @@ class LintMiddleware(object):
         def checking_start_response(*args, **kwargs):
             if len(args) not in (2, 3):
                 warn(WSGIWarning('Invalid number of arguments: %s, expected '
-                     '2 or 3' % len(args), stacklevel=2))
+                                 '2 or 3' % len(args), stacklevel=2))
             if kwargs:
                 warn(WSGIWarning('no keyword arguments allowed.'))
 

@@ -14,6 +14,7 @@ from itertools import islice
 
 class IteratorProxy(object):
     """docstring for IteratorProxy"""
+
     def __init__(self, i):
         self.i = i
         # self.i = chain.from_iterable(i)

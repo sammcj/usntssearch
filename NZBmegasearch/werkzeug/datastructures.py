@@ -15,7 +15,6 @@ from itertools import repeat
 
 from _internal import _proxy_repr, _missing, _empty_stream
 
-
 _locale_delim_re = re.compile(r'[_-]')
 
 
@@ -69,6 +68,7 @@ class ImmutableListMixin(object):
 
     def __iadd__(self, other):
         is_immutable(self)
+
     __imul__ = __iadd__
 
     def __setitem__(self, key, value):
@@ -79,6 +79,7 @@ class ImmutableListMixin(object):
 
     def append(self, item):
         is_immutable(self)
+
     remove = append
 
     def extend(self, iterable):
@@ -203,6 +204,7 @@ class UpdateDictMixin(object):
             if self.on_update is not None:
                 self.on_update(self)
             return rv
+
         oncall.__name__ = name
         return oncall
 
@@ -796,7 +798,7 @@ class OrderedMultiDict(MultiDict):
 
 def _options_header_vkw(value, kw):
     return dump_options_header(value, dict((k.replace('_', '-'), v)
-                                            for k, v in kw.items()))
+                                           for k, v in kw.items()))
 
 
 class Headers(object):
@@ -1063,7 +1065,7 @@ class Headers(object):
     def _validate_value(self, value):
         if isinstance(value, basestring) and ('\n' in value or '\r' in value):
             raise ValueError('Detected newline in header value.  This is '
-                'a potential security problem')
+                             'a potential security problem')
 
     def add_header(self, _key, _value, **_kw):
         """Add a new header tuple to the list.
@@ -1176,10 +1178,12 @@ class ImmutableHeadersMixin(object):
 
     def __setitem__(self, key, value):
         is_immutable(self)
+
     set = __setitem__
 
     def add(self, item):
         is_immutable(self)
+
     remove = add_header = add
 
     def extend(self, iterable):
@@ -1236,7 +1240,7 @@ class EnvironHeaders(ImmutableHeadersMixin, Headers):
     def __iter__(self):
         for key, value in self.environ.iteritems():
             if key.startswith('HTTP_') and key not in \
-               ('HTTP_CONTENT_TYPE', 'HTTP_CONTENT_LENGTH'):
+                    ('HTTP_CONTENT_TYPE', 'HTTP_CONTENT_LENGTH'):
                 yield key[5:].replace('_', '-').title(), value
             elif key in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
                 yield key.replace('_', '-').title(), value
@@ -1684,6 +1688,7 @@ class LanguageAccept(Accept):
     def _value_matches(self, value, item):
         def _normalize(language):
             return _locale_delim_re.split(language.lower())
+
         return item == '*' or _normalize(value) == _normalize(item)
 
 
@@ -1696,6 +1701,7 @@ class CharsetAccept(Accept):
                 return codecs.lookup(name).name
             except LookupError:
                 return name.lower()
+
         return item == '*' or _normalize(value) == _normalize(item)
 
 
@@ -1839,7 +1845,6 @@ class ResponseCacheControl(_CacheControl):
     must_revalidate = cache_property('must-revalidate', None, bool)
     proxy_revalidate = cache_property('proxy-revalidate', None, bool)
     s_maxage = cache_property('s-maxage', None, None)
-
 
 # attach cache_property to the _CacheControl as staticmethod
 # so that others can reuse it.
@@ -2194,10 +2199,12 @@ class ContentRange(object):
     def _callback_property(name):
         def fget(self):
             return getattr(self, name)
+
         def fset(self, value):
             setattr(self, name, value)
             if self.on_update is not None:
                 self.on_update(self)
+
         return property(fget, fset)
 
     #: The units to use, usually "bytes"
@@ -2305,11 +2312,13 @@ class Authorization(ImmutableDictMixin, dict):
     def qop(self):
         """Indicates what "quality of protection" the client has applied to
         the message for HTTP digest auth."""
+
         def on_update(header_set):
             if not header_set and 'qop' in self:
                 del self['qop']
             elif header_set:
                 self['qop'] = header_set.to_header()
+
         return parse_set_header(self.get('qop'), on_update)
 
 
@@ -2336,10 +2345,10 @@ class WWWAuthenticate(UpdateDictMixin, dict):
                    algorithm=None, stale=False):
         """Clear the auth info and enable digest auth."""
         d = {
-            '__auth_type__':    'digest',
-            'realm':            realm,
-            'nonce':            nonce,
-            'qop':              dump_header(qop)
+            '__auth_type__': 'digest',
+            'realm': realm,
+            'nonce': nonce,
+            'qop': dump_header(qop)
         }
         if stale:
             d['stale'] = 'TRUE'
@@ -2357,10 +2366,10 @@ class WWWAuthenticate(UpdateDictMixin, dict):
         d = dict(self)
         auth_type = d.pop('__auth_type__', None) or 'basic'
         return '%s %s' % (auth_type.title(), ', '.join([
-            '%s=%s' % (key, quote_header_value(value,
-                       allow_token=key not in self._require_quoting))
-            for key, value in d.iteritems()
-        ]))
+                                                           '%s=%s' % (key, quote_header_value(value,
+                                                                                              allow_token=key not in self._require_quoting))
+                                                           for key, value in d.iteritems()
+                                                           ]))
 
     def __str__(self):
         return self.to_header()
@@ -2381,11 +2390,13 @@ class WWWAuthenticate(UpdateDictMixin, dict):
         For more information have a look at the sourcecode to see how the
         regular properties (:attr:`realm` etc.) are implemented.
         """
+
         def _set_value(self, value):
             if value is None:
                 self.pop(name, None)
             else:
                 self[name] = str(value)
+
         return property(lambda x: x.get(name), _set_value, doc=doc)
 
     def _set_property(name, doc=None):
@@ -2395,7 +2406,9 @@ class WWWAuthenticate(UpdateDictMixin, dict):
                     del self[name]
                 elif header_set:
                     self[name] = header_set.to_header()
+
             return parse_set_header(self.get(name), on_update)
+
         return property(fget, doc=doc)
 
     type = auth_property('__auth_type__', doc='''
@@ -2431,11 +2444,13 @@ class WWWAuthenticate(UpdateDictMixin, dict):
         val = self.get('stale')
         if val is not None:
             return val.lower() == 'true'
+
     def _set_stale(self, value):
         if value is None:
             self.pop('stale', None)
         else:
             self['stale'] = value and 'TRUE' or 'FALSE'
+
     stale = property(_get_stale, _set_stale, doc='''
         A flag, indicating that the previous request from the client was
         rejected because the nonce value was stale.''')
@@ -2532,6 +2547,7 @@ class FileStorage(object):
                             :func:`shutil.copyfileobj`.
         """
         from shutil import copyfileobj
+
         close_dst = False
         if isinstance(dst, basestring):
             dst = file(dst, 'wb')
@@ -2565,9 +2581,8 @@ class FileStorage(object):
             self.content_type
         )
 
-
 # circular dependencies
 from http import dump_options_header, dump_header, generate_etag, \
-     quote_header_value, parse_set_header, unquote_etag, quote_etag, \
-     parse_options_header, http_date, is_byte_range_valid
+    quote_header_value, parse_set_header, unquote_etag, quote_etag, \
+    parse_options_header, http_date, is_byte_range_valid
 from exceptions import BadRequestKeyError

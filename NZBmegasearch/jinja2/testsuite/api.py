@@ -13,15 +13,14 @@ import unittest
 from jinja2.testsuite import JinjaTestCase
 
 from jinja2 import Environment, Undefined, DebugUndefined, \
-     StrictUndefined, UndefinedError, meta, \
-     is_undefined, Template, DictLoader
+    StrictUndefined, UndefinedError, meta, \
+    is_undefined, Template, DictLoader
 from jinja2.utils import Cycler
 
 env = Environment()
 
 
 class ExtendedAPITestCase(JinjaTestCase):
-
     def test_item_and_attribute(self):
         from jinja2.sandbox import SandboxedEnvironment
 
@@ -39,6 +38,7 @@ class ExtendedAPITestCase(JinjaTestCase):
             if value is None:
                 value = u''
             return value
+
         env = Environment(finalize=finalize_none_empty)
         tmpl = env.from_string('{% for item in seq %}|{{ item }}{% endfor %}')
         assert tmpl.render(seq=(None, 1, "foo")) == '||1|foo'
@@ -78,11 +78,12 @@ class ExtendedAPITestCase(JinjaTestCase):
             if name is None or '.' not in name:
                 return False
             return name.endswith('.html')
+
         env = Environment(autoescape=select_autoescape,
                           loader=DictLoader({
-            'test.txt':     '{{ foo }}',
-            'test.html':    '{{ foo }}'
-        }))
+                              'test.txt': '{{ foo }}',
+                              'test.html': '{{ foo }}'
+                          }))
         t = env.get_template('test.txt')
         assert t.render(foo='<foo>') == '<foo>'
         t = env.get_template('test.html')
@@ -92,7 +93,6 @@ class ExtendedAPITestCase(JinjaTestCase):
 
 
 class MetaTestCase(JinjaTestCase):
-
     def test_find_undeclared_variables(self):
         ast = env.parse('{% set foo = 42 %}{{ bar + foo }}')
         x = meta.find_undeclared_variables(ast)
@@ -137,7 +137,6 @@ class MetaTestCase(JinjaTestCase):
 
 
 class StreamingTestCase(JinjaTestCase):
-
     def test_basic_streaming(self):
         tmpl = env.from_string("<ul>{% for item in seq %}<li>{{ loop.index "
                                "}} - {{ item }}</li>{%- endfor %}</ul>")
@@ -168,10 +167,10 @@ class StreamingTestCase(JinjaTestCase):
 
 
 class UndefinedTestCase(JinjaTestCase):
-
     def test_stopiteration_is_undefined(self):
         def test():
             raise StopIteration()
+
         t = Template('A{{ test() }}B')
         assert t.render(test=test) == 'AB'
         t = Template('A{{ test().missingattribute }}B')

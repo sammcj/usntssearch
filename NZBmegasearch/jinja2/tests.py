@@ -15,15 +15,14 @@ try:
     from collections import Mapping as MappingType
 except ImportError:
     import UserDict
+
     MappingType = (UserDict.UserDict, UserDict.DictMixin, dict)
 
 # nose, nothing here to test
 __test__ = False
 
-
 number_re = re.compile(r'^-?\d+(\.\d+)?$')
 regex_type = type(number_re)
-
 
 try:
     test_callable = callable
@@ -142,20 +141,20 @@ def test_escaped(value):
 
 
 TESTS = {
-    'odd':              test_odd,
-    'even':             test_even,
-    'divisibleby':      test_divisibleby,
-    'defined':          test_defined,
-    'undefined':        test_undefined,
-    'none':             test_none,
-    'lower':            test_lower,
-    'upper':            test_upper,
-    'string':           test_string,
-    'mapping':          test_mapping,
-    'number':           test_number,
-    'sequence':         test_sequence,
-    'iterable':         test_iterable,
-    'callable':         test_callable,
-    'sameas':           test_sameas,
-    'escaped':          test_escaped
+    'odd': test_odd,
+    'even': test_even,
+    'divisibleby': test_divisibleby,
+    'defined': test_defined,
+    'undefined': test_undefined,
+    'none': test_none,
+    'lower': test_lower,
+    'upper': test_upper,
+    'string': test_string,
+    'mapping': test_mapping,
+    'number': test_number,
+    'sequence': test_sequence,
+    'iterable': test_iterable,
+    'callable': test_callable,
+    'sameas': test_sameas,
+    'escaped': test_escaped
 }

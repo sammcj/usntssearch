@@ -17,7 +17,6 @@ env = Environment()
 
 
 class FilterTestCase(JinjaTestCase):
-
     def test_capitalize(self):
         tmpl = env.from_string('{{ "foo bar"|capitalize }}')
         assert tmpl.render() == 'Foo bar'
@@ -66,8 +65,8 @@ class FilterTestCase(JinjaTestCase):
     def test_striptags(self):
         tmpl = env.from_string('''{{ foo|striptags }}''')
         out = tmpl.render(foo='  <p>just a small   \n <a href="#">'
-                          'example</a> link</p>\n<p>to a webpage</p> '
-                          '<!-- <p>and some commented stuff</p> -->')
+                              'example</a> link</p>\n<p>to a webpage</p> '
+                              '<!-- <p>and some commented stuff</p> -->')
         assert out == 'just a small example link to a webpage'
 
     def test_filesizeformat(self):
@@ -132,6 +131,7 @@ class FilterTestCase(JinjaTestCase):
         class User(object):
             def __init__(self, username):
                 self.username = username
+
         tmpl = env.from_string('''{{ users|join(', ', 'username') }}''')
         assert tmpl.render(users=map(User, ['foo', 'bar'])) == 'foo, bar'
 
@@ -152,6 +152,7 @@ class FilterTestCase(JinjaTestCase):
 
     def test_pprint(self):
         from pprint import pformat
+
         tmpl = env.from_string('''{{ data|pprint }}''')
         data = range(1000)
         assert tmpl.render(data=data) == pformat(data)
@@ -192,7 +193,7 @@ class FilterTestCase(JinjaTestCase):
 
     def test_urlize(self):
         tmpl = env.from_string('{{ "foo http://www.example.com/ bar"|urlize }}')
-        assert tmpl.render() == 'foo <a href="http://www.example.com/">'\
+        assert tmpl.render() == 'foo <a href="http://www.example.com/">' \
                                 'http://www.example.com/</a> bar'
 
     def test_wordcount(self):
@@ -241,7 +242,7 @@ class FilterTestCase(JinjaTestCase):
         tmpl = env.from_string('{{ 21.3|round(-1)}}|'
                                "{{ 21.3|round(-1, 'ceil')}}|"
                                "{{ 21.3|round(-1, 'floor')}}")
-        assert tmpl.render() == '20.0|30.0|20.0',tmpl.render()
+        assert tmpl.render() == '20.0|30.0|20.0', tmpl.render()
 
     def test_xmlattr(self):
         tmpl = env.from_string("{{ {'foo': 42, 'bar': 23, 'fish': none, "
@@ -268,8 +269,10 @@ class FilterTestCase(JinjaTestCase):
         class Magic(object):
             def __init__(self, value):
                 self.value = value
+
             def __unicode__(self):
                 return unicode(self.value)
+
         tmpl = env.from_string('''{{ items|sort(attribute='value')|join }}''')
         assert tmpl.render(items=map(Magic, [3, 2, 4, 1])) == '1234'
 
@@ -301,10 +304,12 @@ class FilterTestCase(JinjaTestCase):
                 self.day = day
                 self.month = month
                 self.year = year
+
         class Article(object):
             def __init__(self, title, *date):
                 self.date = Date(*date)
                 self.title = title
+
         articles = [
             Article('aha', 1, 1, 1970),
             Article('interesting', 2, 1, 1970),

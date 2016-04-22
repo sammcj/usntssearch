@@ -32,15 +32,16 @@ def clean_url(url, encoding):
     # Trying to come up with test cases for this gave me a headache, revisit
     # when do switch to unicode.
     # Somebody else's comments (lost the attribution):
-##     - IE will return you the url in the encoding you send it
-##     - Mozilla/Firefox will send you latin-1 if there's no non latin-1
-##     characters in your link. It will send you utf-8 however if there are...
+    ##     - IE will return you the url in the encoding you send it
+    ##     - Mozilla/Firefox will send you latin-1 if there's no non latin-1
+    ##     characters in your link. It will send you utf-8 however if there are...
     if type(url) == type(""):
         url = url.decode(encoding, "replace")
     url = url.strip()
     # for second param to urllib.quote(), we want URI_CHARS, minus the
     # 'always_safe' characters that urllib.quote() never percent-encodes
     return urllib.quote(url.encode(encoding), "!*'();:@&=+$,/?%#[]~")
+
 
 def is_clean_uri(uri):
     """
@@ -64,12 +65,15 @@ def is_clean_uri(uri):
 
 SPLIT_MATCH = re.compile(
     r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?").match
+
+
 def urlsplit(absolute_uri):
     """Return scheme, authority, path, query, fragment."""
     match = SPLIT_MATCH(absolute_uri)
     if match:
         g = match.groups()
         return g[1], g[3], g[4], g[6], g[8]
+
 
 def urlunsplit(parts):
     scheme, authority, path, query, fragment = parts
@@ -90,6 +94,7 @@ def urlunsplit(parts):
         append(fragment)
     return "".join(r)
 
+
 def urljoin(base_uri, uri_reference):
     """Join a base URI with a URI reference and return the resulting URI.
 
@@ -97,6 +102,7 @@ def urljoin(base_uri, uri_reference):
     """
     return urlunsplit(urljoin_parts(urlsplit(base_uri),
                                     urlsplit(uri_reference)))
+
 
 # oops, this doesn't do the same thing as the literal translation
 # from the RFC below
@@ -159,6 +165,7 @@ def urljoin_parts(base_parts, reference_parts):
         tscheme = scheme
     tfragment = rfragment
     return (tscheme, tauthority, tpath, tquery, tfragment)
+
 
 # um, something *vaguely* like this is what I want, but I have to generate
 # lots of test cases first, if only to understand what it is that
@@ -228,18 +235,21 @@ def remove_dot_segments(path):
         path = path[ii:]
     return "".join(r)
 
+
 def merge(base_authority, base_path, ref_path):
     # XXXX Oddly, the sample Perl implementation of this by Roy Fielding
     # doesn't even take base_authority as a parameter, despite the wording in
     # the RFC suggesting otherwise.  Perhaps I'm missing some obvious identity.
-    #if base_authority is not None and base_path == "":
+    # if base_authority is not None and base_path == "":
     if base_path == "":
         return "/" + ref_path
     ii = base_path.rfind("/")
     if ii >= 0:
-        return base_path[:ii+1] + ref_path
+        return base_path[:ii + 1] + ref_path
     return ref_path
+
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

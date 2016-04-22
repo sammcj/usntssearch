@@ -16,10 +16,10 @@ from _internal import _patch_wrapper
 # current thread ident.
 try:
     from greenlet import getcurrent as get_ident
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     try:
         from thread import get_ident
-    except ImportError: # pragma: no cover
+    except ImportError:  # pragma: no cover
         from dummy_thread import get_ident
 
 
@@ -119,8 +119,10 @@ class LocalStack(object):
 
     def _get__ident_func__(self):
         return self._local.__ident_func__
+
     def _set__ident_func__(self, value):
         object.__setattr__(self._local, '__ident_func__', value)
+
     __ident_func__ = property(_get__ident_func__, _set__ident_func__)
     del _get__ident_func__, _set__ident_func__
 
@@ -130,6 +132,7 @@ class LocalStack(object):
             if rv is None:
                 raise RuntimeError('object unbound')
             return rv
+
         return LocalProxy(_lookup)
 
     def push(self, obj):
@@ -219,8 +222,10 @@ class LocalManager(object):
         """Wrap a WSGI application so that cleaning up happens after
         request end.
         """
+
         def application(environ, start_response):
             return ClosingIterator(app(environ, start_response), self.cleanup)
+
         return application
 
     def middleware(self, func):

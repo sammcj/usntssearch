@@ -11,9 +11,9 @@
 from itertools import chain, imap
 from jinja2.nodes import EvalContext, _context_function_types
 from jinja2.utils import Markup, partial, soft_unicode, escape, missing, \
-     concat, internalcode, next, object_type_repr
+    concat, internalcode, next, object_type_repr
 from jinja2.exceptions import UndefinedError, TemplateRuntimeError, \
-     TemplateNotFound
+    TemplateNotFound
 
 
 # these variables are exported to the template runtime
@@ -228,10 +228,10 @@ class Context(object):
             self.name
         )
 
-
 # register the context as mapping if possible
 try:
     from collections import Mapping
+
     Mapping.register(Context)
 except ImportError:
     pass
@@ -463,10 +463,10 @@ class Undefined(object):
         return self._fail_with_undefined_error()
 
     __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
-    __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
-    __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
-    __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
-    __float__ = __complex__ = __pow__ = __rpow__ = \
+        __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
+        __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
+        __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
+        __float__ = __complex__ = __pow__ = __rpow__ = \
         _fail_with_undefined_error
 
     def __str__(self):
@@ -541,7 +541,6 @@ class StrictUndefined(Undefined):
     __slots__ = ()
     __iter__ = __unicode__ = __str__ = __len__ = __nonzero__ = __eq__ = \
         __ne__ = __bool__ = Undefined._fail_with_undefined_error
-
 
 # remove remaining slots attributes, after the metaclass did the magic they
 # are unneeded and irritating as they contain wrong data for the subclasses.

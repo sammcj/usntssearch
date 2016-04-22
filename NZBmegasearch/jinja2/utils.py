@@ -11,13 +11,13 @@
 import re
 import sys
 import errno
+
 try:
     from thread import allocate_lock
 except ImportError:
     from dummy_thread import allocate_lock
 from collections import deque
 from itertools import imap
-
 
 _word_split_re = re.compile(r'(\s+)')
 _punctuation_re = re.compile(
@@ -47,6 +47,7 @@ try:
     def _test_gen_bug():
         raise TypeError(_test_gen_bug)
         yield None
+
     _concat(_test_gen_bug())
 except TypeError, _error:
     if not _error.args or _error.args[0] is not _test_gen_bug:
@@ -96,8 +97,12 @@ from keyword import iskeyword as is_python_keyword
 # to deal with implementation specific stuff here
 class _C(object):
     def method(self): pass
+
+
 def _func():
     yield None
+
+
 FunctionType = type(_func)
 GeneratorType = type(_func())
 MethodType = type(_C.method)
@@ -169,6 +174,7 @@ def is_undefined(obj):
             return var
     """
     from jinja2.runtime import Undefined
+
     return isinstance(obj, Undefined)
 
 
@@ -186,6 +192,7 @@ def clear_caches():
     """
     from jinja2.environment import _spontaneous_environments
     from jinja2.lexer import _lexer_cache
+
     _spontaneous_environments.clear()
     _lexer_cache.clear()
 
@@ -210,10 +217,10 @@ def import_string(import_name, silent=False):
             obj = items[-1]
         else:
             return __import__(import_name)
-        
+
         print '========='
         items = import_name.split('.')
-        import_name = '.'.join(items[1:])    
+        import_name = '.'.join(items[1:])
         print import_name
         print '========='
         return getattr(__import__(module, None, None, [obj]), obj)
@@ -256,9 +263,11 @@ def pformat(obj, verbose=False):
     """
     try:
         from pretty import pretty
+
         return pretty(obj, verbose=verbose)
     except ImportError:
         from pprint import pformat
+
         return pformat(obj)
 
 
@@ -275,8 +284,8 @@ def urlize(text, trim_url_limit=None, nofollow=False):
     attribute.
     """
     trim_url = lambda x, limit=trim_url_limit: limit is not None \
-                         and (x[:limit] + (len(x) >=limit and '...'
-                         or '')) or x
+                                               and (x[:limit] + (len(x) >= limit and '...'
+                                                                 or '')) or x
     words = _word_split_re.split(unicode(escape(text)))
     nofollow_attr = nofollow and ' rel="nofollow"' or ''
     for i, word in enumerate(words):
@@ -284,22 +293,22 @@ def urlize(text, trim_url_limit=None, nofollow=False):
         if match:
             lead, middle, trail = match.groups()
             if middle.startswith('www.') or (
-                '@' not in middle and
-                not middle.startswith('http://') and
-                len(middle) > 0 and
-                middle[0] in _letters + _digits and (
-                    middle.endswith('.org') or
-                    middle.endswith('.net') or
-                    middle.endswith('.com')
-                )):
+                                        '@' not in middle and
+                                    not middle.startswith('http://') and
+                                    len(middle) > 0 and
+                                middle[0] in _letters + _digits and (
+                                    middle.endswith('.org') or
+                                    middle.endswith('.net') or
+                                middle.endswith('.com')
+                    )):
                 middle = '<a href="http://%s"%s>%s</a>' % (middle,
-                    nofollow_attr, trim_url(middle))
+                                                           nofollow_attr, trim_url(middle))
             if middle.startswith('http://') or \
-               middle.startswith('https://'):
+                    middle.startswith('https://'):
                 middle = '<a href="%s"%s>%s</a>' % (middle,
-                    nofollow_attr, trim_url(middle))
+                                                    nofollow_attr, trim_url(middle))
             if '@' in middle and not middle.startswith('www.') and \
-               not ':' in middle and _simple_email_re.match(middle):
+                    not ':' in middle and _simple_email_re.match(middle):
                 middle = '<a href="mailto:%s">%s</a>' % (middle, middle)
             if lead + middle + trail != word:
                 words[i] = lead + middle + trail
@@ -310,6 +319,7 @@ def generate_lorem_ipsum(n=5, html=True, min=20, max=100):
     """Generate some lorem impsum for the template."""
     from jinja2.constants import LOREM_IPSUM_WORDS
     from random import choice, randrange
+
     words = LOREM_IPSUM_WORDS.split()
     result = []
 
@@ -386,9 +396,9 @@ class LRUCache(object):
 
     def __getstate__(self):
         return {
-            'capacity':     self.capacity,
-            '_mapping':     self._mapping,
-            '_queue':       self._queue
+            'capacity': self.capacity,
+            '_mapping': self._mapping,
+            '_queue': self._queue
         }
 
     def __setstate__(self, d):
@@ -535,10 +545,10 @@ class LRUCache(object):
 
     __copy__ = copy
 
-
 # register the LRU cache as mutable mapping if possible
 try:
     from collections import MutableMapping
+
     MutableMapping.register(LRUCache)
 except ImportError:
     pass
@@ -582,7 +592,6 @@ class Joiner(object):
             return u''
         return self.sep
 
-
 # try markupsafe first, if that fails go with Jinja2's bundled version
 # of markupsafe.  Markupsafe was previously Jinja2's implementation of
 # the Markup object but was moved into a separate package in a patchleve
@@ -602,6 +611,7 @@ except ImportError:
             self._func = _func
             self._args = args
             self._kwargs = kwargs
+
         def __call__(self, *args, **kwargs):
             kwargs.update(self._kwargs)
             return self._func(*(self._args + args), **kwargs)

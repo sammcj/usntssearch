@@ -51,14 +51,13 @@ from _internal import _log
 from exceptions import InternalServerError
 
 
-
 class WSGIRequestHandler(BaseHTTPRequestHandler, object):
     """A request handler that implements WSGI dispatching."""
 
     @property
     def server_version(self):
-		# print werkzeug.__file__
-		return 'Werkzeug/' + werkzeug.__version__
+        # print werkzeug.__file__
+        return 'Werkzeug/' + werkzeug.__version__
 
     def make_environ(self):
         if '?' in self.path:
@@ -72,27 +71,27 @@ class WSGIRequestHandler(BaseHTTPRequestHandler, object):
 
         url_scheme = self.server.ssl_context is None and 'http' or 'https'
         environ = {
-            'wsgi.version':         (1, 0),
-            'wsgi.url_scheme':      url_scheme,
-            'wsgi.input':           self.rfile,
-            'wsgi.errors':          sys.stderr,
-            'wsgi.multithread':     self.server.multithread,
-            'wsgi.multiprocess':    self.server.multiprocess,
-            'wsgi.run_once':        False,
+            'wsgi.version': (1, 0),
+            'wsgi.url_scheme': url_scheme,
+            'wsgi.input': self.rfile,
+            'wsgi.errors': sys.stderr,
+            'wsgi.multithread': self.server.multithread,
+            'wsgi.multiprocess': self.server.multiprocess,
+            'wsgi.run_once': False,
             'werkzeug.server.shutdown':
-                                    shutdown_server,
-            'SERVER_SOFTWARE':      self.server_version,
-            'REQUEST_METHOD':       self.command,
-            'SCRIPT_NAME':          '',
-            'PATH_INFO':            unquote(path_info),
-            'QUERY_STRING':         query,
-            'CONTENT_TYPE':         self.headers.get('Content-Type', ''),
-            'CONTENT_LENGTH':       self.headers.get('Content-Length', ''),
-            'REMOTE_ADDR':          self.client_address[0],
-            'REMOTE_PORT':          self.client_address[1],
-            'SERVER_NAME':          self.server.server_address[0],
-            'SERVER_PORT':          str(self.server.server_address[1]),
-            'SERVER_PROTOCOL':      self.request_version
+                shutdown_server,
+            'SERVER_SOFTWARE': self.server_version,
+            'REQUEST_METHOD': self.command,
+            'SCRIPT_NAME': '',
+            'PATH_INFO': unquote(path_info),
+            'QUERY_STRING': query,
+            'CONTENT_TYPE': self.headers.get('Content-Type', ''),
+            'CONTENT_LENGTH': self.headers.get('Content-Length', ''),
+            'REMOTE_ADDR': self.client_address[0],
+            'REMOTE_PORT': self.client_address[1],
+            'SERVER_NAME': self.server.server_address[0],
+            'SERVER_PORT': str(self.server.server_address[1]),
+            'SERVER_PROTOCOL': self.request_version
         }
 
         for key, value in self.headers.items():
@@ -165,6 +164,7 @@ class WSGIRequestHandler(BaseHTTPRequestHandler, object):
             if self.server.passthrough_errors:
                 raise
             from debug.tbtools import get_current_traceback
+
             traceback = get_current_traceback(ignore_system_exceptions=True)
             try:
                 # if we haven't yet sent the headers but they are set
@@ -234,8 +234,8 @@ class WSGIRequestHandler(BaseHTTPRequestHandler, object):
         return self.client_address[0]
 
     def log_request(self, code='-', size='-'):
-		pass 
-        #~ self.log('info', '"%s" %s %s', self.requestline, code, size)
+        pass
+        # ~ self.log('info', '"%s" %s %s', self.requestline, code, size)
 
     def log_error(self, *args):
         self.log('error', *args)
@@ -247,7 +247,6 @@ class WSGIRequestHandler(BaseHTTPRequestHandler, object):
         _log(type, '%s - - [%s] %s\n' % (self.address_string(),
                                          self.log_date_time_string(),
                                          message % args))
-
 
 #: backwards compatible name if someone is subclassing it
 BaseRequestHandler = WSGIRequestHandler
@@ -288,6 +287,7 @@ def is_ssl_error(error=None):
     if error is None:
         error = sys.exc_info()[1]
     from OpenSSL import SSL
+
     return isinstance(error, SSL.Error)
 
 
@@ -302,9 +302,9 @@ class _SSLConnectionFix(object):
 
     def __getattr__(self, attrib):
         try:
-			gat = getattr(self._con, attrib)
+            gat = getattr(self._con, attrib)
         except Exception:
-			print 'Exception in _SSLConnectionFix'
+            print 'Exception in _SSLConnectionFix'
         return gat
 
 
@@ -372,15 +372,13 @@ class BaseWSGIServer(HTTPServer, object):
             print 'Exception: CTRL+C interrupt detected'
             exit()
             pass
-        
-        
 
-    def shutdown_request(self,request): 
-		if(self.ssl_context is not None):
-			try:
-				request.shutdown()
-			except Exception as e:
-				print 'Exception: ' + str(e)
+    def shutdown_request(self, request):
+        if (self.ssl_context is not None):
+            try:
+                request.shutdown()
+            except Exception as e:
+                print 'Exception: ' + str(e)
 
     def handle_error(self, request, client_address):
         if self.passthrough_errors:
@@ -433,8 +431,8 @@ def make_server(host, port, app=None, threaded=False, processes=1,
 
 
 def _iter_module_files():
-    for module in sys.modules.values():        
-        filename = getattr(module, '__file__', None)		
+    for module in sys.modules.values():
+        filename = getattr(module, '__file__', None)
         if filename:
             old = None
             while not os.path.isfile(filename):
@@ -458,6 +456,7 @@ def _reloader_stat_loop(extra_files=None, interval=1):
     :param extra_files: a list of additional files it should watch.
     """
     from itertools import chain
+
     mtimes = {}
     while 1:
         for filename in chain(_iter_module_files(), extra_files or ()):
@@ -486,6 +485,7 @@ def _reloader_inotify(extra_files=None, interval=None):
     # this API changed at one point, support both
     try:
         from pyinotify import EventsCodes as ec
+
         ec.IN_ATTRIB
     except (ImportError, AttributeError):
         import pyinotify as ec
@@ -512,11 +512,10 @@ def _reloader_inotify(extra_files=None, interval=None):
             notif.process_events()
             if notif.check_events(timeout=interval):
                 notif.read_events()
-            # TODO Set timeout to something small and check parent liveliness
+                # TODO Set timeout to something small and check parent liveliness
     finally:
         notif.stop()
     sys.exit(3)
-
 
 # currently we always use the stat loop reloader for the simple reason
 # that the inotify one does not respond to added files properly.  Also
@@ -550,6 +549,7 @@ def restart_with_reloader():
 def run_with_reloader(main_func, extra_files=None, interval=1):
     """Run the given function in an independent python interpreter."""
     import signal
+
     signal.signal(signal.SIGTERM, lambda *args: sys.exit(0))
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         thread.start_new_thread(main_func, ())
@@ -612,20 +612,22 @@ def run_simple(hostname, port, application, use_reloader=False,
     """
     if use_debugger:
         from debug import DebuggedApplication
+
         application = DebuggedApplication(application, use_evalex)
     if static_files:
         from wsgi import SharedDataMiddleware
+
         application = SharedDataMiddleware(application, static_files)
 
     def inner():
-        #~ make_server(hostname, port, application, threaded,
-                    #~ processes, request_handler,
-                    #~ passthrough_errors, ssl_context).serve_forever()
+        # ~ make_server(hostname, port, application, threaded,
+        # ~ processes, request_handler,
+        # ~ passthrough_errors, ssl_context).serve_forever()
 
         palu = make_server(hostname, port, application, threaded,
-                    processes, request_handler,
-                    passthrough_errors, ssl_context)
-        #~ pinu = palu.serve_forever()            
+                           processes, request_handler,
+                           passthrough_errors, ssl_context)
+        # ~ pinu = palu.serve_forever()
         return palu
 
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
@@ -634,9 +636,9 @@ def run_simple(hostname, port, application, use_reloader=False,
             display_hostname = '[%s]' % display_hostname
         _log('info', ' * Running on %s://%s:%d/', ssl_context is None
              and 'http' or 'https', display_hostname, port)
-    if 0:         
-    #~ I had to break the auto-reloader for the autostart :(
-    #~ if use_reloader:
+    if 0:
+        # ~ I had to break the auto-reloader for the autostart :(
+        # ~ if use_reloader:
         # Create and destroy a socket so that any exceptions are raised before
         # we spawn a separate Python interpreter and lose this ability.
         address_family = select_ip_version(hostname, port)
@@ -646,5 +648,5 @@ def run_simple(hostname, port, application, use_reloader=False,
         test_socket.close()
         run_with_reloader(inner, extra_files, reloader_interval)
     else:
-        palu=inner()
-    return palu        
+        palu = inner()
+    return palu

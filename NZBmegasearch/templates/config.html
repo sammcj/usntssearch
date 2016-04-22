@@ -92,6 +92,11 @@
 			
 		</tr>
 
+		<tr>
+			<td><input type="checkbox" name="general_dereferer" id="general_dereferer" {{ genopt['general_dereferer_verbose'] }} ><label for="general_dereferer">Prefix third-party links with dereferer</label></td><td></td>
+			
+		</tr>
+
 		<tr class='config_table_opts_nonhover'>
 			<td> <br>Authentication (optional) </td><td></td>
 		</tr>
@@ -194,6 +199,9 @@
 			<td>Appended search terms, eg: 'R6 -german -french': <input type="text" name="searchaddontxt" id="searchaddontxt" class="conftbox" value="{{ genopt['searchaddontxt'] }}" size="19" ></td>
 		</tr>	
 
+		<tr>	
+			<td>No. days of retention: <input type="text" name="daysretention" id="retention" class="conftbox" value="{{ genopt['daysretention'] }}" size="5" ></td>
+		</tr>	
 	</tbody></table>
 
 	<div class='configsave'>
@@ -223,7 +231,7 @@
 	<table class="config_table_opts" summary="SendtoNZBGet" style="width: 420px;" id='tbl06'><thead>
 	<tr><th scope="col">NZBGet Integration</th> <th></th> <th></th>  <th></th></tr></thead><tbody>
 		<tr>
-				<td><label for="nzbget_url">Host:Port :</label> </td> 
+				<td><label for="nzbget_url">http/s://URL:PORT :</label> </td> 
 				<td><input type="text" name="nzbget_url" id="nzbget_url" value="{{ genopt['nzbget_url'] }}" size="15" class="conftbox"> </td> 
 				<td>  </td>
 				<td>  </td> 
@@ -786,8 +794,8 @@
 				chk1 = /^\d+$/.test(port_v);
 				if(!chk1 || (chk1==true && (parseInt(port_v)> 65535 ||  parseInt(port_v)< 1024 )) )
 				{
-					alert('<strong>ERROR</strong>: [Port] is a number-only field between [1024,65535]');
-					return false
+					alert('<strong>ERROR</strong>: Root access required for a port between 1024-65535');
+					return true
 				}
 
 				var usr_v = cfgform.general_usr.value.replace(/\s+/g, ' ')

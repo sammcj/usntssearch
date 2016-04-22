@@ -18,9 +18,9 @@ from jinja2.optimizer import optimize
 from jinja2.compiler import generate
 from jinja2.runtime import Undefined, new_context
 from jinja2.exceptions import TemplateSyntaxError, TemplateNotFound, \
-     TemplatesNotFound
+    TemplatesNotFound
 from jinja2.utils import import_string, LRUCache, Markup, missing, \
-     concat, consume, internalcode, _encode_filename
+    concat, consume, internalcode, _encode_filename
 
 
 # for direct template usage we have up to ten living environments
@@ -81,13 +81,13 @@ def load_extensions(environment, extensions):
 def _environment_sanity_check(environment):
     """Perform a sanity check on the environment."""
     assert issubclass(environment.undefined, Undefined), 'undefined must ' \
-           'be a subclass of undefined because filters depend on it.'
+                                                         'be a subclass of undefined because filters depend on it.'
     assert environment.block_start_string != \
            environment.variable_start_string != \
            environment.comment_start_string, 'block, variable and comment ' \
-           'start strings must be different'
+                                             'start strings must be different'
     assert environment.newline_sequence in ('\r', '\r\n', '\n'), \
-           'newline_sequence set to unknown line ending string.'
+        'newline_sequence set to unknown line ending string.'
     return environment
 
 
@@ -568,8 +568,9 @@ class Environment(object):
 
         if py_compile:
             import imp, marshal
+
             py_header = imp.get_magic() + \
-                u'\xff\xff\xff\xff'.encode('iso-8859-15')
+                        u'\xff\xff\xff\xff'.encode('iso-8859-15')
 
         def write_file(filename, data, mode):
             if zip:
@@ -585,6 +586,7 @@ class Environment(object):
 
         if zip is not None:
             from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, ZIP_STORED
+
             zip_file = ZipFile(target, 'w', dict(deflated=ZIP_DEFLATED,
                                                  stored=ZIP_STORED)[zip])
             log_function('Compiling into Zip archive "%s"' % target)
@@ -689,7 +691,7 @@ class Environment(object):
         if self.cache is not None:
             template = self.cache.get(name)
             if template is not None and (not self.auto_reload or \
-                                         template.is_up_to_date):
+                                                 template.is_up_to_date):
                 return template
         template = self.loader.load(self, name, globals)
         if self.cache is not None:
@@ -837,8 +839,8 @@ class Template(object):
         is used by the loaders and environment to create a template object.
         """
         namespace = {
-            'environment':  environment,
-            '__file__':     code.co_filename
+            'environment': environment,
+            '__file__': code.co_filename
         }
         exec code in namespace
         rv = cls._from_namespace(environment, namespace, globals)
@@ -1115,7 +1117,6 @@ class TemplateStream(object):
 
     def next(self):
         return self._next()
-
 
 # hook in default template class.  if anyone reads this comment: ignore that
 # it's possible to use custom templates ;-)

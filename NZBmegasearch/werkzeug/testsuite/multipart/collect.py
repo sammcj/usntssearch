@@ -9,6 +9,7 @@ from werkzeug.wrappers import Request, Response
 def copy_stream(request):
     from os import mkdir
     from time import time
+
     folder = 'request-%d' % time()
     mkdir(folder)
     environ = request.environ

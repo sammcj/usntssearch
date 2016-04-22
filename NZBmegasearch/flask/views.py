@@ -10,7 +10,6 @@
 """
 from .globals import request
 
-
 http_method_funcs = frozenset(['get', 'post', 'head', 'options',
                                'delete', 'put', 'trace', 'patch'])
 
@@ -78,6 +77,7 @@ class View(object):
         The arguments passed to :meth:`as_view` are forwarded to the
         constructor of the class.
         """
+
         def view(*args, **kwargs):
             self = view.view_class(*class_args, **class_kwargs)
             return self.dispatch_request(*args, **kwargs)
@@ -102,7 +102,6 @@ class View(object):
 
 
 class MethodViewType(type):
-
     def __new__(cls, name, bases, d):
         rv = type.__new__(cls, name, bases, d)
         if 'methods' not in d:

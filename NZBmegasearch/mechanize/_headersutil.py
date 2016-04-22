@@ -12,6 +12,7 @@ COPYING.txt included with the distribution).
 import os, re
 from types import StringType
 from types import UnicodeType
+
 STRING_TYPES = StringType, UnicodeType
 
 from _util import http2time
@@ -45,19 +46,22 @@ def is_html(ct_headers, url, allow_xhtml=False):
         html_types += [
             "text/xhtml", "text/xml",
             "application/xml", "application/xhtml+xml",
-            ]
+        ]
     return ct in html_types
 
 
 def unmatched(match):
     """Return unmatched part of re.Match object."""
     start, end = match.span(0)
-    return match.string[:start]+match.string[end:]
+    return match.string[:start] + match.string[end:]
 
-token_re =        re.compile(r"^\s*([^=\s;,]+)")
+
+token_re = re.compile(r"^\s*([^=\s;,]+)")
 quoted_value_re = re.compile(r"^\s*=\s*\"([^\"\\]*(?:\\.[^\"\\]*)*)\"")
-value_re =        re.compile(r"^\s*=\s*([^\s;,]*)")
+value_re = re.compile(r"^\s*=\s*([^\s;,]*)")
 escape_re = re.compile(r"\\(.)")
+
+
 def split_header_words(header_values):
     r"""Parse header values into a list of lists containing key,value pairs.
 
@@ -143,7 +147,10 @@ def split_header_words(header_values):
         if pairs: result.append(pairs)
     return result
 
+
 join_escape_re = re.compile(r"([\"\\])")
+
+
 def join_header_words(lists):
     """Do the inverse of the conversion done by split_header_words.
 
@@ -172,12 +179,14 @@ def join_header_words(lists):
         if attr: headers.append("; ".join(attr))
     return ", ".join(headers)
 
+
 def strip_quotes(text):
     if text.startswith('"'):
         text = text[1:]
     if text.endswith('"'):
         text = text[:-1]
     return text
+
 
 def parse_ns_headers(ns_headers):
     """Ad-hoc parser for Netscape protocol cookie-attributes.
@@ -234,8 +243,10 @@ def parse_ns_headers(ns_headers):
 
 
 def _test():
-   import doctest, _headersutil
-   return doctest.testmod(_headersutil)
+    import doctest, _headersutil
+
+    return doctest.testmod(_headersutil)
+
 
 if __name__ == "__main__":
-   _test()
+    _test()

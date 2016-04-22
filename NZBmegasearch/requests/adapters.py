@@ -44,6 +44,7 @@ class BaseAdapter(object):
 
 class HTTPAdapter(BaseAdapter):
     """Built-In HTTP Adapter for Urllib3."""
+
     def __init__(self, pool_connections=DEFAULT_POOLSIZE, pool_maxsize=DEFAULT_POOLSIZE):
         self.max_retries = DEFAULT_RETRIES
         self.config = {}
@@ -214,11 +215,11 @@ class HTTPAdapter(BaseAdapter):
 
                 r = low_conn.getresponse()
                 resp = HTTPResponse.from_httplib(r,
-                    pool=conn,
-                    connection=low_conn,
-                    preload_content=False,
-                    decode_content=False
-                )
+                                                 pool=conn,
+                                                 connection=low_conn,
+                                                 preload_content=False,
+                                                 decode_content=False
+                                                 )
 
         except socket.error as sockerr:
             raise ConnectionError(sockerr)

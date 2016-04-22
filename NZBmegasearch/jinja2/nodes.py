@@ -21,32 +21,31 @@ from jinja2.utils import Markup, MethodType, FunctionType
 #: the types we support for context functions
 _context_function_types = (FunctionType, MethodType)
 
-
 _binop_to_func = {
-    '*':        operator.mul,
-    '/':        operator.truediv,
-    '//':       operator.floordiv,
-    '**':       operator.pow,
-    '%':        operator.mod,
-    '+':        operator.add,
-    '-':        operator.sub
+    '*': operator.mul,
+    '/': operator.truediv,
+    '//': operator.floordiv,
+    '**': operator.pow,
+    '%': operator.mod,
+    '+': operator.add,
+    '-': operator.sub
 }
 
 _uaop_to_func = {
-    'not':      operator.not_,
-    '+':        operator.pos,
-    '-':        operator.neg
+    'not': operator.not_,
+    '+': operator.pos,
+    '-': operator.neg
 }
 
 _cmpop_to_func = {
-    'eq':       operator.eq,
-    'ne':       operator.ne,
-    'gt':       operator.gt,
-    'gteq':     operator.ge,
-    'lt':       operator.lt,
-    'lteq':     operator.le,
-    'in':       lambda a, b: a in b,
-    'notin':    lambda a, b: a not in b
+    'eq': operator.eq,
+    'ne': operator.ne,
+    'gt': operator.gt,
+    'gteq': operator.ge,
+    'lt': operator.lt,
+    'lteq': operator.le,
+    'in': lambda a, b: a in b,
+    'notin': lambda a, b: a not in b
 }
 
 
@@ -153,8 +152,8 @@ class Node(object):
         """
         for name in self.fields:
             if (exclude is only is None) or \
-               (exclude is not None and name not in exclude) or \
-               (only is not None and name in only):
+                    (exclude is not None and name not in exclude) or \
+                    (only is not None and name in only):
                 try:
                     yield name, getattr(self, name)
                 except AttributeError:
@@ -375,7 +374,7 @@ class BinExpr(Expr):
         eval_ctx = get_eval_context(self, eval_ctx)
         # intercepted operators cannot be folded at compile time
         if self.environment.sandboxed and \
-           self.operator in self.environment.intercepted_binops:
+                        self.operator in self.environment.intercepted_binops:
             raise Impossible()
         f = _binop_to_func[self.operator]
         try:
@@ -394,7 +393,7 @@ class UnaryExpr(Expr):
         eval_ctx = get_eval_context(self, eval_ctx)
         # intercepted operators cannot be folded at compile time
         if self.environment.sandboxed and \
-           self.operator in self.environment.intercepted_unops:
+                        self.operator in self.environment.intercepted_unops:
             raise Impossible()
         f = _uaop_to_func[self.operator]
         try:
@@ -441,6 +440,7 @@ class Const(Literal):
         an `Impossible` exception.
         """
         from compiler import has_safe_repr
+
         if not has_safe_repr(value):
             raise Impossible()
         return cls(value, lineno=lineno, environment=environment)
@@ -672,10 +672,12 @@ class Slice(Expr):
 
     def as_const(self, eval_ctx=None):
         eval_ctx = get_eval_context(self, eval_ctx)
+
         def const(obj):
             if obj is None:
                 return None
             return obj.as_const(eval_ctx)
+
         return slice(const(self.start), const(self.stop), const(self.step))
 
 
@@ -713,10 +715,11 @@ class Operand(Helper):
     """Holds an operator and an expression."""
     fields = ('op', 'expr')
 
+
 if __debug__:
     Operand.__doc__ += '\nThe following operators are available: ' + \
-        ', '.join(sorted('``%s``' % x for x in set(_binop_to_func) |
-                  set(_uaop_to_func) | set(_cmpop_to_func)))
+                       ', '.join(sorted('``%s``' % x for x in set(_binop_to_func) |
+                                        set(_uaop_to_func) | set(_cmpop_to_func)))
 
 
 class Mul(BinExpr):
@@ -907,4 +910,7 @@ class ScopedEvalContextModifier(EvalContextModifier):
 # make sure nobody creates custom nodes
 def _failing_new(*args, **kwargs):
     raise TypeError('can\'t create custom node types')
-NodeType.__new__ = staticmethod(_failing_new); del _failing_new
+
+
+NodeType.__new__ = staticmethod(_failing_new);
+del _failing_new

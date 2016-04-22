@@ -25,11 +25,9 @@ try:
 except ImportError:
     from StringIO import StringIO as BytesIO
 
-
 importable_object = 23
 
 _gettext_re = re.compile(r'_\((.*?)\)(?s)')
-
 
 i18n_templates = {
     'master.html': '<title>{{ page_title|default(_("missing")) }}</title>'
@@ -60,17 +58,16 @@ newstyle_i18n_templates = {
     'explicitvars.html': '{% trans foo="42" %}%(foo)s{% endtrans %}'
 }
 
-
 languages = {
     'de': {
-        'missing':                      u'fehlend',
-        'watch out':                    u'pass auf',
-        'One user online':              u'Ein Benutzer online',
-        '%(user_count)s users online':  u'%(user_count)s Benutzer online',
-        'User: %(num)s':                u'Benutzer: %(num)s',
-        'User: %(count)s':              u'Benutzer: %(count)s',
-        '%(num)s apple':                u'%(num)s Apfel',
-        '%(num)s apples':               u'%(num)s Äpfel'
+        'missing': u'fehlend',
+        'watch out': u'pass auf',
+        'One user online': u'Ein Benutzer online',
+        '%(user_count)s users online': u'%(user_count)s Benutzer online',
+        'User: %(num)s': u'Benutzer: %(num)s',
+        'User: %(count)s': u'Benutzer: %(count)s',
+        '%(num)s apple': u'%(num)s Apfel',
+        '%(num)s apples': u'%(num)s Äpfel'
     }
 }
 
@@ -94,9 +91,9 @@ i18n_env = Environment(
     extensions=['jinja2.ext.i18n']
 )
 i18n_env.globals.update({
-    '_':            gettext,
-    'gettext':      gettext,
-    'ngettext':     ngettext
+    '_': gettext,
+    'gettext': gettext,
+    'ngettext': ngettext
 })
 
 newstyle_i18n_env = Environment(
@@ -104,6 +101,7 @@ newstyle_i18n_env = Environment(
     extensions=['jinja2.ext.i18n']
 )
 newstyle_i18n_env.install_gettext_callables(gettext, ngettext, newstyle=True)
+
 
 class TestExtension(Extension):
     tags = set(['test'])
@@ -127,13 +125,11 @@ class TestExtension(Extension):
 
 
 class PreprocessorExtension(Extension):
-
     def preprocess(self, source, name, filename=None):
         return source.replace('[[TEST]]', '({{ foo }})')
 
 
 class StreamFilterExtension(Extension):
-
     def filter_stream(self, stream):
         for token in stream:
             if token.type == 'data':
@@ -166,7 +162,6 @@ class StreamFilterExtension(Extension):
 
 
 class ExtensionsTestCase(JinjaTestCase):
-
     def test_extend_late(self):
         env = Environment()
         env.add_extension('jinja2.ext.autoescape')
@@ -208,7 +203,7 @@ class ExtensionsTestCase(JinjaTestCase):
             {{ a }} = {{ b }}\
         ''')
         assert [x.strip() for x in tmpl.render(a=1, b=2).splitlines()] \
-            == ['42 = 23', '1 = 2']
+               == ['42 = 23', '1 = 2']
 
     def test_extension_nodes(self):
         env = Environment(extensions=[TestExtension])
@@ -240,8 +235,10 @@ class ExtensionsTestCase(JinjaTestCase):
     def test_extension_ordering(self):
         class T1(Extension):
             priority = 1
+
         class T2(Extension):
             priority = 2
+
         env = Environment(extensions=[T1, T2])
         ext = list(env.iter_extensions())
         assert ext[0].__class__ is T1
@@ -249,7 +246,6 @@ class ExtensionsTestCase(JinjaTestCase):
 
 
 class InternationalizationTestCase(JinjaTestCase):
-
     def test_trans(self):
         tmpl = i18n_env.get_template('child.html')
         assert tmpl.render(LANGUAGE='de') == '<title>fehlend</title>pass auf'
@@ -272,11 +268,12 @@ class InternationalizationTestCase(JinjaTestCase):
 
     def test_extract(self):
         from jinja2.ext import babel_extract
+
         source = BytesIO('''
         {{ gettext('Hello World') }}
         {% trans %}Hello World{% endtrans %}
         {% trans %}{{ users }} user{% pluralize %}{{ users }} users{% endtrans %}
-        '''.encode('ascii')) # make python 3 happy
+        '''.encode('ascii'))  # make python 3 happy
         assert list(babel_extract(source, ('gettext', 'ngettext', '_'), [], {})) == [
             (2, 'gettext', u'Hello World', []),
             (3, 'gettext', u'Hello World', []),
@@ -285,13 +282,14 @@ class InternationalizationTestCase(JinjaTestCase):
 
     def test_comment_extract(self):
         from jinja2.ext import babel_extract
+
         source = BytesIO('''
         {# trans first #}
         {{ gettext('Hello World') }}
         {% trans %}Hello World{% endtrans %}{# trans second #}
         {#: third #}
         {% trans %}{{ users }} user{% pluralize %}{{ users }} users{% endtrans %}
-        '''.encode('utf-8')) # make python 3 happy
+        '''.encode('utf-8'))  # make python 3 happy
         assert list(babel_extract(source, ('gettext', 'ngettext', '_'), ['trans', ':'], {})) == [
             (3, 'gettext', u'Hello World', ['first']),
             (4, 'gettext', u'Hello World', ['second']),
@@ -300,7 +298,6 @@ class InternationalizationTestCase(JinjaTestCase):
 
 
 class NewstyleInternationalizationTestCase(JinjaTestCase):
-
     def test_trans(self):
         tmpl = newstyle_i18n_env.get_template('child.html')
         assert tmpl.render(LANGUAGE='de') == '<title>fehlend</title>pass auf'
@@ -312,7 +309,7 @@ class NewstyleInternationalizationTestCase(JinjaTestCase):
 
     def test_complex_plural(self):
         tmpl = newstyle_i18n_env.from_string('{% trans foo=42, count=2 %}{{ count }} item{% '
-                                    'pluralize count %}{{ count }} items{% endtrans %}')
+                                             'pluralize count %}{{ count }} items{% endtrans %}')
         assert tmpl.render() == '2 items'
         self.assert_raises(TemplateAssertionError, i18n_env.from_string,
                            '{% trans foo %}...{% pluralize bar %}...{% endtrans %}')
@@ -370,7 +367,6 @@ class NewstyleInternationalizationTestCase(JinjaTestCase):
 
 
 class AutoEscapeTestCase(JinjaTestCase):
-
     def test_scoped_setting(self):
         env = Environment(extensions=['jinja2.ext.autoescape'],
                           autoescape=True)
@@ -382,7 +378,7 @@ class AutoEscapeTestCase(JinjaTestCase):
             {{ "<HelloWorld>" }}
         ''')
         assert tmpl.render().split() == \
-            [u'&lt;HelloWorld&gt;', u'<HelloWorld>', u'&lt;HelloWorld&gt;']
+               [u'&lt;HelloWorld&gt;', u'<HelloWorld>', u'&lt;HelloWorld&gt;']
 
         env = Environment(extensions=['jinja2.ext.autoescape'],
                           autoescape=False)
@@ -394,7 +390,7 @@ class AutoEscapeTestCase(JinjaTestCase):
             {{ "<HelloWorld>" }}
         ''')
         assert tmpl.render().split() == \
-            [u'<HelloWorld>', u'&lt;HelloWorld&gt;', u'<HelloWorld>']
+               [u'<HelloWorld>', u'&lt;HelloWorld&gt;', u'<HelloWorld>']
 
     def test_nonvolatile(self):
         env = Environment(extensions=['jinja2.ext.autoescape'],

@@ -24,7 +24,6 @@ except ImportError:
 
 
 class SimpleCacheTestCase(WerkzeugTestCase):
-
     def test_get_dict(self):
         c = cache.SimpleCache()
         c.set('a', 'a')
@@ -39,12 +38,11 @@ class SimpleCacheTestCase(WerkzeugTestCase):
         c = cache.SimpleCache()
         c.set_many({0: 0, 1: 1, 2: 4})
         assert c.get(2) == 4
-        c.set_many((i, i*i) for i in xrange(3))
+        c.set_many((i, i * i) for i in xrange(3))
         assert c.get(2) == 4
 
 
 class FileSystemCacheTestCase(WerkzeugTestCase):
-
     def test_set_get(self):
         tmp_dir = tempfile.mkdtemp()
         try:
@@ -67,7 +65,6 @@ class FileSystemCacheTestCase(WerkzeugTestCase):
         shutil.rmtree(tmp_dir)
         assert len(cache_files) <= THRESHOLD
 
-
     def test_filesystemcache_clear(self):
         tmp_dir = tempfile.mkdtemp()
         c = cache.FileSystemCache(cache_dir=tmp_dir)
@@ -81,7 +78,6 @@ class FileSystemCacheTestCase(WerkzeugTestCase):
 
 
 class RedisCacheTestCase(WerkzeugTestCase):
-
     def make_cache(self):
         return cache.RedisCache(key_prefix='werkzeug-test-case:')
 
@@ -147,7 +143,6 @@ class RedisCacheTestCase(WerkzeugTestCase):
         assert c.inc('foo') == 2
         assert c.dec('foo') == 1
         c.delete('foo')
-
 
     def test_true_false(self):
         c = self.make_cache()

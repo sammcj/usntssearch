@@ -13,11 +13,11 @@ import time
 
 from _clientcookie import CookieJar, Cookie, MappingIterator
 from _util import isstringlike, experimental
+
 debug = logging.getLogger("mechanize.cookies").debug
 
 
 class Firefox3CookieJar(CookieJar):
-
     """Firefox 3 cookie jar.
 
     The cookies are stored in Firefox 3's "cookies.sqlite" format.
@@ -58,6 +58,7 @@ class Firefox3CookieJar(CookieJar):
 
     def connect(self):
         import sqlite3  # not available in Python 2.4 stdlib
+
         self._conn = sqlite3.connect(self.filename)
         self._conn.isolation_level = "DEFERRED"
         self._create_table_if_necessary()
@@ -152,9 +153,11 @@ CREATE TABLE IF NOT EXISTS moz_cookies (id INTEGER PRIMARY KEY, name TEXT,
         where = " AND ".join(where_parts)
         if where:
             where = " WHERE " + where
+
         def clear(cur):
             cur.execute("DELETE FROM moz_cookies%s" % where,
                         tuple(sql_params))
+
         self._transaction(clear)
 
     def _row_from_cookie(self, cookie, cur):
@@ -200,6 +203,7 @@ DELETE FROM moz_cookies WHERE host = ? AND path = ? AND name = ?""",
             cur.execute("""\
 INSERT INTO moz_cookies VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 """, row)
+
         self._transaction(set_cookie)
 
     def __iter__(self):
@@ -213,6 +217,7 @@ SELECT * FROM moz_cookies ORDER BY name, path, host"""):
 
     def _cookies_for_request(self, request):
         session_cookies = CookieJar._cookies_for_request(self, request)
+
         def get_cookies(cur):
             query = cur.execute("SELECT host from moz_cookies")
             domains = [row[0] for row in query.fetchall()]
@@ -221,6 +226,7 @@ SELECT * FROM moz_cookies ORDER BY name, path, host"""):
                 cookies += self._persistent_cookies_for_domain(domain,
                                                                request, cur)
             return cookies
+
         persistent_coookies = self._transaction(get_cookies)
         return session_cookies + persistent_coookies
 
@@ -237,7 +243,7 @@ SELECT * from moz_cookies WHERE host = ? ORDER BY path""",
         r = []
         for cookie in cookies:
             if (cookie.path != last_path and
-                not self._policy.path_return_ok(cookie.path, request)):
+                    not self._policy.path_return_ok(cookie.path, request)):
                 last_path = cookie.path
                 continue
             if not self._policy.return_ok(cookie, request):

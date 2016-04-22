@@ -29,14 +29,13 @@ def path_check_app(request):
 
 
 class ServerFixerTestCase(WerkzeugTestCase):
-
     def test_lighttpd_cgi_root_fix(self):
         app = fixers.LighttpdCGIRootFix(path_check_app)
         response = Response.from_app(app, dict(create_environ(),
-            SCRIPT_NAME='/foo',
-            PATH_INFO='/bar',
-            SERVER_SOFTWARE='lighttpd/1.4.27'
-        ))
+                                               SCRIPT_NAME='/foo',
+                                               PATH_INFO='/bar',
+                                               SERVER_SOFTWARE='lighttpd/1.4.27'
+                                               ))
         assert response.data == 'PATH_INFO: /foo/bar\nSCRIPT_NAME: '
 
     def test_path_info_from_request_uri_fix(self):
@@ -49,6 +48,7 @@ class ServerFixerTestCase(WerkzeugTestCase):
 
     def test_proxy_fix(self):
         """Test the ProxyFix fixer"""
+
         @fixers.ProxyFix
         @Request.application
         def app(request):
@@ -57,13 +57,14 @@ class ServerFixerTestCase(WerkzeugTestCase):
                 # do not use request.host as this fixes too :)
                 request.environ['HTTP_HOST']
             ))
+
         environ = dict(create_environ(),
-            HTTP_X_FORWARDED_PROTO="https",
-            HTTP_X_FORWARDED_HOST='example.com',
-            HTTP_X_FORWARDED_FOR='1.2.3.4, 5.6.7.8',
-            REMOTE_ADDR='127.0.0.1',
-            HTTP_HOST='fake'
-        )
+                       HTTP_X_FORWARDED_PROTO="https",
+                       HTTP_X_FORWARDED_HOST='example.com',
+                       HTTP_X_FORWARDED_FOR='1.2.3.4, 5.6.7.8',
+                       REMOTE_ADDR='127.0.0.1',
+                       HTTP_HOST='fake'
+                       )
 
         response = Response.from_app(app, environ)
 
@@ -83,21 +84,24 @@ class ServerFixerTestCase(WerkzeugTestCase):
         @Request.application
         def app(request):
             return Response(request.remote_addr)
+
         environ = dict(create_environ(),
-            HTTP_X_FORWARDED_FOR=',',
-            REMOTE_ADDR='127.0.0.1',
-        )
+                       HTTP_X_FORWARDED_FOR=',',
+                       REMOTE_ADDR='127.0.0.1',
+                       )
 
         response = Response.from_app(app, environ)
         self.assert_equal(response.data, '127.0.0.1')
 
     def test_header_rewriter_fix(self):
         """Test the HeaderRewriterFix fixer"""
+
         @Request.application
         def application(request):
             return Response("", headers=[
                 ('X-Foo', 'bar')
             ])
+
         application = fixers.HeaderRewriterFix(application, ('X-Foo',), (('X-Bar', '42'),))
         response = Response.from_app(application, create_environ())
         assert response.headers['Content-Type'] == 'text/plain; charset=utf-8'
@@ -106,7 +110,6 @@ class ServerFixerTestCase(WerkzeugTestCase):
 
 
 class BrowserFixerTestCase(WerkzeugTestCase):
-
     def test_ie_fixes(self):
         @fixers.InternetExplorerFix
         @Request.application
@@ -145,7 +148,6 @@ class BrowserFixerTestCase(WerkzeugTestCase):
             response.headers['Content-Disposition'] = 'attachment; filename=foo.xls'
             return response
 
-
         # IE has no pragma or cache control
         pragma = ('no-cache',)
         c = Client(application, Response)
@@ -177,7 +179,6 @@ class BrowserFixerTestCase(WerkzeugTestCase):
         assert cc.no_cache
         assert cc.proxy_revalidate
         assert response.headers['content-disposition'] == 'attachment; filename=foo.xls'
-
 
 
 def suite():

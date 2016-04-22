@@ -33,12 +33,17 @@ COPYING.txt included with the distribution).
 """
 
 import sys, re, copy, time, urllib, types, logging
+
 try:
     import threading
-    _threading = threading; del threading
+
+    _threading = threading;
+    del threading
 except ImportError:
     import dummy_threading
-    _threading = dummy_threading; del dummy_threading
+
+    _threading = dummy_threading;
+    del dummy_threading
 
 MISSING_FILENAME_TEXT = ("a filename was not supplied (nor was the CookieJar "
                          "instance initialised with one)")
@@ -56,6 +61,7 @@ def reraise_unmasked_exceptions(unmasked=()):
     # catching input that's bad in unexpected ways.
     # This function re-raises some exceptions we don't want to trap.
     import mechanize, warnings
+
     if not mechanize.USE_BARE_EXCEPT:
         raise
     unmasked = unmasked + (KeyboardInterrupt, SystemExit, MemoryError)
@@ -64,6 +70,7 @@ def reraise_unmasked_exceptions(unmasked=()):
         raise
     # swallowed an exception
     import traceback, StringIO
+
     f = StringIO.StringIO()
     traceback.print_exc(None, f)
     msg = f.getvalue()
@@ -71,6 +78,8 @@ def reraise_unmasked_exceptions(unmasked=()):
 
 
 IPV4_RE = re.compile(r"\.\d+$")
+
+
 def is_HDN(text):
     """Return True if text is a host domain name."""
     # XXX
@@ -81,6 +90,7 @@ def is_HDN(text):
     return not (IPV4_RE.search(text) or
                 text == "" or
                 text[0] == "." or text[-1] == ".")
+
 
 def domain_match(A, B):
     """Return True if domain A domain-matches domain B, according to RFC 2965.
@@ -117,7 +127,8 @@ def domain_match(A, B):
         has_form_nb and
         B.startswith(".") and
         is_HDN(B[1:])
-        )
+    )
+
 
 def liberal_is_HDN(text):
     """Return True if text is a sort-of-like a host domain name.
@@ -126,6 +137,7 @@ def liberal_is_HDN(text):
 
     """
     return not IPV4_RE.search(text)
+
 
 def user_domain_match(A, B):
     """For blocking/accepting domains.
@@ -147,7 +159,10 @@ def user_domain_match(A, B):
         return True
     return False
 
+
 cut_port_re = re.compile(r":\d+$")
+
+
 def request_host(request):
     """Return request-host, as defined by RFC 2965.
 
@@ -162,8 +177,10 @@ def request_host(request):
     # remove port, if present
     return cut_port_re.sub("", host, 1)
 
+
 def request_host_lc(request):
     return request_host(request).lower()
+
 
 def eff_request_host(request):
     """Return a tuple (request-host, effective request-host name)."""
@@ -172,13 +189,16 @@ def eff_request_host(request):
         erhn = req_host + ".local"
     return req_host, erhn
 
+
 def eff_request_host_lc(request):
     req_host, erhn = eff_request_host(request)
     return req_host.lower(), erhn.lower()
 
+
 def effective_request_host(request):
     """Return the effective request-host, as defined by RFC 2965."""
     return eff_request_host(request)[1]
+
 
 def request_path(request):
     """Return path component of request-URI, as defined by RFC 2965."""
@@ -188,11 +208,12 @@ def request_path(request):
         path = "/" + path
     return path
 
+
 def request_port(request):
     host = request.get_host()
     i = host.find(':')
     if i >= 0:
-        port = host[i+1:]
+        port = host[i + 1:]
         try:
             int(port)
         except ValueError:
@@ -201,6 +222,7 @@ def request_port(request):
     else:
         port = DEFAULT_HTTP_PORT
     return port
+
 
 def request_is_unverifiable(request):
     try:
@@ -215,8 +237,12 @@ def request_is_unverifiable(request):
 # need to be escaped to form a valid HTTP URL (RFCs 2396 and 1738).
 HTTP_PATH_SAFE = "%/;:@&=+$,!~*'()"
 ESCAPED_CHAR_RE = re.compile(r"%([0-9a-fA-F][0-9a-fA-F])")
+
+
 def uppercase_escaped_char(match):
     return "%%%s" % match.group(1).upper()
+
+
 def escape_path(path):
     """Escape any invalid characters in HTTP URL, and uppercase all escapes."""
     # There's no knowing what character encoding was used to create URLs
@@ -232,6 +258,7 @@ def escape_path(path):
     path = urllib.quote(path, HTTP_PATH_SAFE)
     path = ESCAPED_CHAR_RE.sub(uppercase_escaped_char, path)
     return path
+
 
 def reach(h):
     """Return reach of host h, as defined by RFC 2965, section 1.
@@ -261,12 +288,13 @@ def reach(h):
     """
     i = h.find(".")
     if i >= 0:
-        #a = h[:i]  # this line is only here to show what a is
-        b = h[i+1:]
+        # a = h[:i]  # this line is only here to show what a is
+        b = h[i + 1:]
         i = b.find(".")
         if is_HDN(h) and (i >= 0 or b == "local"):
-            return "."+b
+            return "." + b
     return h
+
 
 def is_third_party(request):
     """
@@ -338,7 +366,6 @@ class Cookie:
 
     """
 
-
     _attrs = ("version", "name", "value",
               "port", "port_specified",
               "domain", "domain_specified", "domain_initial_dot",
@@ -390,10 +417,13 @@ class Cookie:
 
     def has_nonstandard_attr(self, name):
         return self._rest.has_key(name)
+
     def get_nonstandard_attr(self, name, default=None):
         return self._rest.get(name, default)
+
     def set_nonstandard_attr(self, name, value):
         self._rest[name] = value
+
     def nonstandard_attr_keys(self):
         return self._rest.keys()
 
@@ -408,8 +438,10 @@ class Cookie:
         return not (self == other)
 
     def __str__(self):
-        if self.port is None: p = ""
-        else: p = ":"+self.port
+        if self.port is None:
+            p = ""
+        else:
+            p = ":" + self.port
         limit = self.domain + p + self.path
         if self.value is not None:
             namevalue = "%s=%s" % (self.name, self.value)
@@ -462,6 +494,7 @@ class CookiePolicy:
      cookies)
 
     """
+
     def set_ok(self, cookie, request):
         """Return true if (and only if) cookie should be accepted from server.
 
@@ -605,7 +638,7 @@ class DefaultCookiePolicy(CookiePolicy):
     DomainRFC2965Match = 4
 
     DomainLiberal = 0
-    DomainStrict = DomainStrictNoDots|DomainStrictNonDomain
+    DomainStrict = DomainStrictNoDots | DomainStrictNonDomain
 
     def __init__(self,
                  blocked_domains=None, allowed_domains=None,
@@ -657,6 +690,7 @@ class DefaultCookiePolicy(CookiePolicy):
     def blocked_domains(self):
         """Return the sequence of blocked domains (as a tuple)."""
         return self._blocked_domains
+
     def set_blocked_domains(self, blocked_domains):
         """Set the sequence of blocked domains."""
         self._blocked_domains = tuple(blocked_domains)
@@ -670,6 +704,7 @@ class DefaultCookiePolicy(CookiePolicy):
     def allowed_domains(self):
         """Return None, or the sequence of allowed domains (as a tuple)."""
         return self._allowed_domains
+
     def set_allowed_domains(self, allowed_domains):
         """Set the sequence of allowed domains, or None."""
         if allowed_domains is not None:
@@ -696,7 +731,7 @@ class DefaultCookiePolicy(CookiePolicy):
         assert cookie.name is not None
 
         for n in "version", "verifiability", "name", "path", "domain", "port":
-            fn_name = "set_ok_"+n
+            fn_name = "set_ok_" + n
             fn = getattr(self, fn_name)
             if not fn(cookie, request):
                 return False
@@ -721,11 +756,11 @@ class DefaultCookiePolicy(CookiePolicy):
         if request_is_unverifiable(request) and is_third_party(request):
             if cookie.version > 0 and self.strict_rfc2965_unverifiable:
                 debug("   third-party RFC 2965 cookie during "
-                             "unverifiable transaction")
+                      "unverifiable transaction")
                 return False
             elif cookie.version == 0 and self.strict_ns_unverifiable:
                 debug("   third-party Netscape cookie during "
-                             "unverifiable transaction")
+                      "unverifiable transaction")
                 return False
         return True
 
@@ -733,7 +768,7 @@ class DefaultCookiePolicy(CookiePolicy):
         # Try and stop servers setting V0 cookies designed to hack other
         # servers that know both V0 and V1 protocols.
         if (cookie.version == 0 and self.strict_ns_set_initial_dollar and
-            cookie.name.startswith("$")):
+                cookie.name.startswith("$")):
             debug("   illegal name (starts with '$'): '%s'", cookie.name)
             return False
         return True
@@ -742,8 +777,8 @@ class DefaultCookiePolicy(CookiePolicy):
         if cookie.path_specified:
             req_path = request_path(request)
             if ((cookie.version > 0 or
-                 (cookie.version == 0 and self.strict_ns_set_path)) and
-                not req_path.startswith(cookie.path)):
+                     (cookie.version == 0 and self.strict_ns_set_path)) and
+                    not req_path.startswith(cookie.path)):
                 debug("   path attribute %s is not a prefix of request "
                       "path %s", cookie.path, req_path)
                 return False
@@ -763,15 +798,15 @@ class DefaultCookiePolicy(CookiePolicy):
             if domain.count(".") == 2:
                 # domain like .foo.bar
                 i = domain.rfind(".")
-                tld = domain[i+1:]
+                tld = domain[i + 1:]
                 sld = domain[1:i]
                 if (sld.lower() in [
                     "co", "ac",
                     "com", "edu", "org", "net", "gov", "mil", "int",
                     "aero", "biz", "cat", "coop", "info", "jobs", "mobi",
                     "museum", "name", "pro", "travel",
-                    ] and
-                    len(tld) == 2):
+                ] and
+                            len(tld) == 2):
                     # domain like .co.uk
                     return False
         return True
@@ -800,23 +835,23 @@ class DefaultCookiePolicy(CookiePolicy):
                 return False
             if cookie.version == 0:
                 if (not erhn.endswith(domain) and
-                    (not erhn.startswith(".") and
-                     not ("."+erhn).endswith(domain))):
+                        (not erhn.startswith(".") and
+                             not ("." + erhn).endswith(domain))):
                     debug("   effective request-host %s (even with added "
                           "initial dot) does not end end with %s",
                           erhn, domain)
                     return False
             if (cookie.version > 0 or
-                (self.strict_ns_domain & self.DomainRFC2965Match)):
+                    (self.strict_ns_domain & self.DomainRFC2965Match)):
                 if not domain_match(erhn, domain):
                     debug("   effective request-host %s does not domain-match "
                           "%s", erhn, domain)
                     return False
             if (cookie.version > 0 or
-                (self.strict_ns_domain & self.DomainStrictNoDots)):
+                    (self.strict_ns_domain & self.DomainStrictNoDots)):
                 host_prefix = req_host[:-len(domain)]
                 if (host_prefix.find(".") >= 0 and
-                    not IPV4_RE.search(req_host)):
+                        not IPV4_RE.search(req_host)):
                     debug("   host prefix %s for domain %s contains a dot",
                           host_prefix, domain)
                     return False
@@ -856,7 +891,7 @@ class DefaultCookiePolicy(CookiePolicy):
 
         for n in ("version", "verifiability", "secure", "expires", "port",
                   "domain"):
-            fn_name = "return_ok_"+n
+            fn_name = "return_ok_" + n
             fn = getattr(self, fn_name)
             if not fn(cookie, request):
                 return False
@@ -915,8 +950,8 @@ class DefaultCookiePolicy(CookiePolicy):
 
         # strict check of non-domain cookies: Mozilla does this, MSIE5 doesn't
         if (cookie.version == 0 and
-            (self.strict_ns_domain & self.DomainStrictNonDomain) and
-            not cookie.domain_specified and domain != erhn):
+                (self.strict_ns_domain & self.DomainStrictNonDomain) and
+                not cookie.domain_specified and domain != erhn):
             debug("   cookie with unspecified domain does not string-compare "
                   "equal to request domain")
             return False
@@ -925,7 +960,7 @@ class DefaultCookiePolicy(CookiePolicy):
             debug("   effective request-host name %s does not domain-match "
                   "RFC 2965 cookie domain %s", erhn, domain)
             return False
-        if cookie.version == 0 and not ("."+erhn).endswith(domain):
+        if cookie.version == 0 and not ("." + erhn).endswith(domain):
             debug("   request-host %s does not match Netscape cookie domain "
                   "%s", req_host, domain)
             return False
@@ -939,12 +974,12 @@ class DefaultCookiePolicy(CookiePolicy):
         # the side of letting cookies through.
         dotted_req_host, dotted_erhn = eff_request_host_lc(request)
         if not dotted_req_host.startswith("."):
-            dotted_req_host = "."+dotted_req_host
+            dotted_req_host = "." + dotted_req_host
         if not dotted_erhn.startswith("."):
-            dotted_erhn = "."+dotted_erhn
+            dotted_erhn = "." + dotted_erhn
         if not (dotted_req_host.endswith(domain) or
-                dotted_erhn.endswith(domain)):
-            #debug("   request domain %s does not match cookie domain %s",
+                    dotted_erhn.endswith(domain)):
+            # debug("   request domain %s does not match cookie domain %s",
             #      req_host, domain)
             return False
 
@@ -971,12 +1006,15 @@ def vals_sorted_by_key(adict):
     keys.sort()
     return map(adict.get, keys)
 
+
 class MappingIterator:
     """Iterates over nested mapping, depth-first, in sorted order by key."""
+
     def __init__(self, mapping):
         self._s = [(vals_sorted_by_key(mapping), 0, None)]  # LIFO stack
 
-    def __iter__(self): return self
+    def __iter__(self):
+        return self
 
     def next(self):
         # this is hairy because of lack of generators
@@ -1004,6 +1042,7 @@ class MappingIterator:
 # Used as second parameter to dict.get method, to distinguish absent
 # dict key from one with a None value.
 class Absent: pass
+
 
 class CookieJar:
     """Collection of HTTP cookies.
@@ -1098,6 +1137,7 @@ class CookieJar:
         cookies = self._cookies_for_request(request)
         # add cookies in order of most specific (i.e. longest) path first
         def decreasing_size(a, b): return cmp(len(b.path), len(a.path))
+
         cookies.sort(decreasing_size)
         return cookies
 
@@ -1153,7 +1193,7 @@ class CookieJar:
             # (not for Netscape protocol, which already has any quotes
             #  intact, due to the poorly-specified Netscape Cookie: syntax)
             if ((cookie.value is not None) and
-                self.non_word_re.search(cookie.value) and version > 0):
+                    self.non_word_re.search(cookie.value) and version > 0):
                 value = self.quote_re.sub(r"\\\1", cookie.value)
             else:
                 value = cookie.value
@@ -1169,7 +1209,7 @@ class CookieJar:
                 if cookie.domain.startswith("."):
                     domain = cookie.domain
                     if (not cookie.domain_initial_dot and
-                        domain.startswith(".")):
+                            domain.startswith(".")):
                         domain = domain[1:]
                     attrs.append('$Domain="%s"' % domain)
                 if cookie.port is not None:
@@ -1293,7 +1333,7 @@ class CookieJar:
                     v = self._now + v
                 if (k in value_attrs) or (k in boolean_attrs):
                     if (v is None and
-                        k not in ["port", "comment", "commenturl"]):
+                                k not in ["port", "comment", "commenturl"]):
                         debug("   missing value for %s attribute" % k)
                         bad_cookie = True
                         break
@@ -1344,7 +1384,7 @@ class CookieJar:
                     # Netscape spec parts company from reality here
                     path = path[:i]
                 else:
-                    path = path[:i+1]
+                    path = path[:i + 1]
             if len(path) == 0: path = "/"
 
         # set default domain
@@ -1357,7 +1397,7 @@ class CookieJar:
             req_host, erhn = eff_request_host_lc(request)
             domain = erhn
         elif not domain.startswith("."):
-            domain = "."+domain
+            domain = "." + domain
 
         # set default port
         port_specified = False
@@ -1407,7 +1447,7 @@ class CookieJar:
         for cookie in cookies:
             if cookie.version == 1:
                 cookie.rfc2109 = True
-                if rfc2109_as_netscape: 
+                if rfc2109_as_netscape:
                     # treat 2109 cookies as Netscape cookies rather than
                     # as RFC2965 cookies
                     cookie.version = 0
@@ -1422,9 +1462,9 @@ class CookieJar:
         netscape = self._policy.netscape
 
         if ((not rfc2965_hdrs and not ns_hdrs) or
-            (not ns_hdrs and not rfc2965) or
-            (not rfc2965_hdrs and not netscape) or
-            (not netscape and not rfc2965)):
+                (not ns_hdrs and not rfc2965) or
+                (not rfc2965_hdrs and not netscape) or
+                (not netscape and not rfc2965)):
             return []  # no relevant cookie headers: quick exit
 
         try:
@@ -1458,6 +1498,7 @@ class CookieJar:
                 def no_matching_rfc2965(ns_cookie, lookup=lookup):
                     key = ns_cookie.domain, ns_cookie.path, ns_cookie.name
                     return not lookup.has_key(key)
+
                 ns_cookies = filter(no_matching_rfc2965, ns_cookies)
 
             if ns_cookies:
@@ -1599,8 +1640,9 @@ class CookieJar:
     def __getitem__(self, i):
         if i == 0:
             self._getitem_iterator = self.__iter__()
-        elif self._prev_getitem_index != i-1: raise IndexError(
-            "CookieJar.__getitem__ only supports sequential iteration")
+        elif self._prev_getitem_index != i - 1:
+            raise IndexError(
+                "CookieJar.__getitem__ only supports sequential iteration")
         self._prev_getitem_index = i
         try:
             return self._getitem_iterator.next()
@@ -1628,6 +1670,7 @@ class CookieJar:
 
 
 class LoadError(Exception): pass
+
 
 class FileCookieJar(CookieJar):
     """CookieJar that can be loaded from and saved to a file.
@@ -1695,8 +1738,10 @@ class FileCookieJar(CookieJar):
 
         """
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         f = open(filename)
         try:
@@ -1713,8 +1758,10 @@ class FileCookieJar(CookieJar):
 
         """
         if filename is None:
-            if self.filename is not None: filename = self.filename
-            else: raise ValueError(MISSING_FILENAME_TEXT)
+            if self.filename is not None:
+                filename = self.filename
+            else:
+                raise ValueError(MISSING_FILENAME_TEXT)
 
         old_state = copy.deepcopy(self._cookies)
         self._cookies = {}

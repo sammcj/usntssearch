@@ -16,6 +16,7 @@ import doctest
 def suite():
     from jinja2 import utils, sandbox, runtime, meta, loaders, \
         ext, environment, bccache, nodes
+
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite(utils))
     suite.addTest(doctest.DocTestSuite(sandbox))

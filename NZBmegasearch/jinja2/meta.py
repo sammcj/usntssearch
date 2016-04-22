@@ -93,7 +93,7 @@ def find_referenced_templates(ast):
         # yield the consts that are strings.  We could warn here for
         # non string values
         elif isinstance(node, nodes.Include) and \
-             isinstance(node.template.value, (tuple, list)):
+                isinstance(node.template.value, (tuple, list)):
             for template_name in node.template.value:
                 if isinstance(template_name, basestring):
                     yield template_name

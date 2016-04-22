@@ -85,7 +85,7 @@ def get_host(environ):
         return environ['HTTP_HOST']
     result = environ['SERVER_NAME']
     if (environ['wsgi.url_scheme'], environ['SERVER_PORT']) not \
-       in (('https', '443'), ('http', '80')):
+            in (('https', '443'), ('http', '80')):
         result += ':' + environ['SERVER_PORT']
     return result
 
@@ -204,7 +204,7 @@ def extract_path_info(environ_or_baseurl, path_or_url, charset='utf-8',
         if len(parts) == 2:
             netloc, port = parts
             if (scheme == u'http' and port == u'80') or \
-               (scheme == u'https' and port == u'443'):
+                    (scheme == u'https' and port == u'443'):
                 port = None
         else:
             netloc = parts[0]
@@ -235,7 +235,7 @@ def extract_path_info(environ_or_baseurl, path_or_url, charset='utf-8',
                 return None
     else:
         if not (base_scheme in (u'http', u'https') and \
-                base_scheme == cur_scheme):
+                            base_scheme == cur_scheme):
             return None
 
     # are the netlocs compatible?
@@ -325,6 +325,7 @@ class SharedDataMiddleware(object):
             self.exports[key] = loader
         if disallow is not None:
             from fnmatch import fnmatch
+
             self.is_allowed = lambda x: not fnmatch(x, disallow)
         self.fallback_mimetype = fallback_mimetype
 
@@ -347,11 +348,13 @@ class SharedDataMiddleware(object):
 
     def get_package_loader(self, package, package_path):
         from pkg_resources import DefaultProvider, ResourceManager, \
-             get_provider
+            get_provider
+
         loadtime = datetime.utcnow()
         provider = get_provider(package)
         manager = ResourceManager()
         filesystem_bound = isinstance(provider, DefaultProvider)
+
         def loader(path):
             if path is None:
                 return None, None
@@ -367,6 +370,7 @@ class SharedDataMiddleware(object):
                 loadtime,
                 0
             )
+
         return loader
 
     def get_directory_loader(self, directory):
@@ -378,6 +382,7 @@ class SharedDataMiddleware(object):
             if os.path.isfile(path):
                 return os.path.basename(path), self._opener(path)
             return None, None
+
         return loader
 
     def generate_etag(self, mtime, file_size, real_filename):
@@ -604,6 +609,7 @@ def make_line_iter(stream, limit=None, buffer_size=10 * 1024):
     :param buffer_size: The optional buffer size.
     """
     stream = make_limited_stream(stream, limit)
+
     def _iter_basic_lines():
         _read = stream.read
         buffer = []
@@ -740,10 +746,11 @@ class LimitedStream(object):
         self.silent = silent
         if not silent:
             from warnings import warn
+
             warn(DeprecationWarning('non-silent usage of the '
-            'LimitedStream is deprecated.  If you want to '
-            'continue to use the stream in non-silent usage '
-            'override on_exhausted.'), stacklevel=2)
+                                    'LimitedStream is deprecated.  If you want to '
+                                    'continue to use the stream in non-silent usage '
+                                    'override on_exhausted.'), stacklevel=2)
 
     def __iter__(self):
         return self
@@ -761,6 +768,7 @@ class LimitedStream(object):
         if self.silent:
             return ''
         from exceptions import BadRequest
+
         raise BadRequest('input stream exhausted')
 
     def on_disconnect(self):
@@ -770,6 +778,7 @@ class LimitedStream(object):
         :exc:`~werkzeug.exceptions.ClientDisconnected` exception is raised.
         """
         from exceptions import ClientDisconnected
+
         raise ClientDisconnected()
 
     def exhaust(self, chunk_size=1024 * 16):

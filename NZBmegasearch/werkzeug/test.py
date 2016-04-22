@@ -25,7 +25,7 @@ from urls import url_encode, url_fix, iri_to_uri, _unquote
 from wsgi import get_host, get_current_url, ClosingIterator
 from utils import dump_cookie
 from datastructures import FileMultiDict, MultiDict, \
-     CombinedMultiDict, Headers, FileStorage
+    CombinedMultiDict, Headers, FileStorage
 
 
 def stream_encode_multipart(values, use_tempfile=True, threshold=1024 * 500,
@@ -71,8 +71,8 @@ def stream_encode_multipart(values, use_tempfile=True, threshold=1024 * 500,
                 content_type = getattr(value, 'content_type', None)
                 if content_type is None:
                     content_type = filename and \
-                        mimetypes.guess_type(filename)[0] or \
-                        'application/octet-stream'
+                                   mimetypes.guess_type(filename)[0] or \
+                                   'application/octet-stream'
                 if filename is not None:
                     write('; filename="%s"\r\n' % filename)
                 else:
@@ -107,6 +107,7 @@ def encode_multipart(values, boundary=None, charset='utf-8'):
 def File(fd, filename=None, mimetype=None):
     """Backwards compat."""
     from warnings import warn
+
     warn(DeprecationWarning('werkzeug.test.File is deprecated, use the '
                             'EnvironBuilder or FileStorage instead'))
     return FileStorage(fd, filename=filename, content_type=mimetype)
@@ -308,7 +309,7 @@ class EnvironBuilder(object):
             else:
                 for key, value in _iter_data(data):
                     if isinstance(value, (tuple, dict)) or \
-                       hasattr(value, 'read'):
+                            hasattr(value, 'read'):
                         self._add_file_from_data(key, value)
                     else:
                         self.form.setlistdefault(key).append(value)
@@ -319,6 +320,7 @@ class EnvironBuilder(object):
             self.files.add_file(key, *value)
         elif isinstance(value, dict):
             from warnings import warn
+
             warn(DeprecationWarning('it\'s no longer possible to pass dicts '
                                     'as `data`.  Use tuples or FileStorage '
                                     'objects instead'), stacklevel=2)
@@ -394,6 +396,7 @@ class EnvironBuilder(object):
 
     def form_property(name, storage, doc):
         key = '_' + name
+
         def getter(self):
             if self._input_stream is not None:
                 raise AttributeError('an input stream is defined')
@@ -402,9 +405,11 @@ class EnvironBuilder(object):
                 rv = storage()
                 setattr(self, key, rv)
             return rv
+
         def setter(self, value):
             self._input_stream = None
             setattr(self, key, value)
+
         return property(getter, setter, doc)
 
     form = form_property('form', MultiDict, doc='''
@@ -528,23 +533,23 @@ class EnvironBuilder(object):
             return _unquote(x)
 
         result.update({
-            'REQUEST_METHOD':       self.method,
-            'SCRIPT_NAME':          _path_encode(self.script_root),
-            'PATH_INFO':            _path_encode(self.path),
-            'QUERY_STRING':         self.query_string,
-            'SERVER_NAME':          self.server_name,
-            'SERVER_PORT':          str(self.server_port),
-            'HTTP_HOST':            self.host,
-            'SERVER_PROTOCOL':      self.server_protocol,
-            'CONTENT_TYPE':         content_type or '',
-            'CONTENT_LENGTH':       str(content_length or '0'),
-            'wsgi.version':         self.wsgi_version,
-            'wsgi.url_scheme':      self.url_scheme,
-            'wsgi.input':           input_stream,
-            'wsgi.errors':          self.errors_stream,
-            'wsgi.multithread':     self.multithread,
-            'wsgi.multiprocess':    self.multiprocess,
-            'wsgi.run_once':        self.run_once
+            'REQUEST_METHOD': self.method,
+            'SCRIPT_NAME': _path_encode(self.script_root),
+            'PATH_INFO': _path_encode(self.path),
+            'QUERY_STRING': self.query_string,
+            'SERVER_NAME': self.server_name,
+            'SERVER_PORT': str(self.server_port),
+            'HTTP_HOST': self.host,
+            'SERVER_PROTOCOL': self.server_protocol,
+            'CONTENT_TYPE': content_type or '',
+            'CONTENT_LENGTH': str(content_length or '0'),
+            'wsgi.version': self.wsgi_version,
+            'wsgi.url_scheme': self.url_scheme,
+            'wsgi.input': input_stream,
+            'wsgi.errors': self.errors_stream,
+            'wsgi.multithread': self.multithread,
+            'wsgi.multiprocess': self.multiprocess,
+            'wsgi.run_once': self.run_once
         })
         for key, value in self.headers.to_list(self.charset):
             result['HTTP_%s' % key.upper().replace('-', '_')] = value
@@ -710,11 +715,11 @@ class Client(object):
             # the old request
 
             redirect_kwargs = {
-                'path':             script_root,
-                'base_url':         base_url,
-                'query_string':     qs,
-                'as_tuple':         True,
-                'buffered':         buffered,
+                'path': script_root,
+                'base_url': base_url,
+                'query_string': qs,
+                'as_tuple': True,
+                'buffered': buffered,
                 'follow_redirects': False,
             }
             environ, rv = self.redirect_client.open(**redirect_kwargs)

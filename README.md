@@ -1,3 +1,5 @@
+Doesn't seem to play ball with automation tools... thinking of an alternative/fresh start
+
 **NZBmegasearcH**
 ======================
 
@@ -10,6 +12,24 @@ NZBmegasearcH collects all your (not only) newznab-based accounts to one place. 
 All credits to the original authors. 
 
 ## Updates
+**Changes in v0.56 (11/11/2015)**
++ Merged Undeadhunters NzbGet fix
++ Merged HackedServers rearranged search priority + tvbid (replaced)
++ Replaced tvbid/tvrage by tvmaze as workaround
++ implemented thetvdb lookup for (possible) future implementations
++ removal of AnimeNzb
+
+**Changes in v0.55 (3/8/2015)**
++ Changed default timeouts (higher)
++ gingadaddy is no longer set to use https
++ updated jQuery to 2.1.4
++ added option to disable url warping
++ changed user agents
++ fixed piratenzb not returning any results
++ merged fix from cauchy49:cauchy49-patch-api-url-with-proxy-1
+
+**Changes in v0.54**
++ Fix issue in tvdbid being an int and it expecting a string
 
 **Changes in v0.53 (20/5/2015)**
 + no longer asks for the wrong login/pw on accessing the config

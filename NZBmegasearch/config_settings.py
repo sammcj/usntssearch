@@ -100,6 +100,7 @@ class CfgSettings:
         parser.set('general', 'trends', '0')
         parser.set('general', 'trends_qty', request_form['seltrqty'])
         parser.set('general', 'smartsearch', '0')
+        parser.set('general', 'use_warp', '0')
         parser.set('general', 'cache_active', '0')
         parser.set('general', 'general_ipaddress', '')
         parser.set('general', 'predb_active', '0')
@@ -123,6 +124,8 @@ class CfgSettings:
             parser.set('general', 'search_suggestions', '1')
         if (request_form.has_key('smartsearch') == True):
             parser.set('general', 'smartsearch', '1')
+        if (request_form.has_key('use_warp') == True):
+            parser.set('general', 'use_warp', '1')
         if (request_form.has_key('predb_active') == True):
             parser.set('general', 'predb_active', '1')
         if (request_form.has_key('cache_active') == True):
@@ -355,6 +358,7 @@ class CfgSettings:
         gen_search_default = parser.get('general', 'search_default')
         gen_trends_qty = parser.getint('general', 'trends_qty')
         smartsearch = parser.getint('general', 'smartsearch')
+        use_warp = parser.getint('general', 'use_warp')
         cache_active = parser.getint('general', 'cache_active')
         searchaddontxt = parser.get('general', 'searchaddontxt')
         daysretention = parser.getint('general', 'daysretention')
@@ -363,6 +367,7 @@ class CfgSettings:
                      'config_user': config_user,
                      'config_pwd': config_pwd,
                      'smartsearch': smartsearch,
+                     'use_warp' : use_warp,
                      'searchaddontxt': searchaddontxt,
                      'daysretention': daysretention,
                      'general_suggestion': gen_sugg,
@@ -462,6 +467,8 @@ class CfgSettings:
                 self.cgen['trends_qty'] = cst_parser.getint('general', 'trends_qty')
             if (cst_parser.has_option('general', 'smartsearch')):
                 self.cgen['smartsearch'] = cst_parser.getint('general', 'smartsearch')
+            if (cst_parser.has_option('general', 'use_warp')):
+                self.cgen['use_warp'] = cst_parser.getint('general', 'use_warp')
             if (cst_parser.has_option('general', 'max_cache_age')):
                 self.cgen['max_cache_age'] = cst_parser.getint('general', 'max_cache_age')
             if (cst_parser.has_option('general', 'max_cache_qty')):
@@ -703,6 +710,8 @@ class CfgSettings:
             genopt['general_trend_verbose'] = 'checked=yes'
         if (genopt['smartsearch'] == 1):
             genopt['smartsearch_verbose'] = 'checked=yes'
+        if (genopt['use_warp'] == 1):
+            genopt['use_warp_verbose'] = 'checked=yes'
         if (genopt['cache_active'] == 1):
             genopt['cache_active_verbose'] = 'checked=yes'
         genopt['general_ipaddress_verbose'] = 'AUTO'

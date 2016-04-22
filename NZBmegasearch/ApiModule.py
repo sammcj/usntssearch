@@ -30,10 +30,10 @@ import urllib2
 import os
 import logging
 import copy
-import time
 import uuid
 
 log = logging.getLogger(__name__)
+
 
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 class ApiResponses:
@@ -48,12 +48,12 @@ class ApiResponses:
         self.tvrage_rqheaders = {
             'Connection': 'keep-alive;',
             'Cache-Control': 'max-age=0',
+            'Content-Type': 'application/json',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17',
-            'Referer': 'http://services.tvrage.com/info.php?page=main',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
             'Accept-Encoding': 'gzip,deflate,sdch',
             'Accept-Language': 'en-US,en;q=0.8',
-            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3'
+            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
         }
         if (conf is not None):
             self.timeout = conf[0]['timeout']
@@ -86,8 +86,8 @@ class ApiResponses:
                 response = self.couchpotato_req()
             elif (typesearch == 'search'):
                 response = self.generate_tsearch_nabresponse()
-            # ~ elif (typesearch == 'music'):
-            # ~ response = self.headphones_req()
+                # ~ elif (typesearch == 'music'):
+                # ~ response = self.headphones_req()
             elif (typesearch == 'get'):
                 filetosend = self.proxy_NZB_file()
                 return filetosend
@@ -177,12 +177,12 @@ class ApiResponses:
             onearg = dict(urlparse.parse_qsl(sq[i]))
             if ('m' in onearg):
                 arguments['m'] = onearg['m']
-            # ~ LEGACY CODE FOR CP
-            # ~ arguments={}
-            # ~ arguments['x'] = self.args['id']
-            # ~ print self.args
-            # ~ if('m' in self.args):
-            # ~ arguments['m'] = self.args['m']
+                # ~ LEGACY CODE FOR CP
+                # ~ arguments={}
+                # ~ arguments['x'] = self.args['id']
+                # ~ print self.args
+                # ~ if('m' in self.args):
+                # ~ arguments['m'] = self.args['m']
         return self.wrp.beam(arguments)
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -206,20 +206,28 @@ class ApiResponses:
         if (self.args.has_key('rid')):
             # ~ print 'requested series ID'
             # ~ request rage
-            tvrage_show = self.tvrage_getshowinfo(self.args['rid'])
+            tvrage_show = self.tvmaze_getshowinfo(self.args['rid'], 'tvrage')
             if (len(tvrage_show['showtitle'])):
                 return self.generate_tvserie_nabresponse(tvrage_show)
             else:
                 return render_template('api_error.html')
+        elif (self.args.has_key('tvdbid')):
+            # ~ print 'requested series ID'
+            # ~ request tvdbid
+            tvrage_show = self.tvmaze_getshowinfo(self.args['tvdbid'], 'thetvdb')
+            if (len(tvrage_show['showtitle'])):
+                return self.generate_tvserie_nabresponse(tvrage_show)
+            else:
+                return render_template('api_error.html')
+        elif (self.args.has_key('q')):
+            query = {'showtitle': self.args['q']}
+            return self.generate_tvserie_nabresponse(query)
         elif (self.args.has_key('cat')):
             if ((self.args['cat'].find('5030') != -1) or (self.args['cat'].find('5040') != -1)):
                 return self.generate_tvserie_nabresponse_broadcast();
             else:
                 return render_template('api_error.html')
             # if user searches for a query, look it up
-        elif (self.args.has_key('q')):
-            query = {'showtitle': self.args['q']}
-            return self.generate_tvserie_nabresponse(query)
         # use userdefined category
         elif (self.args.has_key('cat')):
             return self.generate_tvserie_nabresponse_broadcast(self.args['cat']);
@@ -231,12 +239,12 @@ class ApiResponses:
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 
-    def generate_tvserie_nabresponse_broadcast(self, catIDs='5040,5030'):
+    def generate_tvserie_nabresponse_broadcast(self):
 
         addparams = dict(
-            age='3000',
+            age='1500',
             t='tvsearch',
-            cat=catIDs)
+            cat='5040,5030')
 
         rawResults = SearchModule.performSearch('', self.cfg, self.cfg_ds, addparams)
         # ~ rawResults = SearchModule.performSearch('', self.cfg, None, addparams)
@@ -280,33 +288,32 @@ class ApiResponses:
 
     # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
-
-    def tvrage_getshowinfo(self, rid):
+    def tvmaze_getshowinfo(self, rid, idtype):
         parsed_data = {'showtitle': ''}
 
-        url_tvrage = 'http://services.tvrage.com/feeds/showinfo.php'
-        urlParams = dict(sid=rid)
+        url_tvrage = 'http://api.tvmaze.com/lookup/shows'
+
+        urlParams = { idtype : rid }
         # ~ loading
         try:
-            http_result = requests.get(url=url_tvrage, params=urlParams, verify=False, timeout=self.timeout,
+            request = requests.get(url=url_tvrage, params=urlParams, verify=False, timeout=self.timeout,
                                        headers=self.tvrage_rqheaders)
         except Exception as e:
-            print 'TV-RAGE does not respond -- ', e
+            print 'TVMaze does not respond -- ', e
             log.critical(str(e))
             return parsed_data
 
-        data = http_result.text
+        data = request.json()
         # ~ parsing
         try:
-            tree = ET.fromstring(data.encode('utf-8'))
+            showtitle = data['name']
         except Exception as e:
-            print 'TV-RAGE has sintax errors -- ', e
+            print 'TVMaze unable to parse showtitle -- ', e
             log.critical(str(e))
             return parsed_data
 
-        showtitle = tree.find("showname")
         if (showtitle is not None):
-            parsed_data['showtitle'] = showtitle.text
+            parsed_data['showtitle'] = showtitle
 
         return parsed_data
 
@@ -406,16 +413,6 @@ class ApiResponses:
         # ~ no sorting
         for i in xrange(len(results)):
             if (results[i]['ignore'] == 0):
-                # retention
-                totdays = int((time.time() - results[i]['posting_date_timestamp']) / (3600 * 24))
-                if (totdays == 0):
-                    totdays = float((time.time() - results[i]['posting_date_timestamp']) / (3600))
-                    if (totdays < 0):
-                        totdays = -totdays
-                    totdays = totdays / 100.0
-                if (totdays > float(self.cgen['daysretention'])):
-                    continue
-
                 if (results[i]['url'] is None):
                     results[i]['url'] = ""
                 qryforwarp = self.wrp.chash64_encode(results[i]['url'])
@@ -430,16 +427,16 @@ class ApiResponses:
                 niceResults_row = {
                     # ~ 'url': results[i]['url'],
                     'url': self.rqurl + self.cgen['revproxy'] + '/warp?x=' + qryforwarp,
-                    'encodedurl': uuid.uuid4(),
+                    'encodedurl': qryforwarp,
                     'title': results[i]['title'],
                     'filesize': results[i]['size'],
                     'age': human_readable_time,
                     'providertitle': results[i]['providertitle'],
-                    'providerurl': results[i]['provider']
+                    'providerurl': 'http://www.derefer.me/?' + results[i]['release_comments']
                 }
 
                 # ~ non CP request generate might errors if no url is found in the permalink
-                if (self.typesearch != 0 or self.typesearch != 1):
+                if (self.typesearch != 0):
                     niceResults_row['encodedurl'] = self.rqurl + '/' + str(uuid.uuid4())
 
                 niceResults.append(niceResults_row)

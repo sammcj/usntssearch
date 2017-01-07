@@ -39,24 +39,24 @@ openssl_imported = True
 try:
 	from OpenSSL import SSL
 except ImportError as exc:
-    print ">> Warning: failed to import OPENSSL module ({})".format(exc)
-    openssl_imported = False
+	print ">> Warning: failed to import OPENSSL module ({})".format(exc)
+	openssl_imported = False
 
 sessionid_string = base64.urlsafe_b64encode(os.urandom(10)).replace('-', '').replace('=', '').replace('/', '').replace(
-    '+', '')
+	'+', '')
 
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 def loginit():
 	log = logging.getLogger() 
-    handler = logging.handlers.RotatingFileHandler(logsdir + 'nzbmegasearch.log', maxBytes=cfgsets.cgen['log_size'],
-                                                   backupCount=cfgsets.cgen['log_backupcount'])
+	handler = logging.handlers.RotatingFileHandler(logsdir + 'nzbmegasearch.log', maxBytes=cfgsets.cgen['log_size'],
+												   backupCount=cfgsets.cgen['log_backupcount'])
 	log.setLevel(logging.INFO) 
 	formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 	handler.setFormatter(formatter)
 	log.addHandler(handler)
 	log.info(motd)
 
-    # ~ HOOK INTO STDOUT CONSOLE
+	# ~ HOOK INTO STDOUT CONSOLE
 	stdout_logger = logging.getLogger('TERMINAL')
 	sl = miscdefs.StreamToLogger(stdout_logger, logging.INFO)
 	sys.stdout = sl
@@ -75,7 +75,7 @@ def reload_all():
 	cfgsets.cgen['large_server'] = LARGESERVER
 	sugg = SuggestionResponses(cfgsets.cfg, cfgsets.cgen)
 	ds = DeepsearchModule.DeepSearch(cfgsets.cfg_deep, cfgsets.cgen)
-    wrp = Warper(cfgsets.cgen, cfgsets.cfg, ds)
+	wrp = Warper(cfgsets.cgen, cfgsets.cfg, ds)
 	mega_parall = megasearch.DoParallelSearch(cfgsets.cfg, cfgsets.cgen, ds, wrp)
 	apiresp = ApiResponses(cfgsets.cfg, cfgsets.cgen, wrp, ds)
 	getsmartinfo = nzbsanity.GetNZBInfo(cfgsets.cfg, cfgsets.cgen, ds,  app)
@@ -95,7 +95,7 @@ if (len(os.getenv('OPENSHIFT_DATA_DIR', ''))):
 
 if (len(sys.argv) > 1):
 	for argv in sys.argv:
-        if (argv == 'help'):
+		if (argv == 'help'):
 			print ''
 			print '`debug`: start in debug mode'
 			print '`large`: modality for GUNICORN + NGINX large server'
@@ -103,15 +103,15 @@ if (len(sys.argv) > 1):
 			print ''
 			exit()
 
-        if (argv == 'debug'):
+		if (argv == 'debug'):
 			print '====== DEBUGMODE DEBUGMODE DEBUGMODE DEBUGMODE ======'
 			DEBUGFLAG = True	
 
-        if (argv == 'large'):
+		if (argv == 'large'):
 			print '====== GUNICORN + NGIX server ======'
 			LARGESERVER = True
 
-        if (argv == 'daemon'):
+		if (argv == 'daemon'):
 			print '====== DAEMON MODE ======'
 			miscdefs.daemonize(logsdir)	
 
@@ -125,7 +125,7 @@ if (__name__ == 'mega2' and len(oshift_dirconf) == 0):
 cver = miscdefs.ChkVersion(DEBUGFLAG) 
 print '>> version: ' + str(cver.ver_notify['curver'])
 motd = motd + ' v.' + str(cver.ver_notify['curver']) + ' large_server: ' + str(LARGESERVER) + ' debug: ' + str(
-    DEBUGFLAG)
+	DEBUGFLAG)
 cfgsets = config_settings.CfgSettings()
 first_time = 0
 # ~ init logger
@@ -155,9 +155,9 @@ if (DEBUGFLAG):
 @app.route('/poweroff', methods=['GET'])
 @auth.requires_auth
 def poweroff():
-    if (cfgsets.cgen['large_server'] == False):
-        if ('sid' in request.args):
-            if (request.args['sid'] == sessionid_string):
+	if (cfgsets.cgen['large_server'] == False):
+		if ('sid' in request.args):
+			if (request.args['sid'] == sessionid_string):
 				os._exit(0)
 	return main_index()
 
@@ -165,9 +165,9 @@ def poweroff():
 @app.route('/restart', methods=['GET'])
 @auth.requires_auth
 def reboot():
-    if (cfgsets.cgen['large_server'] == False):
-        if ('sid' in request.args):
-            if (request.args['sid'] == sessionid_string):
+	if (cfgsets.cgen['large_server'] == False):
+		if ('sid' in request.args):
+			if (request.args['sid'] == sessionid_string):
 				app.restart()
 				return render_template('restart.html');
 	return main_index();			
@@ -176,14 +176,14 @@ def reboot():
 @app.route('/legal', methods=['GET'])
 @auth.requires_auth
 def legal():
-    if (cfgsets.cgen['large_server'] == True):
+	if (cfgsets.cgen['large_server'] == True):
 		return render_template('legal.html')
 	return main_index()
 
 
 @app.route('/robots.txt')
 def static_from_root():
-    return send_from_directory(app.static_folder, request.path[1:])
+	return send_from_directory(app.static_folder, request.path[1:])
 			
  
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -197,24 +197,24 @@ def log():
 @app.route('/s', methods=['GET'])
 @auth.requires_auth
 def search():
-    if (first_time and cfgsets.cgen['large_server'] == False):
+	if (first_time and cfgsets.cgen['large_server'] == False):
 		return (main_index)
 	
 	sugg.asktrend_allparallel()	
-    # ~ parallel suggestion and search
-    if (cfgsets.cgen['general_suggestion'] == 1):
-        t1 = threading.Thread(target=sugg.ask, args=(request.args,))
-    if (cfgsets.cgen['predb_active'] == 1):
-        t3 = threading.Thread(target=sugg.ask_predb, args=(request.args,))
-    t2 = threading.Thread(target=mega_parall.dosearch, args=(request.args,))
+	# ~ parallel suggestion and search
+	if (cfgsets.cgen['general_suggestion'] == 1):
+		t1 = threading.Thread(target=sugg.ask, args=(request.args,))
+	if (cfgsets.cgen['predb_active'] == 1):
+		t3 = threading.Thread(target=sugg.ask_predb, args=(request.args,))
+	t2 = threading.Thread(target=mega_parall.dosearch, args=(request.args,))
 	t2.start()
-    if (cfgsets.cgen['general_suggestion'] == 1):
+	if (cfgsets.cgen['general_suggestion'] == 1):
 		t1.start()
-    if (cfgsets.cgen['predb_active'] == 1):
+	if (cfgsets.cgen['predb_active'] == 1):
 		t3.start()		
-    if (cfgsets.cgen['general_suggestion'] == 1):
+	if (cfgsets.cgen['general_suggestion'] == 1):
 		t1.join()
-    if (cfgsets.cgen['predb_active'] == 1):
+	if (cfgsets.cgen['predb_active'] == 1):
 		t3.join()
 	t2.join()
 
@@ -224,7 +224,7 @@ def search():
 						'trend_movie': sugg.movie_trend, 
 						'trend_show': sugg.show_trend, 
 						'ver': cver.ver_notify,
-                       'debugflag': DEBUGFLAG,
+					   'debugflag': DEBUGFLAG,
 						'sid': sessionid_string
 						}
 	return mega_parall.renderit(params_dosearch)
@@ -234,22 +234,22 @@ def search():
 @app.route('/config', methods=['GET', 'POST'])
 @auth.requires_admin
 def config():
-    # ~ flask bug in threads, had to solve like that
+	# ~ flask bug in threads, had to solve like that
 	cfgsets.cgen['large_server'] = LARGESERVER
 
-    if (cfgsets.cgen['large_server'] == False):
+	if (cfgsets.cgen['large_server'] == False):
 		return cfgsets.edit_config()
 	else:	
 		return main_index();
 
-        
+		
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        
+		
 @app.route('/warp', methods=['GET'])
 def warpme():
 	res = wrp.beam(request.args)
 	
-    if (res == -1):
+	if (res == -1):
 		return main_index()
 	else: 	
 		return res
@@ -275,14 +275,14 @@ def rss():
 		else:	
 				return '[API key protection ACTIVE] API key required'
 	else:
-        return apiresp.dosearch_rss(request.args, urlparse(request.url)), 200, {'Content-Type': 'application/rss+xml'}
+		return apiresp.dosearch_rss(request.args, urlparse(request.url)), 200, {'Content-Type': 'application/rss+xml'}
 
 
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 @app.route('/smartget', methods=['POST'])
 def smartget():
-    jsonret = jsonify(code=getsmartinfo.process(request.data, urlparse(request.url)))
+	jsonret = jsonify(code=getsmartinfo.process(request.data, urlparse(request.url)))
 	return jsonret
 	
 
@@ -290,14 +290,14 @@ def smartget():
 
 @app.route('/tosab')
 def tosab():
-    return jsonify(code=mega_parall.tosab(request.args, urlparse(request.url)))
+	return jsonify(code=mega_parall.tosab(request.args, urlparse(request.url)))
 
 
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 @app.route('/tonzbget')
 def tonzbget():
-    return jsonify(code=mega_parall.tonzbget(request.args, urlparse(request.url)))
+	return jsonify(code=mega_parall.tonzbget(request.args, urlparse(request.url)))
 	
 	
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -308,9 +308,9 @@ def saveconfig():
 	global first_time
 	savedok = 0
 	if request.method == 'POST':
-        # ~ just for showing a minimum waiting
+		# ~ just for showing a minimum waiting
 		time.sleep(1)		
-        if (len(request.form) > 0):
+		if (len(request.form) > 0):
 			cfgsets.write(request.form)
 			first_time = 0
 			savedok = 1
@@ -324,11 +324,11 @@ def saveconfig():
 @app.route('/', methods=['GET'])
 @auth.requires_auth
 def main_index():	
-    # ~ flask bug in threads, had to solve like that
+	# ~ flask bug in threads, had to solve like that
 	cfgsets.cgen['large_server'] = LARGESERVER
-    # ~ ~
+	# ~ ~
 	global first_time
-    if (cfgsets.cgen['large_server'] == False):
+	if (cfgsets.cgen['large_server'] == False):
 
 		if first_time == 1:
 			return cfgsets.edit_config()
@@ -341,7 +341,7 @@ def main_index():
 						'trend_movie': sugg.movie_trend, 
 						'trend_show': sugg.show_trend, 
 						'ver': cver.ver_notify,
-                       'debugflag': DEBUGFLAG,
+					   'debugflag': DEBUGFLAG,
 						'sid': sessionid_string}
 	return mega_parall.renderit_empty(params_dosearch)
 
@@ -371,9 +371,9 @@ def api():
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
-                               			
+	return send_from_directory(os.path.join(app.root_path, 'static'),
+							   'favicon.ico', mimetype='image/vnd.microsoft.icon')
+							   			
 
 # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
@@ -400,10 +400,10 @@ if __name__ == "__main__":
 	
 	ctx = None
 	
-    if (cfgsets.cgen['general_https'] == 1 and openssl_imported == True):
+	if (cfgsets.cgen['general_https'] == 1 and openssl_imported == True):
 		print '>> HTTPS security activated' 
 		ctx = SSL.Context(SSL.SSLv23_METHOD)
-        ctx.use_privatekey_file(certdir + 'server.key')
-        ctx.use_certificate_file(certdir + 'server.crt')
+		ctx.use_privatekey_file(certdir + 'server.key')
+		ctx.use_certificate_file(certdir + 'server.crt')
 	
-    app.run(host=chost, port=cfgsets.cgen['portno'], debug=True, ssl_context=ctx)
+	app.run(host=chost, port=cfgsets.cgen['portno'], debug=True, ssl_context=ctx)
